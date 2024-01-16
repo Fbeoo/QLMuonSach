@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('category', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->string('category_name');
-            $table->integer('category_parent_id')->nullable();
+            $table->string('category_name',100);
+            $table->integer('category_parent_id')->unsigned()->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
