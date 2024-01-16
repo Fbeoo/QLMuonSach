@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('report_compensation', function (Blueprint $table) {
             $table->id();
-            $table->string('content');
+            $table->string('content',500);
             $table->integer('quantity');
             $table->timestamps();
             $table->softDeletes();
