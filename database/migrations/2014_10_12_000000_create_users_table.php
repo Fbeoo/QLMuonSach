@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('user', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->string('name');
+            $table->string('name',100);
             $table->date('dob')->nullable();
-            $table->string('mail');
-            $table->string('password');
-            $table->string('address');
+            $table->string('mail',100);
+            $table->string('password',100);
+            $table->string('address',100);
             $table->binary('status');
             $table->timestamps();
             $table->softDeletes();
