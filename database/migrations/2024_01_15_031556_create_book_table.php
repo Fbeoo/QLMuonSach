@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('book', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->string('name');
+            $table->string('name',100);
             $table->integer('year_publish');
             $table->integer('price_rent');
             $table->integer('weight');
             $table->integer('total_page');
-            $table->string('thumbnail');
+            $table->string('thumbnail',100);
             $table->binary('status');
             $table->timestamps();
             $table->softDeletes();
