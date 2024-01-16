@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('admin', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->string('account');
-            $table->string('password');
+            $table->string('account',100);
+            $table->string('password',100);
             $table->timestamps();
             $table->softDeletes();
         });
