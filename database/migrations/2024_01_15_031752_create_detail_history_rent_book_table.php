@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id()->autoIncrement();
             $table->date('expiration_date');
             $table->integer('quantity');
-            $table->date('return_date');
+            $table->date('return_date')->nullable();
             $table->integer('status');
             $table->timestamps();
             $table->softDeletes();
