@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('price_rent');
             $table->integer('weight');
             $table->integer('total_page');
+            $table->integer('quantity');
             $table->string('thumbnail',100);
             $table->binary('status');
             $table->timestamps();
