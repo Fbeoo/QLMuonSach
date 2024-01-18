@@ -20,6 +20,7 @@ class BookFactory extends Factory
             'name' => 'Cuộc phiêu lưu của ' . fake()->name,
             'year_publish' => rand(1980,2000),
             'price_rent' => 20000,
+            'quantity' => rand(5,20),
             'weight'=> rand(100,300),
             'total_page' => rand(100,500),
             'thumbnail' => 'image.jpg',
