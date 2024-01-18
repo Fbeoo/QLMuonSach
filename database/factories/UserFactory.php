@@ -26,7 +26,7 @@ class UserFactory extends Factory
         return [
             'name' => fake()->name,
             'dob' => fake()->dateTimeBetween('1991-01-01','2006-01-01'),
-            'password' => '123456',
+            'password' => bcrypt('123456'),
             'mail' => fake()->safeEmail,
             'address' => fake()->address,
             'status' => 1
