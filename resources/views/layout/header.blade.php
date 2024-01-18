@@ -101,9 +101,10 @@
                     <i class="fas fa-cog"></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                    <a href="" class="nav-link active">
-                        <p>Logout</p>
-                    </a>
+                    <form action="{{route('logout')}}" method="post">
+                        @csrf
+                        <button type="submit">Logout</button>
+                    </form>
                 </div>
             </li>
         </ul>
