@@ -15,8 +15,8 @@ class AdminSeeder extends Seeder
     {
         Admin::factory()->sequence(
             [
-                'account' => 'admin',
-                'password' => 'admin'
+                'mail' => 'admin@gmail.com',
+                'password' => bcrypt('admin')
             ]
         )->create();
     }
