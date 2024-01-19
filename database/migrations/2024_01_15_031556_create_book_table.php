@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('total_page');
             $table->integer('quantity');
             $table->string('thumbnail',100);
+            $table->string('description',10000);
             $table->binary('status');
             $table->timestamps();
             $table->softDeletes();
