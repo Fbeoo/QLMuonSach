@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -14,29 +15,48 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-//General
 
+//User
+    //GET
 Route::get('/login',function () {
     return view('login');
 })->name('login');
 
-Route::post('/login')->middleware('auth.useroradmin');
+Route::get('/403', function () {
+    return view('error.403');
+})->name('403');
 
-//User
-    // Get
-Route::get('/', [BookController::class,'getBookForHomePage'])->name('home')->middleware('auth');
+Route::middleware(['auth'])->group(function () {
+    // GET
+    Route::get('/', [BookController::class,'getBookForHomePage'])->name('home');
 
-Route::get('/test',function () {
-    return view('test');
-})->middleware('auth');
+    Route::get('/test',function () {
+        return view('test');
+    });
+});
 
-    //Post
+    //POST
+Route::post('/login')->middleware('auth.user')->name('login');
+
 Route::post('/logout',[UserController::class,'logout'])->name('logout');
 
 //Admin
-    //Get
-Route::get('/admin/dashboard',function () {
-    return view('admin.dashboard');
-})->name('dashboard');
+Route::prefix('admin')->group(function () {
+    //GET
+    Route::get('/login',function () {
+        return view('admin.login');
+    })->name('admin.login');
+
+    //POST
+    Route::post('/login')->middleware('auth.admin')->name('admin.login');
+
+    Route::post('/logout',[AdminController::class,'logout'])->name('admin.logout');
+    Route::middleware('auth.check.admin')->group(function () {
+        //GET
+        Route::get('/dashboard',function () {
+            return view('admin.dashboard');
+        })->name('dashboard');
+    });
+});
 
 
