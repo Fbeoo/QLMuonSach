@@ -23,7 +23,8 @@ class BookFactory extends Factory
             'quantity' => rand(5,20),
             'weight'=> rand(100,300),
             'total_page' => rand(100,500),
-            'thumbnail' => 'image.jpg',
+            'thumbnail' => 'sach.jpg',
+            'description' => fake()->sentence(100),
             'status' => 1
         ];
     }
