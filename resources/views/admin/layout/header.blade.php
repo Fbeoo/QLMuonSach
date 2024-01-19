@@ -96,10 +96,16 @@
                     <i class="fas fa-expand-arrows-alt"></i>
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" data-widget="control-sidebar" data-controlsidebar-slide="true" href="#" role="button">
-                    <i class="fas fa-th-large"></i>
+            <li class="nav-item dropdown">
+                <a class="nav-link" data-toggle="dropdown" href="#">
+                    <i class="fas fa-cog"></i>
                 </a>
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    <form action="{{route('admin.logout')}}" method="post">
+                        @csrf
+                        <button type="submit">Logout</button>
+                    </form>
+                </div>
             </li>
         </ul>
     </nav>
