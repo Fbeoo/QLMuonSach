@@ -18,7 +18,7 @@
                 <a href="#" class="nav-link">
                     <i class="fas fa-book"></i>
                     <p>
-                        Sản phẩm
+                        Sách
                         <i class="right fas fa-angle-left"></i>
                     </p>
                 </a>
