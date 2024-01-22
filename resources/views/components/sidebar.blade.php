@@ -33,7 +33,7 @@
                                 @foreach($category_children as $category_child)
                                     @if($category_child->category_parent_id === $category_parent->id)
                                         <li class="nav-item">
-                                            <a href="#" class="nav-link">
+                                            <a href="{{route('getBookByCategory',['categoryId'=>$category_child->id])}}" class="nav-link">
                                                 <p>{{$category_child->category_name}}</p>
                                             </a>
                                         </li>
