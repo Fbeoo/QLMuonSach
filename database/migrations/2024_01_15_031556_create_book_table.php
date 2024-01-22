@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('quantity');
             $table->string('thumbnail',100);
             $table->string('description',10000);
-            $table->binary('status');
+            $table->integer('status');
             $table->timestamps();
             $table->softDeletes();
             $table->unsignedBigInteger('category_id');
