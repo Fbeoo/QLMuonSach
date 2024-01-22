@@ -25,7 +25,7 @@
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <a href="./index.html" class="nav-link">
+                        <a href="{{route('manageBook')}}" class="nav-link">
                             <i class="far fa-circle nav-icon"></i>
                             <p>Quản lý sách</p>
                         </a>
