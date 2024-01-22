@@ -7,6 +7,9 @@
             <div>
                 <div class="filter-container p-0 row">
                     @foreach($books as $book)
+                        @if($book->status === 0)
+                            @continue
+                        @endif
                         <div class="filtr-item col-sm-3" style="border: 1px solid rgb(233, 233, 233); text-align: center;">
                             <div style="padding: 30px">
                                 <div class="book_image">
@@ -16,7 +19,7 @@
                                     <h6 class="book_name"><a>{{$book->name}}</a></h6>
                                     <div class="rent_price" style="font-size: 16px;color: #fe4c50;font-weight: 600">{{$book->price_rent}}VNĐ /1 tháng</div>
                                 </div>
-                                <button type="button" class="btn btn-block btn-primary">Chi tiết</button>
+                                <a type="button" class="btn btn-block btn-primary" href="{{route('detail_book',['id'=>$book->id])}}">Chi tiết</a>
                             </div>
                             </div>
                     @endforeach
