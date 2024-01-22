@@ -13,4 +13,9 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
     {
         return $this->model->where('category_parent_id','<>',null)->get();
     }
+
+    public function getCategoryChildByCategoryParentId($categoryParentId)
+    {
+        return $this->model->where('category_parent_id',$categoryParentId)->get();
+    }
 }
