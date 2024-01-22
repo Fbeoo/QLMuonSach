@@ -33,6 +33,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/test',function () {
         return view('test');
     });
+
+    Route::get('/book/{id}',[BookController::class,'getDetailBook'])->name('detail_book');
+
+    Route::get('/book/category/{categoryId}',[BookController::class,'getBookByCategory'])->name('getBookByCategory');
 });
 
     //POST
@@ -56,6 +60,21 @@ Route::prefix('admin')->group(function () {
         Route::get('/dashboard',function () {
             return view('admin.dashboard');
         })->name('dashboard');
+
+        Route::get('/manage/book',[BookController::class,'getBookForManageBookPage'])->name('manageBook');
+
+        Route::get('/edit/book/{bookId}',[BookController::class,'getBookEdit'])->name('editBookPage');
+
+        Route::get('/add/book',[BookController::class,'addBookPage'])->name('addBookPage');
+        //POST
+        Route::post('/add/book',[BookController::class,'addBook'])->name('addBook');
+        //PUT
+        Route::put('/edit/book',[BookController::class,'editBook'])->name('editBook');
+
+        Route::put('/lock/book/{bookId}',[BookController::class,'lockBook'])->name('lockBook');
+
+        Route::put('/unlock/book/{bookId}',[BookController::class,'unlockBook'])->name('unlockBook');
+
     });
 });
 
