@@ -28,12 +28,14 @@ class BaseRepository implements EloquentRepositoryInterface {
 
     public function add(Model $model)
     {
-        // TODO: Implement add() method.
+        $this->model->create($model->getAttributes());
+        return true;
     }
 
     public function update(Model $model)
     {
-        // TODO: Implement update() method.
+        $model->update($model->getAttributes());
+        return true;
     }
 
     public function delete($id)
