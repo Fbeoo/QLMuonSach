@@ -1,6 +1,6 @@
 @include('admin.layout.header')
 @include('admin.layout.sidebar')
-<div class="card card-primary">
+<div class="card card-primary" style="width: 80%; margin: auto; margin-top: 20px">
     <div class="card-header">
         <h3 class="card-title">General</h3>
 
@@ -12,6 +12,7 @@
     </div>
     <div class="card-body" style="display: block;">
             <input type="hidden" value="{{$book->id}}" name="bookId" id="id">
+        <div style="display: inline-block; width: 45%;">
             <div class="form-group">
                 <label for="inputName">Tên sách</label>
                 <input type="text" id="bookName" class="form-control" value="{{$book->name}}" name="bookName">
@@ -33,6 +34,8 @@
 
                 </div>
             </div>
+        </div>
+        <div style="display: inline-block;width: 45%;margin-left: 100px">
             <div class="form-group">
                 <label for="inputProjectLeader">Trọng lượng</label>
                 <input type="text" id="weight" class="form-control" value="{{$book->weight}}" name="weight">
@@ -54,28 +57,33 @@
 
                 </div>
             </div>
+        </div>
             <div class="form-group" style="display: inline-grid">
                 <label for="inputStatus">Danh mục</label>
                 <div style="display: inline-flex">
-                    <select id="inputCategoryParent" class="form-control custom-select" style="width: 500px">
-                        @foreach($categoryParents as $categoryParent)
-                            @if($categoryOfBook->category_parent_id === $categoryParent->id)
-                                <option selected id="{{$categoryParent->id}}">{{$categoryParent->category_name}}</option>
-                            @else
-                                <option id="{{$categoryParent->id}}">{{$categoryParent->category_name}}</option>
-                            @endif
+                    <div style="width: 300px">
+                        <select id="inputCategoryParent" class="form-control custom-select">
+                            @foreach($categoryParents as $categoryParent)
+                                @if($categoryOfBook->category_parent_id === $categoryParent->id)
+                                    <option selected id="{{$categoryParent->id}}">{{$categoryParent->category_name}}</option>
+                                @else
+                                    <option id="{{$categoryParent->id}}">{{$categoryParent->category_name}}</option>
+                                @endif
 
-                        @endforeach
-                    </select>
-                    <select id="categoryChildren" class="form-control custom-select" name="categoryChildren">
-                        @foreach($categoryChildren as $categoryChild)
-                            @if($categoryOfBook->id === $categoryChild->id)
-                                <option value="{{$categoryChild->id}}" selected id="{{$categoryChild->id}}">{{$categoryChild->category_name}}</option>
-                            @else
-                                <option value="{{$categoryChild->id}}" id="{{$categoryChild->id}}">{{$categoryChild->category_name}}</option>
-                            @endif
-                        @endforeach
-                    </select>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div style="width: 300px; margin-left: 30px">
+                        <select id="categoryChildren" class="form-control custom-select" name="categoryChildren">
+                            @foreach($categoryChildren as $categoryChild)
+                                @if($categoryOfBook->id === $categoryChild->id)
+                                    <option value="{{$categoryChild->id}}" selected id="{{$categoryChild->id}}">{{$categoryChild->category_name}}</option>
+                                @else
+                                    <option value="{{$categoryChild->id}}" id="{{$categoryChild->id}}">{{$categoryChild->category_name}}</option>
+                                @endif
+                            @endforeach
+                        </select>
+                    </div>
                     <div id="categoryError">
 
                     </div>
@@ -89,7 +97,7 @@
                 </div>
             </div>
         <div class="form-group">
-            <label for="exampleInputFile"Ảnh</label>
+            <label for="exampleInputFile">Ảnh</label>
             <div class="input-group">
                 <div class="custom-file" style="display: table">
                     <input type="hidden" name="bookImage" id="bookImage" value="{{$book->thumbnail}}">
