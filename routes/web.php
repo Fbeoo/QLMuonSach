@@ -67,13 +67,9 @@ Route::prefix('admin')->group(function () {
 
         Route::get('/add/book',[BookController::class,'addBookPage'])->name('addBookPage');
         //POST
-        Route::post('/add/book',[BookController::class,'addBook'])->name('addBook');
+
         //PUT
-        Route::put('/edit/book',[BookController::class,'editBook'])->name('editBook');
 
-        Route::put('/lock/book/{bookId}',[BookController::class,'lockBook'])->name('lockBook');
-
-        Route::put('/unlock/book/{bookId}',[BookController::class,'unlockBook'])->name('unlockBook');
 
     });
 });
