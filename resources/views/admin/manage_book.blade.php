@@ -4,7 +4,7 @@
 <div class="card-body">
     <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4"><div class="row"><div class="col-sm-12 col-md-6"></div><div class="col-sm-12 col-md-6"></div></div><div class="row"><div class="col-sm-12"><table id="example2" class="table table-bordered table-hover dataTable dtr-inline" aria-describedby="example2_info">
                     <thead>
-                    <tr><th class="sorting sorting_asc" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Id</th><th class="sorting" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">Book Name</th><th class="sorting" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending">Thumbnail</th><th class="sorting" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Year Publish</th><th class="sorting" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Engine version: activate to sort column ascending">Price Rent</th><th class="sorting" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending">Weight</th><th class="sorting" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending">Total Page</th><th class="sorting" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending">Quantity</th><th class="sorting" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending">Status</th><th class="sorting" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending">Action</th></tr>
+                    <tr><th class="sorting sorting_asc" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Id</th><th class="sorting" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">Tên sách</th><th class="sorting" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending">Hình ảnh</th><th class="sorting" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Năm phát hành</th><th class="sorting" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Engine version: activate to sort column ascending">giá thuê</th><th class="sorting" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending">Trọng lượng</th><th class="sorting" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending">Tổng số trang</th><th class="sorting" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending">Số lượng</th><th class="sorting" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending">Trạng thái</th><th class="sorting" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending">Hành động</th></tr>
                     </thead>
                     <tbody>
                         @foreach($books as $book)
@@ -20,31 +20,23 @@
                             <td>{{$book->total_page}}</td>
                             <td>{{$book->quantity}}</td>
                             @if($book->status === 1)
-                                <td style="color: green">Available</td>
+                                <td style="color: green" id="statusBook{{$book->id}}">Bình thường</td>
                             @endif
                             @if($book->status === 0)
-                                <td style="color:red">Lock</td>
+                                <td style="color:red" id="statusBook{{$book->id}}">Khóa</td>
                             @endif
                             <td>
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-warning">Action</button>
+                                    <button type="button" class="btn btn-warning">Hành động</button>
                                     <button type="button" class="btn btn-warning dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
                                         <span class="sr-only">Toggle Dropdown</span>
                                     </button>
                                     <div class="dropdown-menu" role="menu" style="">
-                                        <a class="dropdown-item" href="{{route('editBookPage',['bookId'=>$book->id])}}">Change</a>
+                                        <a class="dropdown-item" href="{{route('editBookPage',['bookId'=>$book->id])}}">Sửa</a>
                                         @if($book->status === 1)
-                                            <form action="{{route('lockBook',['bookId' => $book->id])}}" method="POST">
-                                                @method('put')
-                                                @csrf
-                                                <input type="submit" class="dropdown-item" value="Lock">
-                                            </form>
+                                            <a style="cursor: pointer" class="dropdown-item" id="actionStatusBook{{$book->id}}" onclick="lockBook({{$book->id}})">Khóa</a>
                                         @else
-                                            <form action="{{route('unlockBook',['bookId' => $book->id])}}" method="POST">
-                                                @method('put')
-                                                @csrf
-                                                <input type="submit" class="dropdown-item" value="Unlock">
-                                            </form>
+                                            <a style="cursor: pointer" class="dropdown-item" id="actionStatusBook{{$book->id}}" onclick="unlockBook({{$book->id}})">Mở khóa</a>
                                         @endif
 
                                     </div>
@@ -55,4 +47,6 @@
                     </tbody>
                 </table>
     </div>
+            <script src="{{asset('dist/js/phongJs/lockBook.js')}}"></script>
 @include('admin.layout.footer')
+
