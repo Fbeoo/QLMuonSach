@@ -11,67 +11,51 @@
         </div>
     </div>
     <div class="card-body" style="display: block;">
-        <form action="{{route('editBook')}}" method="POST">
-            @method('put')
-            @csrf
-            <input type="hidden" value="{{$book->id}}" name="bookId">
+            <input type="hidden" value="{{$book->id}}" name="bookId" id="id">
             <div class="form-group">
-                <label for="exampleInputFile"Book Image</label>
-                <div class="input-group">
-                    <div class="custom-file" style="display: table">
-                        <input type="hidden" name="bookImage" id="bookImage">
-                        <input type="file" id="imageInput">
-                        <img id="previewImage" src="{{asset('dist/img/'.$book->thumbnail)}}" alt="Preview Image" style="width: 5%">
-                    </div>
+                <label for="inputName">Tên sách</label>
+                <input type="text" id="bookName" class="form-control" value="{{$book->name}}" name="bookName">
+                <div id="nameError">
+
                 </div>
             </div>
             <div class="form-group">
-                @error('bookName')
-                <div class="alert alert-danger">{{ $message }}</div>
-                @enderror
-                <label for="inputName">Book Name</label>
-                <input type="text" id="inputName" class="form-control" value="{{$book->name}}" name="bookName">
+                <label for="inputClientCompany">Năm phát hành</label>
+                <input type="text" id="yearPublish" class="form-control" value="{{$book->year_publish}}" name="yearPublish">
+                <div id="yearPublishError">
+
+                </div>
             </div>
             <div class="form-group">
-                @error('yearPublish')
-                <div class="alert alert-danger">{{ $message }}</div>
-                @enderror
-                <label for="inputClientCompany">Year Publish</label>
-                <input type="text" id="inputClientCompany" class="form-control" value="{{$book->year_publish}}" name="yearPublish">
+                <label for="inputProjectLeader">Giá thuê</label>
+                <input type="text" id="priceRent" class="form-control" value="{{$book->price_rent}}" name="priceRent">
+                <div id="priceRentError">
+
+                </div>
             </div>
             <div class="form-group">
-                @error('priceRent')
-                <div class="alert alert-danger">{{ $message }}</div>
-                @enderror
-                <label for="inputProjectLeader">Price Rent</label>
-                <input type="text" id="inputProjectLeader" class="form-control" value="{{$book->price_rent}}" name="priceRent">
+                <label for="inputProjectLeader">Trọng lượng</label>
+                <input type="text" id="weight" class="form-control" value="{{$book->weight}}" name="weight">
+                <div id="weightError">
+
+                </div>
             </div>
             <div class="form-group">
-                @error('weight')
-                <div class="alert alert-danger">{{ $message }}</div>
-                @enderror
-                <label for="inputProjectLeader">Weight</label>
-                <input type="text" id="inputProjectLeader" class="form-control" value="{{$book->weight}}" name="weight">
+                <label for="inputProjectLeader">Tổng số trang</label>
+                <input type="text" id="totalPage" class="form-control" value="{{$book->total_page}}" name="totalPage">
+                <div id="totalPageError">
+
+                </div>
             </div>
             <div class="form-group">
-                @error('totalPage')
-                <div class="alert alert-danger">{{ $message }}</div>
-                @enderror
-                <label for="inputProjectLeader">Total Page</label>
-                <input type="text" id="inputProjectLeader" class="form-control" value="{{$book->total_page}}" name="totalPage">
-            </div>
-            <div class="form-group">
-                @error('quantity')
-                <div class="alert alert-danger">{{ $message }}</div>
-                @enderror
-                <label for="inputProjectLeader">Quantity</label>
-                <input type="text" id="inputProjectLeader" class="form-control" value="{{$book->quantity}}" name="quantity">
+                <label for="inputProjectLeader">Số lượng</label>
+                <input type="text" id="quantity" class="form-control" value="{{$book->quantity}}" name="quantity">
+                <div id="quantityError">
+
+                </div>
             </div>
             <div class="form-group" style="display: inline-grid">
-                @error('categoryChildren')
-                <div class="alert alert-danger">{{ $message }}</div>
-                @enderror
-                <label for="inputStatus">Category</label>
+                <label for="inputStatus">Danh mục</label>
                 <div style="display: inline-flex">
                     <select id="inputCategoryParent" class="form-control custom-select" style="width: 500px">
                         @foreach($categoryParents as $categoryParent)
@@ -83,7 +67,7 @@
 
                         @endforeach
                     </select>
-                    <select id="inputCategoryChildren" class="form-control custom-select" name="categoryChildren">
+                    <select id="categoryChildren" class="form-control custom-select" name="categoryChildren">
                         @foreach($categoryChildren as $categoryChild)
                             @if($categoryOfBook->id === $categoryChild->id)
                                 <option value="{{$categoryChild->id}}" selected id="{{$categoryChild->id}}">{{$categoryChild->category_name}}</option>
@@ -92,17 +76,32 @@
                             @endif
                         @endforeach
                     </select>
+                    <div id="categoryError">
+
+                    </div>
                 </div>
             </div>
             <div class="form-group">
-                @error('bookDescription')
-                <div class="alert alert-danger">{{ $message }}</div>
-                @enderror
-                <label for="inputDescription">Project Description</label>
-                <textarea id="inputDescription" class="form-control" rows="4" name="bookDescription">{{$book->description}}</textarea>
+                <label for="inputDescription">Mô tả</label>
+                <textarea id="bookDescription" class="form-control" rows="4" name="bookDescription">{{$book->description}}</textarea>
+                <div id="descriptionError">
+
+                </div>
             </div>
-            <input type="submit" value="Save change">
-        </form>
+        <div class="form-group">
+            <label for="exampleInputFile"Ảnh</label>
+            <div class="input-group">
+                <div class="custom-file" style="display: table">
+                    <input type="hidden" name="bookImage" id="bookImage" value="{{$book->thumbnail}}">
+                    <input type="file" id="imageInput">
+                    <img id="previewImage" src="{{asset('dist/img/'.$book->thumbnail)}}" alt="Preview Image" style="width: 5%">
+                </div>
+            </div>
+            <div id="thumbnailError">
+
+            </div>
+        </div>
+        <a type="button" class="btn btn-block btn-success" id="editBook">Lưu thay đổi</a>
     </div>
     <!-- /.card-body -->
 </div>
