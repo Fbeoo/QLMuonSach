@@ -14,8 +14,6 @@ return new class extends Migration
         Schema::create('author_info', function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->string('author_name',100);
-            $table->date('dob');
-            $table->string('address',100);
             $table->timestamps();
             $table->softDeletes();
         });
