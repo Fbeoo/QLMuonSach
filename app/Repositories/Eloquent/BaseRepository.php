@@ -5,7 +5,13 @@ namespace App\Repositories\Eloquent;
 use App\Repositories\EloquentRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ *
+ */
 class BaseRepository implements EloquentRepositoryInterface {
+    /**
+     * @var Model
+     */
     protected $model;
 
     /**
@@ -16,33 +22,77 @@ class BaseRepository implements EloquentRepositoryInterface {
         $this->model = $model;
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection|mixed
+     * @throws \Exception
+     */
     public function getALl()
     {
-        return $this->model->all();
+        try {
+            return $this->model->all();
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
     }
 
+    /**
+     * @param $id
+     * @return mixed
+     * @throws \Exception
+     */
     public function find($id)
     {
-        return $this->model->find($id);
+        try {
+            return $this->model->find($id);
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
     }
 
+    /**
+     * @param Model $model
+     * @return mixed
+     * @throws \Exception
+     */
     public function add(Model $model)
     {
-        $this->model->create($model->getAttributes());
-        return true;
+        try {
+            $createRecord = $this->model->create($model->getAttributes());
+            return $createRecord->id;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
     }
 
+    /**
+     * @param Model $model
+     * @return true
+     * @throws \Exception
+     */
     public function update(Model $model)
     {
-        $model->update($model->getAttributes());
-        return true;
+        try {
+            $model->update($model->getAttributes());
+            return true;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
     }
 
+    /**
+     * @param $id
+     * @return true
+     * @throws \Exception
+     */
     public function delete($id)
     {
-        $record = $this->model->findorFail($id);
-        $record->delete();
-        $this->model->save();
-        return true;
+        try {
+            $record = $this->model->findorFail($id);
+            $record->delete();
+            $this->model->save();
+            return true;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
     }
 }

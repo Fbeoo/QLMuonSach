@@ -2,13 +2,33 @@
 namespace App\Repositories\Eloquent;
 use App\Repositories\BookRepositoryInterface;
 
+/**
+ *
+ */
 class BookRepository extends BaseRepository implements BookRepositoryInterface {
+    /**
+     * @return mixed
+     * @throws \Exception
+     */
     public function getBookForPaging() {
-        return $this->model->paginate(4);
+        try {
+            return $this->model->paginate(4);
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
     }
 
+    /**
+     * @param $categoryId
+     * @return mixed
+     * @throws \Exception
+     */
     public function getBookByCategory($categoryId)
     {
-        return $this->model->where('category_id',$categoryId)->get();
+        try {
+            return $this->model->where('category_id',$categoryId)->get();
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
     }
 }

@@ -6,15 +6,27 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ *
+ */
 class AuthorInfo extends Model
 {
     use HasFactory, SoftDeletes;
+
+    /**
+     * @var string
+     */
     protected $table = 'author_info';
+    /**
+     * @var string[]
+     */
     protected $fillable = [
         'author_name',
-        'dob',
-        'address',
     ];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function book() {
         return $this->belongsToMany(Book::class);
     }

@@ -9,11 +9,24 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ *
+ */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+
+    /**
+     * @var string
+     */
     protected $table = 'user';
+    /**
+     * @var string
+     */
     protected $guarded = 'web';
+    /**
+     * @var string[]
+     */
     protected $fillable = [
         'name',
         'dob',
@@ -22,12 +35,24 @@ class User extends Authenticatable
         'address',
         'status'
     ];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function historyRentBook() {
         return $this->hasMany(HistoryRentBook::class,'user_id');
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function commentedBook() {
         return $this->belongsToMany(Book::class,'comment_book');
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function compensateBook() {
         return $this->belongsToMany(Book::class,'report_compensation');
     }
