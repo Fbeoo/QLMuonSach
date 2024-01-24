@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthorInfoController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CategoryController;
 use Illuminate\Http\Request;
@@ -22,12 +23,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 //GET
 Route::get('/category/parent',[CategoryController::class,'getCategoryParent']);
+
 Route::get('/category/children/{categoryParentId}',[CategoryController::class,'getCategoryChildren']);
+
+Route::get('/author',[AuthorInfoController::class,'getAllAuthor']);
 
 //POST
 Route::post('/admin/add/book',[BookController::class,'addBook'])->name('addBook');
 
-Route::post('/admin/validate',[BookController::class,'validateInput']);
+Route::post('/admin/add/author',[AuthorInfoController::class,'addAuthor']);
 
 //PUT
 Route::put('/admin/edit/book',[BookController::class,'editBook'])->name('editBook');
