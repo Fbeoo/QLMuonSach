@@ -18,7 +18,6 @@ function getCategoryChildren(categoryParentId) {
         }
     });
 }
-
 function addBook() {
     $.ajax({
         url: 'http://localhost:8000/api/admin/add/book',
@@ -27,58 +26,98 @@ function addBook() {
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify({
             "name": document.getElementById('bookName').value,
-            "year_publish" : document.getElementById('yearPublish').value,
-            "price_rent" : document.getElementById('priceRent').value,
+            "yearPublish" : document.getElementById('yearPublish').value,
+            "priceRent" : document.getElementById('priceRent').value,
             "weight" : document.getElementById('weight').value,
-            "total_page" : document.getElementById('totalPage').value,
-            "thumbnail" : document.getElementById('bookImage').value,
-            "category_id" : document.getElementById('categoryChildren').value,
+            "totalPage" : document.getElementById('totalPage').value,
+            "thumbnail" : document.getElementById('imageInput').value,
+            "categoryId" : document.getElementById('categoryChildren').value,
             "quantity" : document.getElementById('quantity').value,
-            "description" : document.getElementById('bookDescription').value
-        }),
-        error: function(xhr, textStatus, errorThrown) {
-            console.log(xhr.responseText);
-            alert('Lỗi: ' + xhr.responseText);
-        },
-        success: function () {
-            alert('Thêm sách thành công');
-            window.location.href = "http://localhost:8000/admin/manage/book";
-        }
-    });
-}
-
-function validateInputToAddBook() {
-    $.ajax({
-        url: 'http://localhost:8000/api/admin/validate',
-        method: 'POST',
-        dataType: 'json',
-        contentType: "application/json; charset=utf-8",
-        data: JSON.stringify({
-            "name": document.getElementById('bookName').value,
-            "year_publish" : document.getElementById('yearPublish').value,
-            "price_rent" : document.getElementById('priceRent').value,
-            "weight" : document.getElementById('weight').value,
-            "total_page" : document.getElementById('totalPage').value,
-            "thumbnail" : document.getElementById('bookImage').value,
-            "category_id" : document.getElementById('categoryChildren').value,
-            "quantity" : document.getElementById('quantity').value,
-            "description" : document.getElementById('bookDescription').value
+            "description" : document.getElementById('bookDescription').value,
+            "authorId" : document.getElementById('author').value
         }),
         error: function(xhr, textStatus, errorThrown) {
             console.log(xhr.responseText);
             alert('Lỗi: ' + xhr.responseText);
         },
         success: function (response) {
-            var strHtml = '';
-            if (response.errors) {
-                for (var key in response.errors) {
-                    strHtml = `<p style="color: red">${response.errors[key]}</p>`
-                    $('#'+key).html(strHtml);
+            console.log(response)
+            console.log(this.data)
+            if (response.error) {
+                alert(response.error)
+                return
+            }
+            if (response.errorValidate) {
+                $('#nameError').html('');
+                $('#yearPublishError').html('');
+                $('#priceRentError').html('');
+                $('#quantityError').html('');
+                $('#totalPageError').html('');
+                $('#thumbnailError').html('');
+                $('#weightError').html('');
+                $('#categoryIdError').html('');
+                $('#descriptionError').html('');
+                $('#authorNameError').html('');
+                for (var key in response.errorValidate) {
+                    strHtml = `<p style="color: red">${response.errorValidate[key][0]}</p>`
+                    $('#'+key+"Error").html(strHtml);
                 }
+                return
             }
-            else {
-                addBook();
+            alert('Thêm sách thành công');
+            window.location.href = "http://localhost:8000/admin/manage/book";
+        }
+    });
+}
+
+function addAuthor() {
+    $.ajax({
+        url: 'http://localhost:8000/api/admin/add/author',
+        method: 'POST',
+        dataType: 'json',
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify({
+            "authorName": document.getElementById('authorName').value,
+        }),
+        error: function(xhr, textStatus, errorThrown) {
+            console.log(xhr.responseText);
+            alert('Lỗi: ' + xhr.responseText);
+        },
+        success: function (response) {
+            console.log(response)
+            if (response.error) {
+                alert(response.error)
+                return
             }
+            if (response.errorValidate) {
+                for (var key in response.errorValidate) {
+                    strHtml = `<p style="color: red">${response.errorValidate[key][0]}</p>`
+                    $('#'+key+"Error").html(strHtml);
+                }
+                return
+            }
+            alert('Thêm tác giả thành công');
+            getAuthor();
+        }
+    });
+}
+
+function getAuthor() {
+    let data;
+    $.ajax({
+        url: 'http://localhost:8000/api/author',
+        method: 'GET',
+        contentType: 'json',
+        error: function (response) {
+            console.log('Không thể gọi api');
+        },
+        success: function (response) {
+            var strHtml = '<option value="" selected>Chọn tác giả bất kì</option>';
+            for (var i=0;i<response.length;i++) {
+                strHtml += `<option value="${response[i].id}" id="${response[i].id}">${response[i].author_name}</option>`
+            }
+            console.log(strHtml);
+            $('#author').html(strHtml);
         }
     });
 }
@@ -103,5 +142,8 @@ selectCategoryParent.addEventListener('change',function () {
 })
 
 document.getElementById('addBook').addEventListener('click',function () {
-    validateInputToAddBook();
+    addBook();
+})
+document.getElementById('addAuthor').addEventListener('click',function () {
+    addAuthor();
 })
