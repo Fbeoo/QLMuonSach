@@ -18,8 +18,6 @@ class AuthorInfoFactory extends Factory
     {
         return [
             'author_name' => fake()->name,
-            'dob' => fake()->dateTimeBetween('1920-01-01','2000-01,-01'),
-            'address' => fake()->country
         ];
     }
 }
