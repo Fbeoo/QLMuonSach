@@ -58,10 +58,11 @@
                 </div>
             </div>
         </div>
+        <div style="width: 45%; display: inline-block">
             <div class="form-group" style="display: inline-grid">
                 <label for="inputStatus">Danh mục</label>
                 <div style="display: inline-flex">
-                    <div style="width: 300px">
+                    <div style="width: 271px">
                         <select id="inputCategoryParent" class="form-control custom-select">
                             @foreach($categoryParents as $categoryParent)
                                 @if($categoryOfBook->category_parent_id === $categoryParent->id)
@@ -73,7 +74,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div style="width: 300px; margin-left: 30px">
+                    <div style="width: 271px; margin-left: 30px">
                         <select id="categoryChildren" class="form-control custom-select" name="categoryChildren">
                             @foreach($categoryChildren as $categoryChild)
                                 @if($categoryOfBook->id === $categoryChild->id)
@@ -89,6 +90,21 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div style="width: 45%; display: inline-block; margin-left: 100px">
+            <div class="form-group" style="display: inline-grid; width: 300px">
+                <label for="inputStatus">Tác giả</label>
+                <select id="author" class="form-control custom-select">
+                    @foreach($authors as $author)
+                        @if($author->id === $authorOfBook[0]->author_id)
+                            <option value="{{$author->id}}" selected id="{{$author->id}}">{{$author->author_name}}</option>
+                        @else
+                            <option value="{{$author->id}}" id="{{$author->id}}">{{$author->author_name}}</option>
+                        @endif
+                    @endforeach
+                </select>
+            </div>
+        </div>
             <div class="form-group">
                 <label for="inputDescription">Mô tả</label>
                 <textarea id="bookDescription" class="form-control" rows="4" name="bookDescription">{{$book->description}}</textarea>
