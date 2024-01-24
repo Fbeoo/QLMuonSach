@@ -28,63 +28,49 @@ function editBook() {
         data: JSON.stringify({
             "id" : document.getElementById('id').value,
             "name": document.getElementById('bookName').value,
-            "year_publish" : document.getElementById('yearPublish').value,
-            "price_rent" : document.getElementById('priceRent').value,
+            "yearPublish" : document.getElementById('yearPublish').value,
+            "priceRent" : document.getElementById('priceRent').value,
             "weight" : document.getElementById('weight').value,
-            "total_page" : document.getElementById('totalPage').value,
+            "totalPage" : document.getElementById('totalPage').value,
             "thumbnail" : document.getElementById('bookImage').value,
-            "category_id" : document.getElementById('categoryChildren').value,
+            "categoryId" : document.getElementById('categoryChildren').value,
             "quantity" : document.getElementById('quantity').value,
-            "description" : document.getElementById('bookDescription').value
-        }),
-        error: function(xhr, textStatus, errorThrown) {
-            console.log(xhr.responseText);
-            alert('Lỗi: ' + xhr.responseText);
-        },
-        success: function () {
-            alert('Sửa sách thành công');
-            window.location.href = "http://localhost:8000/admin/manage/book";
-        }
-    });
-}
-
-function validateInputToEditBook() {
-    $.ajax({
-        url: 'http://localhost:8000/api/admin/validate',
-        method: 'POST',
-        dataType: 'json',
-        contentType: "application/json; charset=utf-8",
-        data: JSON.stringify({
-            "id" : document.getElementById('id').value,
-            "name": document.getElementById('bookName').value,
-            "year_publish" : document.getElementById('yearPublish').value,
-            "price_rent" : document.getElementById('priceRent').value,
-            "weight" : document.getElementById('weight').value,
-            "total_page" : document.getElementById('totalPage').value,
-            "thumbnail" : document.getElementById('bookImage').value,
-            "category_id" : document.getElementById('categoryChildren').value,
-            "quantity" : document.getElementById('quantity').value,
-            "description" : document.getElementById('bookDescription').value
+            "description" : document.getElementById('bookDescription').value,
+            "authorId" : document.getElementById('author').value
         }),
         error: function(xhr, textStatus, errorThrown) {
             console.log(xhr.responseText);
             alert('Lỗi: ' + xhr.responseText);
         },
         success: function (response) {
-            var strHtml = '';
-            if (response.errors) {
-                for (var key in response.errors) {
-                    strHtml = `<p style="color: red">${response.errors[key]}</p>`
-                    $('#'+key).html(strHtml);
+            console.log(this.data)
+            if (response.error) {
+                alert(response.error)
+                return
+            }
+            if (response.errorValidate) {
+                $('#nameError').html('');
+                $('#yearPublishError').html('');
+                $('#priceRentError').html('');
+                $('#quantityError').html('');
+                $('#totalPageError').html('');
+                $('#thumbnailError').html('');
+                $('#weightError').html('');
+                $('#categoryIdError').html('');
+                $('#descriptionError').html('');
+                for (var key in response.errorValidate) {
+                    strHtml = `<p style="color: red">${response.errorValidate[key][0]}</p>`
+                    $('#'+key+"Error").html(strHtml);
                 }
+                return
             }
-            else {
-                console.log(this.data);
-                editBook();
-            }
+            alert('Sửa sách thành công');
+            window.location.href = "http://localhost:8000/admin/manage/book";
         }
     });
 }
+
+
 var imageInput = document.getElementById('imageInput');
 var previewImage = document.getElementById('previewImage');
 imageInput.addEventListener('change', function(event) {
@@ -104,5 +90,5 @@ selectCategoryParent.addEventListener('change',function () {
     getCategoryChildren(selectCategoryParent.selectedOptions[0].id);
 })
 document.getElementById('editBook').addEventListener('click',function () {
-    validateInputToEditBook();
+    editBook();
 })
