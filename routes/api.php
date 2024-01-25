@@ -28,13 +28,15 @@ Route::get('/category/children/{categoryParentId}',[CategoryController::class,'g
 
 Route::get('/author',[AuthorInfoController::class,'getAllAuthor']);
 
+Route::get('/admin/search/book/{bookName}',[BookController::class,'getBookByName']);
+
 //POST
 Route::post('/admin/add/book',[BookController::class,'addBook'])->name('addBook');
 
 Route::post('/admin/add/author',[AuthorInfoController::class,'addAuthor']);
 
 //PUT
-Route::put('/admin/edit/book',[BookController::class,'editBook'])->name('editBook');
+Route::post('/admin/edit/book',[BookController::class,'editBook'])->name('editBook');
 
 Route::put('/admin/lock/book',[BookController::class,'lockBook'])->name('lockBook');
 
