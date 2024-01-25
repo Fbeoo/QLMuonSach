@@ -9,6 +9,10 @@ function getCategoryChildren(categoryParentId) {
             console.log('error to call api');
         },
         success: function (response) {
+            if (response.error) {
+                alert(response.error);
+                return;
+            }
             var strHtml = '';
             for (var i=0;i<response.length;i++) {
                 strHtml += `<option value="${response[i].id}" id="${response[i].id}">${response[i].category_name}</option>`
@@ -19,25 +23,37 @@ function getCategoryChildren(categoryParentId) {
     });
 }
 
-function editBook() {
+
+var imageInput = document.getElementById('imageInput');
+var previewImage = document.getElementById('previewImage');
+imageInput.addEventListener('change', function(event) {
+    var file = event.target.files[0];
+    if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            previewImage.setAttribute('src', e.target.result);
+        }
+        reader.readAsDataURL(file);
+    }
+});
+
+var selectCategoryParent = document.getElementById('inputCategoryParent');
+selectCategoryParent.addEventListener('change',function () {
+    getCategoryChildren(selectCategoryParent.selectedOptions[0].id);
+})
+$('#editBook').click(function(event) {
+    event.preventDefault();
+
+    var formData = new FormData($('#formEditBook')[0]);
     $.ajax({
         url: 'http://localhost:8000/api/admin/edit/book',
-        method: 'PUT',
-        dataType: 'json',
-        contentType: "application/json; charset=utf-8",
-        data: JSON.stringify({
-            "id" : document.getElementById('id').value,
-            "name": document.getElementById('bookName').value,
-            "yearPublish" : document.getElementById('yearPublish').value,
-            "priceRent" : document.getElementById('priceRent').value,
-            "weight" : document.getElementById('weight').value,
-            "totalPage" : document.getElementById('totalPage').value,
-            "thumbnail" : document.getElementById('bookImage').value,
-            "categoryId" : document.getElementById('categoryChildren').value,
-            "quantity" : document.getElementById('quantity').value,
-            "description" : document.getElementById('bookDescription').value,
-            "authorId" : document.getElementById('author').value
-        }),
+        method: 'POST',
+        contentType: false,
+        processData: false,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        data: formData,
         error: function(xhr, textStatus, errorThrown) {
             console.log(xhr.responseText);
             alert('Lỗi: ' + xhr.responseText);
@@ -68,27 +84,5 @@ function editBook() {
             window.location.href = "http://localhost:8000/admin/manage/book";
         }
     });
-}
 
-
-var imageInput = document.getElementById('imageInput');
-var previewImage = document.getElementById('previewImage');
-imageInput.addEventListener('change', function(event) {
-    var file = event.target.files[0];
-    if (file) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            previewImage.setAttribute('src', e.target.result);
-        }
-        reader.readAsDataURL(file);
-    }
-    document.getElementById('bookImage').value = file.name;
-});
-
-var selectCategoryParent = document.getElementById('inputCategoryParent');
-selectCategoryParent.addEventListener('change',function () {
-    getCategoryChildren(selectCategoryParent.selectedOptions[0].id);
-})
-document.getElementById('editBook').addEventListener('click',function () {
-    editBook();
 })
