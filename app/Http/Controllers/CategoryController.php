@@ -28,7 +28,12 @@ class CategoryController extends Controller
      * @return mixed
      */
     public function getCategoryParent() {
-        return $this->categoryRepository->getCategoryParent();
+        try {
+            $categoryParent = $this->categoryRepository->getCategoryParent();
+            return $categoryParent;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
     }
 
     /**
@@ -36,6 +41,14 @@ class CategoryController extends Controller
      * @return mixed
      */
     public function getCategoryChildren($categoryParentId) {
-        return $this->categoryRepository->getCategoryChildByCategoryParentId($categoryParentId);
+        try {
+            $categoryChildren = $this->categoryRepository->getCategoryChildByCategoryParentId($categoryParentId);
+            if (!$categoryChildren) {
+                return response()->json(['error'=>'Không tìm thấy thể loại']);
+            }
+            return $categoryChildren;
+        }catch (\Exception $e) {
+            return response()->json(['error'=>$e]);
+        }
     }
 }
