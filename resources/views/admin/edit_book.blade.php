@@ -10,6 +10,7 @@
             </button>
         </div>
     </div>
+    <form id="formEditBook" enctype="multipart/form-data">
     <div class="card-body" style="display: block;">
             <input type="hidden" value="{{$book->id}}" name="bookId" id="id">
         <div style="display: inline-block; width: 45%;">
@@ -94,7 +95,7 @@
         <div style="width: 45%; display: inline-block; margin-left: 100px">
             <div class="form-group" style="display: inline-grid; width: 300px">
                 <label for="inputStatus">Tác giả</label>
-                <select id="author" class="form-control custom-select">
+                <select id="author" class="form-control custom-select" name="authorId">
                     @foreach($authors as $author)
                         @if($author->id === $authorOfBook[0]->author_id)
                             <option value="{{$author->id}}" selected id="{{$author->id}}">{{$author->author_name}}</option>
@@ -104,10 +105,13 @@
                     @endforeach
                 </select>
             </div>
+            <div id="authorIdError">
+
+            </div>
         </div>
             <div class="form-group">
                 <label for="inputDescription">Mô tả</label>
-                <textarea id="bookDescription" class="form-control" rows="4" name="bookDescription">{{$book->description}}</textarea>
+                <textarea id="bookDescription" class="form-control" rows="4" name="description">{{$book->description}}</textarea>
                 <div id="descriptionError">
 
                 </div>
@@ -116,9 +120,9 @@
             <label for="exampleInputFile">Ảnh</label>
             <div class="input-group">
                 <div class="custom-file" style="display: table">
-                    <input type="hidden" name="bookImage" id="bookImage" value="{{$book->thumbnail}}">
-                    <input type="file" id="imageInput">
-                    <img id="previewImage" src="{{asset('dist/img/'.$book->thumbnail)}}" alt="Preview Image" style="width: 5%">
+{{--                    <input type="hidden" name="bookImage" id="bookImage" value="{{$book->thumbnail}}">--}}
+                    <input type="file" id="imageInput" name="thumbnail" value="{{asset('storage/'.$book->thumbnail)}}">
+                    <img id="previewImage" src="{{asset('storage/'.$book->thumbnail)}}" alt="Preview Image" style="width: 5%">
                 </div>
             </div>
             <div id="thumbnailError">
@@ -127,6 +131,7 @@
         </div>
         <a type="button" class="btn btn-block btn-success" id="editBook">Lưu thay đổi</a>
     </div>
+    </form>
     <!-- /.card-body -->
 </div>
 @include('admin.layout.footer')

@@ -50,14 +50,14 @@
             </button>
         </div>
     </div>
-    <form>
+    <form id="formAddBook" enctype="multipart/form-data">
     <div class="card-body" style="display: block;">
         <div style="display: inline-block; width: 45%;">
             <input type="hidden" name="bookId" id="bookId">
             <div class="form-group">
                 <label for="inputName">Tên sách</label>
                 <input type="text" id="bookName" class="form-control" name="bookName" value="{{ old('bookName') }}">
-                <div id="nameError">
+                <div id="bookNameError">
 
                 </div>
             </div>
@@ -117,7 +117,7 @@
                         </select>
                     </div>
                 </div>
-                <div id="categoryIdError">
+                <div id="categoryChildrenError">
 
                 </div>
             </div>
@@ -127,7 +127,7 @@
                 <label for="inputStatus">Tác giả</label>
                 <div style="display: inline-flex">
                     <div style="width: 300px">
-                        <select id="author" class="form-control custom-select">
+                        <select name="authorId" id="author" class="form-control custom-select">
                             <option value="">Chọn tác giả bất kì</option>
                             @foreach($authors as $author)
                                 <option value="{{$author->id}}" id="{{$author->id}}">{{$author->author_name}}</option>
@@ -145,7 +145,7 @@
         </div>
             <div class="form-group">
                 <label for="inputDescription">Mô tả</label>
-                <textarea id="bookDescription" class="form-control" rows="4" name="bookDescription">{{ old('bookDescription') }}</textarea>
+                <textarea id="bookDescription" class="form-control" rows="4" name="description">{{ old('bookDescription') }}</textarea>
                 <div id="descriptionError">
 
                 </div>
@@ -154,8 +154,8 @@
             <label for="exampleInputFile">Ảnh</label>
             <div class="input-group">
                 <div class="custom-file" style="display: table">
-                    <input type="hidden" name="bookImage" id="bookImage">
-                    <input type="file" id="imageInput">
+{{--                    <input type="hidden" name="bookImage" id="bookImage">--}}
+                    <input type="file" id="imageInput" name="thumbnail">
                     <img id="previewImage" src="{{asset('dist/img/'.old('bookImage'))}}" alt="Ảnh sách" style="width: 5%">
                 </div>
             </div>
@@ -165,10 +165,11 @@
         </div>
             <a type="button" class="btn btn-block btn-success" id="addBook">Thêm mới</a>
     </div>
+    </form>
     <!-- /.card-body -->
 </div>
 <div class="modal fade" id="susbc-form">
-    <div class="modal-dialog shadow-lg p-3 mb-5 bg-white rounded">
+    <div class="modal-dialog mb-5 bg-white rounded">
         <div class="modal-content sub-bg">
             <div class="modal-header subs-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
