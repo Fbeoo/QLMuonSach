@@ -20,13 +20,15 @@ return [
     'quantityValidateInteger' => 'Số lượng phải là số nguyên',
     'quantityValidateMin' => 'Số lượng phải lớn hơn 0',
 
-    'categoryIdValidateRequired' => 'Danh mục không được để trống',
+    'categoryChildrenValidateRequired' => 'Danh mục không được để trống',
 
     'thumbnailValidateRequired' => 'Ảnh của sách không được để trống',
+    'thumbnailValidateMimes' => 'Ảnh của sách phải có phần mở rộng là jpg, png hoặc jpeg',
+    'thumbnailValidateMax' => 'Ảnh của sách chỉ được có dung lượng tối đa là 4MB',
 
     'descriptionValidateRequired' => 'Mô tả sách không được để trống',
 
-    'nameValidateRequired' => 'Tên của sách không được để trống',
+    'bookNameValidateRequired' => 'Tên của sách không được để trống',
 
     'authorIdValidateRequired' => 'Tác giả không được để trống',
 
