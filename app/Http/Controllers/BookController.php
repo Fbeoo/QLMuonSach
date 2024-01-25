@@ -13,10 +13,14 @@ use App\Repositories\Eloquent\BookRepository;
 use http\Env\Response;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use mysql_xdevapi\Exception;
 use function Illuminate\Tests\Integration\Routing\fail;
 use function Laravel\Prompts\error;
+use function Webmozart\Assert\Tests\StaticAnalysis\uuid;
 
 /**
  *
@@ -102,21 +106,23 @@ class BookController extends Controller
      */
     public function editBook(Request $request) {
         try {
-            $book = $this->bookRepository->find($request->input('id'));
+            DB::beginTransaction();
+            $book = $this->bookRepository->find($request->input('bookId'));
             if (!$book) {
-                return response()->json(['errors'=>'Không tìm thấy sách']);
+                return response()->json(['error'=>'Không tìm thấy sách']);
             }
-            $validation = Validator::make($request->all(),[
-                'yearPublish'=> 'required|integer|min:1',
-                'priceRent' => 'required|integer|min:1',
-                'weight' => 'required|integer|min:1',
-                'totalPage' => 'required|integer|min:1',
-                'quantity' => 'required|integer|min:1',
-                'categoryId' => 'required',
-                'thumbnail' => 'required',
-                'description' => 'required',
-                'name' => 'required'
-            ],[
+                $validation = Validator::make($request->all(),[
+                    'yearPublish'=> 'required|integer|min:1',
+                    'priceRent' => 'required|integer|min:1',
+                    'weight' => 'required|integer|min:1',
+                    'totalPage' => 'required|integer|min:1',
+                    'quantity' => 'required|integer|min:1',
+                    'categoryChildren' => 'required',
+                    'description' => 'required',
+                    'thumbnail' => 'mimes:jpeg,png,jpg|max:4096',
+                    'bookName' => 'required',
+                    'authorId' => 'required'
+                ],[
                     'yearPublish.required' => @trans('message.yearPublishValidateRequired'),
                     'yearPublish.integer' => @trans('message.yearPublishValidateInteger'),
                     'yearPublish.min' => @trans('message.yearPublishValidateMin'),
@@ -138,39 +144,56 @@ class BookController extends Controller
                     'quantity.integer' => @trans('message.quantityValidateInteger'),
                     'quantity.min' => @trans('message.quantityValidateMin'),
 
-                    'categoryId.required' => @trans('message.categoryIdValidateRequired'),
+                    'categoryChildren.required' => @trans('message.categoryChildrenValidateRequired'),
 
                     'thumbnail.required' => @trans('message.thumbnailValidateRequired'),
-//                'thumbnail.image' => 'File được đưa lên không phải định dạng ảnh',
-//                'thumbnail.mimes' => 'Định dạng file ảnh không hợp lệ',
-//                'thumbnail.max' => 'Kích thước tệp quá giới hạn',
+                    'thumbnail.mimes' => @trans('message.thumbnailValidateMimes'),
+                    'thumbnail.max' => @trans('message.thumbnailValidateMax'),
 
                     'description.required' => @trans('message.descriptionValidateRequired'),
 
-                    'name.required' => @trans('message.nameValidateRequired'),
+                    'bookName.required' => @trans('message.bookNameValidateRequired'),
+
+                    'authorId.required' => @trans('message.authorIdValidateRequired'),
                 ]
             );
             if ($validation->fails()) {
                 return response()->json(['errorValidate'=>$validation->errors()]);
             }
-            $book->name = $request->input('name');
-            $book->thumbnail = $request->input('thumbnail');
+            if ($request->hasFile('thumbnail')) {
+                $path = $request->file('thumbnail')->store('public/img');
+                $book->thumbnail = Str::after($path,'/');
+            }
+
+            $categoryChildren = $this->categoryRepository->find($request->input('categoryChildren'));
+            if (!$categoryChildren) {
+                return response()->json(['error'=>'Không có danh mục này']);
+            }
+
+            $author = $this->authorInfoRepository->find($request->input('authorId'));
+            if (!$author) {
+                return response()->json(['error'=>'Không có tác giả này']);
+            }
+
+            $book->name = $request->input('bookName');
             $book->year_publish = $request->input('yearPublish');
             $book->price_rent = $request->input('priceRent');
             $book->weight = $request->input('weight');
             $book->total_page = $request->input('totalPage');
             $book->quantity = $request->input('quantity');
-            $book->category_id = $request->input('categoryId');
             $book->description = $request->input('description');
             $this->bookRepository->update($book);
+            $book->category_id = $request->input('categoryChildren');
 
-            $authorBook = $this->authorBookRepository->getAuthorBook($request->input('id'));
+            $authorBook = $this->authorBookRepository->getAuthorBook($request->input('bookId'));
             $authorBook[0]->author_id = $request->input('authorId');
             $this->authorBookRepository->update($authorBook[0]);
+            DB::commit();
 
             return response()->json(['success' => 'Sửa sách thành công']);
         }catch (\Exception $e) {
-            throw new \Exception($e);
+            DB::rollBack();
+            return response()->json(['error',$e]);
         }
     }
 
@@ -193,6 +216,7 @@ class BookController extends Controller
      */
     public function addBook(Request $request) {
         try {
+            DB::beginTransaction();
             $book = new Book();
             $validation = Validator::make($request->all(),[
                 'yearPublish'=> 'required|integer|min:1',
@@ -200,10 +224,10 @@ class BookController extends Controller
                 'weight' => 'required|integer|min:1',
                 'totalPage' => 'required|integer|min:1',
                 'quantity' => 'required|integer|min:1',
-                'categoryId' => 'required',
+                'categoryChildren' => 'required',
                 'thumbnail' => 'required|mimes:jpeg,png,jpg|max:2048',
                 'description' => 'required',
-                'name' => 'required',
+                'bookName' => 'required',
                 'authorId' => 'required'
             ],[
                     'yearPublish.required' => @trans('message.yearPublishValidateRequired'),
@@ -227,16 +251,15 @@ class BookController extends Controller
                     'quantity.integer' => @trans('message.quantityValidateInteger'),
                     'quantity.min' => @trans('message.quantityValidateMin'),
 
-                    'categoryId.required' => @trans('message.categoryIdValidateRequired'),
+                    'categoryChildren.required' => @trans('message.categoryChildrenValidateRequired'),
 
                     'thumbnail.required' => @trans('message.thumbnailValidateRequired'),
-//                'thumbnail.image' => 'File được đưa lên không phải định dạng ảnh',
-                'thumbnail.mimes' => 'Định dạng file ảnh không hợp lệ',
-//                'thumbnail.max' => 'Kích thước tệp quá giới hạn',
+                    'thumbnail.mimes' => @trans('message.thumbnailValidateMimes'),
+                    'thumbnail.max' => @trans('message.thumbnailValidateMax'),
 
                     'description.required' => @trans('message.descriptionValidateRequired'),
 
-                    'name.required' => @trans('message.nameValidateRequired'),
+                    'bookName.required' => @trans('message.bookNameValidateRequired'),
 
                     'authorId.required' => @trans('message.authorIdValidateRequired')
                 ]
@@ -244,14 +267,27 @@ class BookController extends Controller
             if ($validation->fails()) {
                 return response()->json(['errorValidate'=>$validation->errors()]);
             }
-            $book->name = $request->input('name');
-            $book->thumbnail = $request->input('thumbnail');
+
+            $categoryChildren = $this->categoryRepository->find($request->input('categoryChildren'));
+            if (!$categoryChildren) {
+                return response()->json(['error'=>'Không có danh mục này']);
+            }
+
+            $author = $this->authorInfoRepository->find($request->input('authorId'));
+            if (!$author) {
+                return response()->json(['error'=>'Không có tác giả này']);
+            }
+
+            $path = $request->file('thumbnail')->store('public/img');
+
+            $book->name = $request->input('bookName');
+            $book->thumbnail = Str::after($path,'/');
             $book->year_publish = $request->input('yearPublish');
             $book->price_rent = $request->input('priceRent');
             $book->weight = $request->input('weight');
             $book->total_page = $request->input('totalPage');
             $book->quantity = $request->input('quantity');
-            $book->category_id = $request->input('categoryId');
+            $book->category_id = $request->input('categoryChildren');
             $book->description = $request->input('description');
             $book->status = Book::statusAvailable;
             $bookId = $this->bookRepository->add($book);
@@ -260,9 +296,11 @@ class BookController extends Controller
             $authorBook->book_id = $bookId;
             $authorBook->author_id = $request->input('authorId');
             $this->authorBookRepository->add($authorBook);
+            DB::commit();
 
             return response()->json(['success' => 'Thêm sách thành công']);
         }catch (\Exception $e) {
+            DB::rollBack();
             return \response()->json(['error'=>$e]);
         }
     }
@@ -302,6 +340,15 @@ class BookController extends Controller
             return response()->json(['message' => 'Mở khóa sách thành công']);
         }catch (\Exception $e) {
             return \response()->json(['error'=>$e]);
+        }
+    }
+
+    public function getBookByName($bookName) {
+        try {
+            $books = $this->bookRepository->getBookByName($bookName);
+            return $books;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
         }
     }
 
