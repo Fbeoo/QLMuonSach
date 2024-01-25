@@ -31,4 +31,13 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface {
             throw new \Exception($e);
         }
     }
+
+    public function getBookByName($bookName)
+    {
+        try {
+            return $this->model::where('name','like','%'.$bookName.'%')->get();
+        }catch (\Exception $e) {
+            return response()->json(['error' => $e]);
+        }
+    }
 }

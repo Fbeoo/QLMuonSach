@@ -14,4 +14,6 @@ interface BookRepositoryInterface extends EloquentRepositoryInterface {
      * @return mixed
      */
     public function getBookByCategory($categoryId);
+
+    public function getBookByName($bookName);
 }
