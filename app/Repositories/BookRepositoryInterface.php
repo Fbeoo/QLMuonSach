@@ -1,5 +1,8 @@
 <?php
 namespace App\Repositories;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+
 /**
  *
  */
@@ -16,4 +19,6 @@ interface BookRepositoryInterface extends EloquentRepositoryInterface {
     public function getBookByCategory($categoryId);
 
     public function getBookByName($bookName);
+
+    public function sortBookByYearPublish (Collection $collection,$type);
 }

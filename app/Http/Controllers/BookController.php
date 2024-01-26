@@ -14,6 +14,7 @@ use http\Env\Response;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -63,7 +64,7 @@ class BookController extends Controller
     public function getBookForManageBookPage() {
         try {
             $books = $this->bookRepository->getALl();
-
+            Session::put('books',$books);
             return view('admin.manage_book',['books'=>$books]);
         }catch (\Exception $e) {
             throw new \Exception($e);
@@ -346,9 +347,19 @@ class BookController extends Controller
     public function getBookByName($bookName) {
         try {
             $books = $this->bookRepository->getBookByName($bookName);
+            Session::put('books',$books);
             return $books;
         }catch (\Exception $e) {
             throw new \Exception($e);
+        }
+    }
+
+    public function sortBookByYearPublish($type) {
+        try {
+            $resultSortBooks = $this->bookRepository->sortBookByYearPublish(Session::get('books'),$type);
+            return $resultSortBooks;
+        }catch (\Exception $e) {
+            return \response()->json(['error'=>$e]);
         }
     }
 

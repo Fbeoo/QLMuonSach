@@ -1,7 +1,9 @@
 <?php
 namespace App\Repositories\Eloquent;
 use App\Repositories\BookRepositoryInterface;
-
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 /**
  *
  */
@@ -38,6 +40,21 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface {
             return $this->model::where('name','like','%'.$bookName.'%')->get();
         }catch (\Exception $e) {
             return response()->json(['error' => $e]);
+        }
+    }
+
+
+
+    public function sortBookByYearPublish(Collection $collection, $type)
+    {
+        try {
+            if ($type == "desc") {
+                return new ResourceCollection($collection->sortByDesc('year_publish'));
+            } else if ($type == "asc") {
+                return new ResourceCollection($collection->sortBy('year_publish'));
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error'=>$e]);
         }
     }
 }
