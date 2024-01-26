@@ -30,6 +30,8 @@ Route::get('/author',[AuthorInfoController::class,'getAllAuthor']);
 
 Route::get('/admin/search/book/{bookName}',[BookController::class,'getBookByName']);
 
+Route::get('/admin/sort/book/year_publish/{type}',[BookController::class,'sortBookByYearPublish']);
+
 //POST
 Route::post('/admin/add/book',[BookController::class,'addBook'])->name('addBook');
 
