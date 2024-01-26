@@ -1,4 +1,5 @@
 function lockBook(bookId) {
+    $('#actionStatusBook'+bookId).prop('disabled',true);
     $.ajax({
         url: 'http://localhost:8000/api/admin/lock/book',
         method: 'PUT',
@@ -19,11 +20,13 @@ function lockBook(bookId) {
             document.getElementById('actionStatusBook'+bookId).onclick = function () {
                 unlockBook(bookId);
             };
+            $('#actionStatusBook'+bookId).prop('disabled',false);
         }
     });
 }
 
 function unlockBook(bookId) {
+    $('#actionStatusBook'+bookId).prop('disabled',true);
     $.ajax({
         url: 'http://localhost:8000/api/admin/unlock/book',
         method: 'PUT',
@@ -44,6 +47,7 @@ function unlockBook(bookId) {
             document.getElementById('actionStatusBook'+bookId).onclick = function () {
                 lockBook(bookId);
             };
+            $('#actionStatusBook'+bookId).prop('disabled',false);
         }
     });
 }
