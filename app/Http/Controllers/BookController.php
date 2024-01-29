@@ -13,6 +13,7 @@ use App\Repositories\Eloquent\BookRepository;
 use http\Env\Response;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
@@ -63,9 +64,16 @@ class BookController extends Controller
 
     public function getBookForManageBookPage() {
         try {
-            $books = $this->bookRepository->getALl();
-            Session::put('books',$books);
-            return view('admin.manage_book',['books'=>$books]);
+            $books = $this->bookRepository->getBookWithAuthorAndCategory();
+            $currentPage = $books->currentPage();
+            $totalPages = $books->lastPage();
+            $categories = $this->categoryRepository->getCategoryParent();
+            return view('admin.manage_book',[
+                'books'=>$books,
+                'categories' => $categories,
+                'currentPage' => $currentPage,
+                'totalPage' => $totalPages
+            ]);
         }catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -347,8 +355,13 @@ class BookController extends Controller
     public function getBookByName($bookName) {
         try {
             $books = $this->bookRepository->getBookByName($bookName);
-            Session::put('books',$books);
-            return $books;
+            $currentPage = $books->currentPage();
+            $totalPages = $books->lastPage();
+            return [
+                'books' => $books,
+                'currentPage' => $currentPage,
+                'totalPage' => $totalPages
+            ];
         }catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -363,11 +376,66 @@ class BookController extends Controller
         }
     }
 
+    public function filterBookByStatus ($type) {
+        try {
+            $resultFilter = $this->bookRepository->filterBookByStatus(Session::get('books'),$type);
+            return new ResourceCollection($resultFilter);
+        }catch (\Exception $e) {
+            return \response()->json(['error'=>$e]);
+        }
+    }
+
+    public function filterBookByCategoryParent ($categoryParentId) {
+        try {
+            $books = $this->bookRepository->getBookByCategoryParent($categoryParentId);
+            return $books;
+        }catch (\Exception $e) {
+            return \response()->json(['error'=>$e]);
+        }
+    }
+
+    public function filterBookByCategoryChildren($categoryChildrenId) {
+        try {
+            $books = $this->bookRepository->getBookByCategory($categoryChildrenId);
+            return $books;
+        }catch (\Exception $e) {
+            return response()->json(['error'=>$e]);
+        }
+    }
+
+    public function filterBookByRangeOfYear(Request $request) {
+        try {
+            $validation = Validator::make($request->all(), [
+                'minYear' => 'required|min:1',
+                'maxYear' => 'required|min:1'
+            ]);
+            if ($request->input('minYear')>$request->input('maxYear')) {
+                $validation->errors()->add('minYear','Năm nhỏ không thể lớn hơn năm lớn');
+            }
+            if ($validation->fails()) {
+                return response()->json(['errorValidate'=>$validation->errors()]);
+            }
+            $resultFilter = $this->bookRepository->filterBookByRangeOfYear(Session::get('books'),$request->input('minYear'),$request->input('maxYear'));
+            return $resultFilter;
+        }catch (\Exception $e) {
+            return \response()->json(['error'=>$e]);
+        }
+    }
+
+    public function getBookByRangeOfYear($minYear,$maxYear) {
+        try {
+            $resultFilter = $this->bookRepository->filterBookByRangeOfYear(Session::get('books'),$minYear,$maxYear);
+            return $resultFilter;
+        }catch (\Exception $e) {
+            return response()->json(['error'=>$e]);
+        }
+    }
+
     /** USER */
 
     public function getBookForHomePage() {
         try {
-            $books = $this->bookRepository->getALl();
+            $books = $this->bookRepository->getBookForHomePage();
 
             return view('index',['books'=>$books]);
         }catch (\Exception $e) {
@@ -402,8 +470,10 @@ class BookController extends Controller
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
      */
     public function getBookByCategory($categoryId) {
-        $books = $this->bookRepository->getBookByCategory($categoryId);
+        $books = $this->bookRepository->getBookByCategoryForUser($categoryId);
         return view ('index',['books'=>$books]);
     }
-
+    public function test() {
+        return $this->bookRepository->getBookWithAuthorAndCategory();
+    }
 }
