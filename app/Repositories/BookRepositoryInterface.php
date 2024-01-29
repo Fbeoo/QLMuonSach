@@ -16,9 +16,21 @@ interface BookRepositoryInterface extends EloquentRepositoryInterface {
      * @param $categoryId
      * @return mixed
      */
+    public function getBookWithAuthorAndCategory();
+
     public function getBookByCategory($categoryId);
 
     public function getBookByName($bookName);
 
-    public function sortBookByYearPublish (Collection $collection,$type);
+    public function sortBookByYearPublish (Collection $books,$type);
+
+    public function filterBookByStatus (Collection $books,$type);
+
+    public function getBookByCategoryParent($categoryParentId);
+
+    public function filterBookByRangeOfYear(Collection $books ,$minYear, $maxYear);
+
+    public function getBookForHomePage();
+
+    public function getBookByCategoryForUser($categoryId);
 }
