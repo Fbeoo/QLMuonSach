@@ -32,10 +32,20 @@ Route::get('/admin/search/book/{bookName}',[BookController::class,'getBookByName
 
 Route::get('/admin/sort/book/year_publish/{type}',[BookController::class,'sortBookByYearPublish']);
 
+Route::get('/admin/filter/book/status/{type}',[BookController::class,'filterBookByStatus']);
+
+Route::get('/admin/filter/book/category_parent/{categoryParentId}',[BookController::class,'filterBookByCategoryParent']);
+
+Route::get('/admin/filter/book/category_children/{categoryChildrenId}',[BookController::class,'filterBookByCategoryChildren']);
+
+Route::get('/admin/filter/book/year_publish/{minYear}/to/{maxYear}',[BookController::class,'getBookByRangeOfYear']);
+
 //POST
 Route::post('/admin/add/book',[BookController::class,'addBook'])->name('addBook');
 
 Route::post('/admin/add/author',[AuthorInfoController::class,'addAuthor']);
+
+Route::post('/admin/filter/book/year_publish/range',[BookController::class,'filterBookByRangeOfYear']);
 
 //PUT
 Route::post('/admin/edit/book',[BookController::class,'editBook'])->name('editBook');
