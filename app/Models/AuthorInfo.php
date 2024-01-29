@@ -25,9 +25,9 @@ class AuthorInfo extends Model
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function book() {
-        return $this->belongsToMany(Book::class);
+        return $this->hasMany(AuthorBook::class,'author_id','id');
     }
 }

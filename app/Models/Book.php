@@ -43,11 +43,8 @@ class Book extends Model
         return $this->belongsTo(Category::class,'category_id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function authorInfo() {
-        return $this->belongsToMany(AuthorInfo::class);
+    public function authorBook() {
+        return $this->hasMany(AuthorBook::class,'book_id','id');
     }
 
     /**
@@ -64,10 +61,4 @@ class Book extends Model
         return $this->belongsToMany(User::class,'comment_book');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function compensatingByUser() {
-        return $this->belongsToMany(User::class,'report_compensation');
-    }
 }
