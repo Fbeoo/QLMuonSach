@@ -18,6 +18,7 @@ class AuthorInfoFactory extends Factory
     {
         return [
             'author_name' => fake()->name,
+            'author_image' => 'img/imagesAuthor.jpg'
         ];
     }
 }
