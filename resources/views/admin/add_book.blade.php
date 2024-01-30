@@ -39,6 +39,36 @@
     .close:not(:disabled):not(.disabled):focus, .close:not(:disabled):not(.disabled):hover {
         outline: none;
     }
+    .loader-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+    }
+
+    .loader {
+        border: 16px solid #f3f3f3;
+        border-top: 16px solid #3498db;
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .hidden {
+        display: none;
+    }
 </style>
 <div class="card card-primary" style="width: 80%; margin: auto; margin-top: 20px">
     <div class="card-header">
@@ -181,14 +211,19 @@
                 </div>
                 <div class="row">
                     <div class="col-md-12">
-                        <form id="subs-form">
+                        <form id="formAddAuthor">
                             <div class="form-group row">
                                 <div class="col-md-12 col-xs-12">
                                     <label for="firstName">Tên tác giả</label>
-                                    <input type="text" class="form-control" id="authorName">
+                                    <input type="text" class="form-control" id="authorName" name="authorName">
                                     <div id="authorNameError">
 
                                     </div>
+                                </div>
+                                <label style="margin-left: 10px">Ảnh tác giả</label>
+                                <div class="custom-file" style="display: table; margin-left: 8px;">
+                                    <input type="file" id="imageAuthorInput" name="authorImage">
+                                    <img id="previewAuthorImage" alt="Ảnh sách" style="width: 5%">
                                 </div>
                             </div>
                             <a id="addAuthor" class="btn btn-primary text-center">Thêm mới</a>
@@ -199,7 +234,9 @@
         </div>
     </div>
 </div>
-
+<div id="loaderContainer" class="loader-container hidden">
+    <div class="loader"></div>
+</div>
 
 
 @include('admin.layout.footer')
