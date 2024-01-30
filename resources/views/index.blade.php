@@ -34,23 +34,52 @@
         color: white;
     }
 </style>
-<h1>Home</h1>
-<div class="col-10" style="margin: auto">
+<div class="col-10" style="margin: auto; padding-top: 50px">
     <div class="card card-primary">
         <div class="card-body">
             <div>
+                <div style="position: relative; padding-bottom: 30px">
+                    <label style="font-size: 30px">Tác giả</label>
+                    <a href="{{route('allAuthor')}}" style="color:black ;position: absolute; right: 0px; cursor: pointer;font-size: 18px">Xem thêm
+                        <i class="fas fa-chevron-right"></i></a>
+                </div>
                 <div class="filter-container p-0 row">
-                    @if(!$books->items())
-                        <h4 style="margin: auto">Hiện đang không có sách</h4>
-                    @endif
+                    @foreach($authors as $author)
+                        <div class="filtr-item col-sm-2" style="rgb(233, 233, 233); text-align: center;">
+                            <div>
+                                <div class="book_image" style="width: 200px; height: 200px; margin: auto; display: flex; justify-content: center;">
+                                    <img src="{{asset('storage/'.$author->author_image)}}" style="cursor: pointer;border-radius: 200px;max-width: 100%; max-height: 100%; object-fit: cover">
+                                </div>
+                                <div class="book_info" style="height: 80px; margin-top: 20px">
+                                    <h6 style="font-weight: bold" class="book_name"><a style="cursor: pointer">{{$author->author_name}}</a></h6>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-10" style="margin: auto; padding-top: 50px; padding-bottom: 100px">
+    <div class="card card-primary">
+        <div class="card-body">
+            <div>
+                <div style="position: relative; padding-bottom: 30px">
+                    <label style="font-size: 30px">Một số sách</label>
+                    <a href="{{route('allBook')}}" style="color:black ;position: absolute; right: 0px; cursor: pointer;font-size: 18px">Xem thêm
+                        <i class="fas fa-chevron-right"></i></a>
+                </div>
+                <div class="filter-container p-0 row">
                     @foreach($books as $book)
                         <div class="filtr-item col-sm-3" style="border: 1px solid rgb(233, 233, 233); text-align: center;">
                             <div style="padding: 30px">
-                                <div class="book_image" style="width: 200px;height: 300px;margin: auto">
-                                    <img src="{{asset('storage/'.$book->thumbnail)}}" style="width: 100%;height: 100%;object-fit: cover">
+                                <div class="book_image" style="width: 200px;height: 300px;margin: auto;display: flex;justify-content: center;align-items: center">
+                                    <img src="{{asset('storage/'.$book->thumbnail)}}" style="max-width: 100%;max-height:100%;object-fit: cover">
                                 </div>
                                 <div class="book_info" style="height: 80px; margin-top: 20px">
-                                    <h6 class="book_name"><a>{{$book->name}}</a></h6>
+                                    <h6 style="font-weight: bold" class="book_name"><a>{{$book->name}}</a></h6>
                                     <div class="rent_price" style="font-size: 16px;color: #fe4c50;font-weight: 600">{{number_format($book->price_rent, 0, ',', '.')}}VNĐ /1 tháng</div>
                                 </div>
                                 <a type="button" class="btn btn-block btn-primary" href="{{route('detail_book',['id'=>$book->id])}}">Chi tiết</a>
@@ -62,15 +91,4 @@
         </div>
     </div>
 </div>
-@if($books->items())
-    <div class="pagination">
-        <ul id="ulPagination">
-            @for($i = 1; $i <= $books->lastPage(); $i++)
-                <li>
-                    <a href="{{ route('home', ['page' => $i]) }}">{{ $i }}</a>
-                </li>
-            @endfor
-        </ul>
-    </div>
-@endif
 @include('layout.footer')
