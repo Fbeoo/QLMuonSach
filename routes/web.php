@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthorBookController;
+use App\Http\Controllers\AuthorInfoController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -30,13 +32,16 @@ Route::middleware(['auth'])->group(function () {
     // GET
     Route::get('/', [BookController::class,'getBookForHomePage'])->name('home');
 
-    Route::get('/test',function () {
-        return view('test');
-    });
+    Route::get('/author',[AuthorInfoController::class,'showAuthorInAllAuthorPage'])->name('allAuthor');
 
     Route::get('/book/{id}',[BookController::class,'getDetailBook'])->name('detail_book');
 
     Route::get('/book/category/{categoryId}',[BookController::class,'getBookByCategory'])->name('getBookByCategory');
+
+    Route::get('/book',[BookController::class,'showBookInAllBookPage'])->name('allBook');
+
+    Route::get('/author/{authorId}',[AuthorBookController::class,'showBookOfAuthor'])->name('bookOfAuthor');
+
 });
 
     //POST
@@ -73,5 +78,7 @@ Route::prefix('admin')->group(function () {
 
     });
 });
+
+
 
 
