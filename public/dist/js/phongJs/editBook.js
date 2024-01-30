@@ -45,6 +45,8 @@ $('#editBook').click(function(event) {
     event.preventDefault();
 
     var formData = new FormData($('#formEditBook')[0]);
+    var loaderContainer = document.getElementById("loaderContainer");
+    loaderContainer.classList.remove("hidden");
     $.ajax({
         url: 'http://localhost:8000/api/admin/edit/book',
         method: 'POST',
@@ -81,6 +83,7 @@ $('#editBook').click(function(event) {
                 return
             }
             alert('Sửa sách thành công');
+            loaderContainer.classList.add("hidden");
             window.location.href = "http://localhost:8000/admin/manage/book";
         }
     });
