@@ -22,6 +22,7 @@ class AuthorInfo extends Model
      */
     protected $fillable = [
         'author_name',
+        'author_image',
     ];
 
     /**
