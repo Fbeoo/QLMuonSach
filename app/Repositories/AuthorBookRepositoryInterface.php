@@ -6,4 +6,6 @@ interface AuthorBookRepositoryInterface extends EloquentRepositoryInterface {
      * @return mixed
      */
     public function getAuthorBook ($bookId);
+
+    public function getBookOfAuthor($authorId);
 }
