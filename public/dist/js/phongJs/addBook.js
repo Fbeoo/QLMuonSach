@@ -23,6 +23,8 @@ function getCategoryChildren(categoryParentId) {
 }
 
 function addAuthor() {
+    var loaderContainer = document.getElementById("loaderContainer");
+    loaderContainer.classList.remove("hidden");
     $.ajax({
         url: 'http://localhost:8000/api/admin/add/author',
         method: 'POST',
@@ -48,8 +50,9 @@ function addAuthor() {
                 }
                 return
             }
-            alert('Thêm tác giả thành công');
             getAuthor();
+            alert('Thêm tác giả thành công');
+            loaderContainer.classList.add("hidden");
         }
     });
 }
@@ -87,17 +90,61 @@ imageInput.addEventListener('change', function(event) {
     }
 });
 
+var imageAuthorInput = document.getElementById('imageAuthorInput');
+var previewAuthorImage = document.getElementById('previewAuthorImage');
+imageAuthorInput.addEventListener('change', function(event) {
+    var file = event.target.files[0];
+    if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            previewAuthorImage.setAttribute('src', e.target.result);
+        }
+        reader.readAsDataURL(file);
+    }
+});
+
 var selectCategoryParent = document.getElementById('inputCategoryParent');
 selectCategoryParent.addEventListener('change',function () {
     getCategoryChildren(selectCategoryParent.selectedOptions[0].id);
 });
 document.getElementById('addAuthor').addEventListener('click',function () {
-    addAuthor();
+    event.preventDefault();
+    var formDataAddAuthor = new FormData($('#formAddAuthor')[0]);
+    $.ajax({
+        url: 'http://localhost:8000/api/admin/add/author',
+        method: 'POST',
+        dataType: 'json',
+        contentType: false,
+        processData: false,
+        data: formDataAddAuthor,
+        error: function(xhr, textStatus, errorThrown) {
+            console.log(xhr.responseText);
+            alert('Lỗi: ' + xhr.responseText);
+        },
+        success: function (response) {
+            if (response.error) {
+                alert(response.error)
+                return
+            }
+            if (response.errorValidate) {
+                for (var key in response.errorValidate) {
+                    strHtml = `<p style="color: red">${response.errorValidate[key][0]}</p>`
+                    $('#'+key+"Error").html(strHtml);
+                }
+                return
+            }
+            getAuthor();
+            alert('Thêm tác giả thành công');
+            loaderContainer.classList.add("hidden");
+        }
+    });
 })
 $('#addBook').click(function(event) {
     event.preventDefault();
 
     var formData = new FormData($('#formAddBook')[0]);
+    var loaderContainer = document.getElementById("loaderContainer");
+    loaderContainer.classList.remove("hidden");
     $.ajax({
         url: 'http://localhost:8000/api/admin/add/book',
         method: 'POST',
@@ -134,6 +181,7 @@ $('#addBook').click(function(event) {
                 return
             }
             alert('Thêm sách thành công');
+            loaderContainer.classList.add("hidden");
             window.location.href = "http://localhost:8000/admin/manage/book";
         }
     });
