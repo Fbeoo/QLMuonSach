@@ -62,6 +62,14 @@ class BookController extends Controller
 
     /** ADMIN */
 
+    public function getBookForPagingInManageBookPage() {
+        try {
+            $books = $this->bookRepository->getBookWithAuthorAndCategory();
+            return $books;
+        }catch (\Exception $e) {
+            return \response()->json(['error'=>$e]);
+        }
+    }
     public function getBookForManageBookPage() {
         try {
             $books = $this->bookRepository->getBookWithAuthorAndCategory();
@@ -234,7 +242,7 @@ class BookController extends Controller
                 'totalPage' => 'required|integer|min:1',
                 'quantity' => 'required|integer|min:1',
                 'categoryChildren' => 'required',
-                'thumbnail' => 'required|mimes:jpeg,png,jpg|max:2048',
+                'thumbnail' => 'required|mimes:jpeg,png,jpg|max:4096',
                 'description' => 'required',
                 'bookName' => 'required',
                 'authorId' => 'required'
@@ -406,8 +414,8 @@ class BookController extends Controller
     public function filterBookByRangeOfYear(Request $request) {
         try {
             $validation = Validator::make($request->all(), [
-                'minYear' => 'required|min:1',
-                'maxYear' => 'required|min:1'
+                'minYear' => 'required|min:1|integer',
+                'maxYear' => 'required|min:1|integer'
             ]);
             if ($request->input('minYear')>$request->input('maxYear')) {
                 $validation->errors()->add('minYear','Năm nhỏ không thể lớn hơn năm lớn');
@@ -431,13 +439,26 @@ class BookController extends Controller
         }
     }
 
+    public function filterBook (Request $request) {
+        try {
+            $books = $this->bookRepository->filterBook($request->all());
+            return \response()->json($books);
+        }catch (\Exception $e) {
+            dd($e);
+            return response()->json(['error'=>$e]);
+        }
+    }
+
     /** USER */
 
     public function getBookForHomePage() {
         try {
             $books = $this->bookRepository->getBookForHomePage();
-
-            return view('index',['books'=>$books]);
+            $authors = $this->authorInfoRepository->getAuthorForHomePage();
+            return view('index',[
+                'books'=>$books,
+                'authors' => $authors
+            ]);
         }catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -450,15 +471,9 @@ class BookController extends Controller
      */
     public function getDetailBook($bookId) {
         try {
-            $authorInfo = [];
-            $authorBooks = $this->authorBookRepository->getAuthorBook($bookId);
-            foreach ($authorBooks as $authorBook) {
-                array_push($authorInfo,$this->authorInfoRepository->find($authorBook->id));
-            }
-
+            $books = $this->bookRepository->getDetailBook($bookId);
             return view('detail_book',[
-                'book'=>$this->bookRepository->find($bookId),
-                'authors' => $authorInfo
+                'book'=>$books
             ]);
         }catch (\Exception $e) {
             throw new \Exception($e);
@@ -473,7 +488,13 @@ class BookController extends Controller
         $books = $this->bookRepository->getBookByCategoryForUser($categoryId);
         return view ('index',['books'=>$books]);
     }
-    public function test() {
-        return $this->bookRepository->getBookWithAuthorAndCategory();
+
+    public function showBookInAllBookPage() {
+        try {
+            $books = $this->bookRepository->getBookForAllBookPage();
+            return view('allBook',['books'=>$books]);
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
     }
 }
