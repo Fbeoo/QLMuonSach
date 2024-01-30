@@ -1,5 +1,37 @@
 @include('admin.layout.header')
 @include('admin.layout.sidebar')
+<style>
+    .loader-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+    }
+
+    .loader {
+        border: 16px solid #f3f3f3;
+        border-top: 16px solid #3498db;
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
 <div class="card card-primary" style="width: 80%; margin: auto; margin-top: 20px">
     <div class="card-header">
         <h3 class="card-title">General</h3>
@@ -133,6 +165,10 @@
     </div>
     </form>
     <!-- /.card-body -->
+</div>
+
+<div id="loaderContainer" class="loader-container hidden">
+    <div class="loader"></div>
 </div>
 @include('admin.layout.footer')
 <script src="{{asset('dist/js/phongJs/editBook.js')}}"></script>
