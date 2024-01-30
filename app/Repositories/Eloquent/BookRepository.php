@@ -147,7 +147,6 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface {
             $itemsPerPage = 10;
             $currentPage = LengthAwarePaginator::resolveCurrentPage();
             $resultFilter = $books->whereBetween('year_publish',[$minYear,$maxYear]);
-            Session::put('books',$resultFilter);
             $totalItems = $resultFilter->count();
             $resultFilterPaginate = new LengthAwarePaginator($resultFilter
                 ->forPage($currentPage, $itemsPerPage), $totalItems, $itemsPerPage, $currentPage);
@@ -160,7 +159,7 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface {
     public function getBookForHomePage()
     {
         try {
-            $books = $this->model::where('status',1)->paginate('12');
+            $books = $this->model::where('status',1)->take(8)->get();
             return $books;
         }catch (\Exception $e) {
             throw new \Exception($e);
@@ -175,6 +174,53 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface {
                 ->with('category','authorBook','authorBook.authorInfo')
                 ->paginate(12);
             return $books;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function getBookForAllBookPage()
+    {
+        try {
+            $books = $this->model->paginate('12');
+            return $books;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function getDetailBook($bookId)
+    {
+        try {
+            $books = $this->model->find($bookId)->with('authorBook.authorInfo')->first();
+            return $books;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function filterBook($arrFilter)
+    {
+        try {
+            $books = $this->model;
+            if ($arrFilter['name']!="") {
+                $books = $books->where('name',$arrFilter['name']);
+            }
+            if ($arrFilter['status']!="") {
+                $books = $books->where('status',$arrFilter['status']);
+            }
+            if ($arrFilter['category_parent_id']!="") {
+                $books = $books->whereHas('category',function ($query) use($arrFilter) {
+                    $query->where('category_parent_id',$arrFilter['category_parent_id']);
+                });
+                if ($arrFilter['category_children_id']!="") {
+                    $books = $books->where('category_id',$arrFilter['category_children_id']);
+                }
+            }
+            if ($arrFilter['minYear']!="" && $arrFilter['maxYear']!="") {
+                $books = $books->whereBetween('year_publish',[$arrFilter['minYear'],$arrFilter['maxYear']]);
+            }
+            return $books->with('category','authorBook','authorBook.authorInfo')->paginate('10');
         }catch (\Exception $e) {
             throw new \Exception($e);
         }

@@ -33,4 +33,12 @@ interface BookRepositoryInterface extends EloquentRepositoryInterface {
     public function getBookForHomePage();
 
     public function getBookByCategoryForUser($categoryId);
+
+    public function getBookForAllBookPage();
+
+    public function getDetailBook($bookId);
+
+    public function filterBook($arrFilter);
+
+
 }
