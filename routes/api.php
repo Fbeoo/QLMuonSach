@@ -40,12 +40,16 @@ Route::get('/admin/filter/book/category_children/{categoryChildrenId}',[BookCont
 
 Route::get('/admin/filter/book/year_publish/{minYear}/to/{maxYear}',[BookController::class,'getBookByRangeOfYear']);
 
+Route::get('/admin/all/book',[BookController::class,'getBookForPagingInManageBookPage']);
+
 //POST
 Route::post('/admin/add/book',[BookController::class,'addBook'])->name('addBook');
 
 Route::post('/admin/add/author',[AuthorInfoController::class,'addAuthor']);
 
 Route::post('/admin/filter/book/year_publish/range',[BookController::class,'filterBookByRangeOfYear']);
+
+Route::post('/admin/filter/book',[BookController::class,'filterBook']);
 
 //PUT
 Route::post('/admin/edit/book',[BookController::class,'editBook'])->name('editBook');
