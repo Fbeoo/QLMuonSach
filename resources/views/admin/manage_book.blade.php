@@ -33,12 +33,47 @@
         background-color: #4CAF50;
         color: white;
     }
+
+
+    .loader-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+    }
+
+    .loader {
+        border: 16px solid #f3f3f3;
+        border-top: 16px solid #3498db;
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .hidden {
+        display: none;
+    }
+
+
 </style>
 <a type="button" class="btn btn-block btn-success" style="margin-left: auto; width: 10%; margin-top: 20px" href="{{route('addBookPage')}}">Thêm mới</a>
 <div style="display: flex; justify-content: center; align-items: center;">
 <div style="margin-left: 20px">
+    <form id="formFilterBook" enctype="multipart/form-data">
     <div class="input-group" style="margin-top: 20px">
-        <input id="bookSearch" type="search" class="form-control form-control-lg" placeholder="Nhập tên sách để tìm kiếm" style="height: 40px; width: 500px">
+        <input name="name" id="bookSearch" type="search" class="form-control form-control-lg" placeholder="Nhập tên sách để tìm kiếm" style="height: 40px; width: 500px">
         <div class="input-group-append" style="height: 40px">
             <button class="btn btn-default" id="search">
                 <i class="fa fa-search"></i>
@@ -49,20 +84,15 @@
             <div style="display: inline-flex">
                 <div style="width: 271px">
                     <label>Năm phát hành</label>
-                    <select id="sortBookByYearPublish" class="form-control custom-select">
-                        <option selected>Sắp xếp theo năm phát hành</option>
-                        <option value="asc">Tăng dần</option>
-                        <option value="desc">Giảm dần</option>
-                    </select>
-                    <div style="display: inline-flex; margin-top: 20px">
+                    <div style="display: inline-flex;">
                         <div>
-                            <input class="form-control" type="text" style="width: 60px" id="minYear">
+                            <input name="minYear" class="form-control" type="text" style="width: 60px" id="minYear">
                             <p id="minYearError">
 
                             </p>
                         </div>
                         <div>
-                            <input class="form-control" type="text" style="width: 60px; margin-left: 30px" id="maxYear">
+                            <input name="maxYear" class="form-control" type="text" style="width: 60px; margin-left: 30px" id="maxYear">
                             <p id="maxYearError">
 
                             </p>
@@ -76,27 +106,29 @@
                 </div>
                 <div style="width: 271px; margin-left: 30px">
                     <label>Trạng thái</label>
-                    <select id="filterBookByStatus" class="form-control custom-select">
-                        <option selected>Sắp xếp theo trạng thái</option>
+                    <select name="status" id="filterBookByStatus" class="form-control custom-select">
+                        <option value="" selected>Sắp xếp theo trạng thái</option>
                         <option value="available">Bình thường</option>
                         <option value="lock">Khóa</option>
                     </select>
                 </div>
                 <div style="width: 271px; margin-left: 30px">
                     <label>Danh mục</label>
-                    <select id="filterBookByCategoryParent" class="form-control custom-select">
-                        <option selected>Sắp xếp theo danh mục lớn</option>
+                    <select name="category_parent_id" id="filterBookByCategoryParent" class="form-control custom-select">
+                        <option value="" selected>Sắp xếp theo danh mục lớn</option>
                         @foreach($categories as $category)
                             <option value="{{$category->id}}">{{$category->category_name}}</option>
                         @endforeach
                     </select>
-                    <select id="filterBookByCategoryChildren" class="form-control custom-select" style="margin-top: 20px">
+                    <select name="category_children_id" id="filterBookByCategoryChildren" class="form-control custom-select" style="margin-top: 20px">
 
                     </select>
                 </div>
             </div>
 
     </div>
+    </form>
+
 </div>
 </div>
 <div class="card-body">
@@ -150,16 +182,20 @@
                         @endforeach
                     </tbody>
                 </table>
-                <div class="pagination">
+                <div class="pagination" style="align-items: center; justify-content: center">
                     <ul id="ulPagination">
-                        @for($i = 1; $i <= $books->lastPage(); $i++)
-                            <li>
-                                <a href="{{ route('manageBook', ['page' => $i]) }}">{{ $i }}</a>
-                            </li>
-                        @endfor
-                    </ul>
+{{--                        @for($i = 1; $i <= $books->lastPage(); $i++)--}}
+{{--                            <li>--}}
+{{--                                <a href="{{ route('manageBook', ['page' => $i]) }}">{{ $i }}</a>--}}
+{{--                            </li>--}}
+{{--                        @endfor--}}
+{{--                    </ul>--}}
                 </div>
     </div>
+            <div id="loaderContainer" class="loader-container hidden">
+                <div class="loader"></div>
+            </div>
+
             <script src="{{asset('dist/js/phongJs/lockBook.js')}}"></script>
             <script src="{{asset('dist/js/phongJs/manageBook.js')}}"></script>
 @include('admin.layout.footer')
