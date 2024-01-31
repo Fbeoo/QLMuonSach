@@ -51,6 +51,10 @@ Route::post('/admin/filter/book/year_publish/range',[BookController::class,'filt
 
 Route::post('/admin/filter/book',[BookController::class,'filterBook']);
 
+Route::post('/add-to-cart',[BookController::class,'addBookToCart']);
+
+Route::post('/rent-single-book',[BookController::class,'rentSingleBook']);
+
 //PUT
 Route::post('/admin/edit/book',[BookController::class,'editBook'])->name('editBook');
 
