@@ -45,7 +45,7 @@
                 </ul>
             </li>
             <li class="nav-item">
-                <a href="/test" class="nav-link">
+                <a href="{{route('historyRentBook',['userId'=>session()->get('user')->id])}}" class="nav-link">
                     <i class="fas fa-history"></i>
                     <p>
                         Lịch sử mượn sách
