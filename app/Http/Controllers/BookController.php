@@ -5,11 +5,16 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\AuthorBook;
 use App\Models\Book;
+use App\Models\DetailHistoryRentBook;
+use App\Models\HistoryRentBook;
 use App\Repositories\AuthorBookRepositoryInterface;
 use App\Repositories\AuthorInfoRepositoryInterface;
 use App\Repositories\BookRepositoryInterface;
 use App\Repositories\CategoryRepositoryInterface;
+use App\Repositories\DetailHistoryRentBookRepositoryInterface;
 use App\Repositories\Eloquent\BookRepository;
+use App\Repositories\HistoryRentBookRepositoryInterface;
+use Carbon\Carbon;
 use http\Env\Response;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -46,18 +51,31 @@ class BookController extends Controller
      */
     protected $categoryRepository;
 
+    protected $detailHistoryRentBookRepository;
+
+    protected $historyRentBookRepository;
+
     /**
      * @param BookRepositoryInterface $bookRepository
      * @param AuthorBookRepositoryInterface $authorBookRepository
      * @param AuthorInfoRepositoryInterface $authorInfoRepository
      * @param CategoryRepositoryInterface $categoryRepository
      */
-    public function __construct(BookRepositoryInterface $bookRepository, AuthorBookRepositoryInterface $authorBookRepository, AuthorInfoRepositoryInterface $authorInfoRepository, CategoryRepositoryInterface $categoryRepository)
+    public function __construct(
+        BookRepositoryInterface $bookRepository,
+        AuthorBookRepositoryInterface $authorBookRepository,
+        AuthorInfoRepositoryInterface $authorInfoRepository,
+        CategoryRepositoryInterface $categoryRepository,
+        DetailHistoryRentBookRepositoryInterface $detailHistoryRentBookRepository,
+        HistoryRentBookRepositoryInterface $historyRentBookRepository
+    )
     {
         $this->bookRepository = $bookRepository;
         $this->authorBookRepository = $authorBookRepository;
         $this->authorInfoRepository = $authorInfoRepository;
         $this->categoryRepository = $categoryRepository;
+        $this->detailHistoryRentBookRepository = $detailHistoryRentBookRepository;
+        $this->historyRentBookRepository = $historyRentBookRepository;
     }
 
     /** ADMIN */
@@ -472,8 +490,14 @@ class BookController extends Controller
     public function getDetailBook($bookId) {
         try {
             $books = $this->bookRepository->getDetailBook($bookId);
+            $detailHistoryRentBook = $this->detailHistoryRentBookRepository->getNumberOfBookRenting($bookId);
+            $numberBookAvailable = $books->quantity;
+            foreach ($detailHistoryRentBook as $detail) {
+                $numberBookAvailable -= $detail->quantity;
+            }
             return view('detail_book',[
-                'book'=>$books
+                'book'=>$books,
+                'numberBookAvailable' => $numberBookAvailable,
             ]);
         }catch (\Exception $e) {
             throw new \Exception($e);
@@ -495,6 +519,83 @@ class BookController extends Controller
             return view('allBook',['books'=>$books]);
         }catch (\Exception $e) {
             throw new \Exception($e);
+        }
+    }
+
+    public function addBookToCart(Request $request) {
+        try {
+            if (Session::get('books')) {
+                foreach (Session::get('books') as $bookInCart) {
+                    if ($bookInCart->id == $request->input('bookId')) {
+                        return \response()->json(['error'=>'Sách đã có trong giỏ hàng']);
+                    }
+                }
+            }
+            $book = $this->bookRepository->find($request->input('bookId'));
+            Session::push('books',$book);
+            return \response()->json(['success'=>'Thêm vào giỏ hàng thành công']);
+        }catch (\Exception $e) {
+            return \response()->json(['error'=>$e]);
+        }
+    }
+
+    public function showBookInCart() {
+        try {
+            $books = Session::get('books');
+            return view('cart',['books'=>$books]);
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function rentSingleBook(Request $request) {
+        try {
+            DB::beginTransaction();
+            $validation = Validator::make($request->all(),[
+                'dateRent' => 'required|date_format:d/m/Y|after:tomorrow',
+                'quantityRent' => 'required|integer|min:1'
+            ],[
+                'dateRent.required' => 'Ngày thuê không được để trống',
+                'dateRent.date_format' => 'Định dạng ngày không đúng',
+                'dateRent.after' => 'Ngày thuê tối thiểu phải là ngày mai',
+
+                'quantityRent.required' => 'Số lượng thuê không được để trống',
+                'quantityRent.integer' => 'Số lượng thuê phải là số nguyên',
+                'quantityRent.min' => 'Số lượng thuê phải lớn hơn 0'
+
+            ]);
+
+            if (intval($request->input('numberBookAvailable'))<intval($request->input('quantityRent'))) {
+                $validation->errors()->add('quantityRent','Số sách mượn vượt quá số lượng đang có trong kho');
+            }
+            if ($validation->fails()) {
+                return \response()->json(['errorValidate'=>$validation->errors()]);
+            }
+
+            $historyRentBook = new HistoryRentBook();
+
+            $currentDate = Carbon::now();
+            $dateRent = Carbon::createFromFormat('d/m/Y', $request->input('dateRent'));
+            $numberDayRent = $currentDate->diffInDays($dateRent);
+
+            $historyRentBook->rent_date = now()->format('Y/m/d');
+            $historyRentBook->status = HistoryRentBook::statusPending;
+            $historyRentBook->expiration_date = $dateRent->format('Y/m/d');
+            $historyRentBook->total_price =$numberDayRent*$request->input('price');
+            $historyRentBook->user_id = session()->get('user')->id;
+            $historyRentBookId = $this->historyRentBookRepository->add($historyRentBook);
+
+            $detailHistoryRentBook = new DetailHistoryRentBook();
+            $detailHistoryRentBook->quantity = $request->input('quantityRent');
+            $detailHistoryRentBook->book_id = $request->input('bookId');
+            $detailHistoryRentBook->history_rent_book_id = $historyRentBookId;
+            $this->detailHistoryRentBookRepository->add($detailHistoryRentBook);
+
+            DB::commit();
+            return \response()->json(['success'=>'Thuê sách thành công']);
+        }catch (\Exception $e) {
+            DB::rollBack();
+            return \response()->json(['error'=>$e]);
         }
     }
 }
