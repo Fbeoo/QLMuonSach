@@ -21,10 +21,7 @@ class DetailHistoryRentBook extends Model
      * @var string[]
      */
     protected $fillable = [
-        'expiration_date',
         'quantity',
-        'return_date',
-        'status',
         'book_id',
         'history_rent_book_id',
     ];
