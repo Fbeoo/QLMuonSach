@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthorBookController;
 use App\Http\Controllers\AuthorInfoController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\HistoryRentBookController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -42,6 +43,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/author/{authorId}',[AuthorBookController::class,'showBookOfAuthor'])->name('bookOfAuthor');
 
+    Route::get('/cart',[BookController::class,'showBookInCart']);
+
+    Route::get('/history/{userId}',[HistoryRentBookController::class,'showHistoryRentBook'])->name('historyRentBook');
 });
 
     //POST
@@ -71,6 +75,8 @@ Route::prefix('admin')->group(function () {
         Route::get('/edit/book/{bookId}',[BookController::class,'getBookEdit'])->name('editBookPage');
 
         Route::get('/add/book',[BookController::class,'addBookPage'])->name('addBookPage');
+
+        Route::get('/request/rent-book',[HistoryRentBookController::class,'showRequestRentBook'])->name('requestRentBook');
         //POST
 
         //PUT
@@ -78,6 +84,12 @@ Route::prefix('admin')->group(function () {
 
     });
 });
+
+
+
+
+
+
 
 
 
