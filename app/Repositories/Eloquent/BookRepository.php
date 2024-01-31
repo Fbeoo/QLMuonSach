@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Session;
+use PharIo\Version\Exception;
+
 /**
  *
  */
@@ -192,7 +194,7 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface {
     public function getDetailBook($bookId)
     {
         try {
-            $books = $this->model->find($bookId)->with('authorBook.authorInfo')->first();
+            $books = $this->model->where('id',$bookId)->with('authorBook.authorInfo')->first();
             return $books;
         }catch (\Exception $e) {
             throw new \Exception($e);
@@ -225,4 +227,5 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface {
             throw new \Exception($e);
         }
     }
+
 }
