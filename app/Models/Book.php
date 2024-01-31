@@ -47,11 +47,8 @@ class Book extends Model
         return $this->hasMany(AuthorBook::class,'book_id','id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function historyRentBook() {
-        return $this->belongsToMany(HistoryRentBook::class);
+    public function detailHistoryRentBook() {
+        return $this->hasMany(DetailHistoryRentBook::class,'book_id','id');
     }
 
     /**
