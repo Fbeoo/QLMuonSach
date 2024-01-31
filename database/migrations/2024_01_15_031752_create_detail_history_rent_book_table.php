@@ -13,10 +13,7 @@ return new class extends Migration
     {
         Schema::create('detail_history_rent_book', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->date('expiration_date');
             $table->integer('quantity');
-            $table->date('return_date')->nullable();
-            $table->integer('status');
             $table->timestamps();
             $table->softDeletes();
             $table->unsignedBigInteger('book_id');

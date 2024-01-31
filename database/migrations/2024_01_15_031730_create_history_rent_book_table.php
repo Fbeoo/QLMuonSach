@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('history_rent_book', function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->date('rent_date');
+            $table->date('expiration_date');
+            $table->date('return_date')->nullable();
             $table->integer('status');
             $table->integer('total_price');
             $table->timestamps();
