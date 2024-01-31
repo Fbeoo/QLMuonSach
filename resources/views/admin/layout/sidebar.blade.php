@@ -39,6 +39,14 @@
                 </ul>
             </li>
             <li class="nav-item">
+                <a href="{{route('requestRentBook')}}" class="nav-link">
+                    <i class="fas fa-history"></i>
+                    <p>
+                        Yêu cầu mượn sách
+                    </p>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a href="/test" class="nav-link">
                     <i class="fas fa-history"></i>
                     <p>
