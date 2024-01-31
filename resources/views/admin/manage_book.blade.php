@@ -86,21 +86,16 @@
                     <label>Năm phát hành</label>
                     <div style="display: inline-flex;">
                         <div>
-                            <input name="minYear" class="form-control" type="text" style="width: 60px" id="minYear">
+                            <input name="minYear" class="form-control" type="text" style="width: 100px" id="minYear">
                             <p id="minYearError">
 
                             </p>
                         </div>
                         <div>
-                            <input name="maxYear" class="form-control" type="text" style="width: 60px; margin-left: 30px" id="maxYear">
+                            <input name="maxYear" class="form-control" type="text" style="width: 100px; margin-left: 30px" id="maxYear">
                             <p id="maxYearError">
 
                             </p>
-                        </div>
-                        <div class="input-group-append" style="height: 40px; margin-left: 30px">
-                            <button class="btn btn-default" id="searchByYear">
-                                <i class="fa fa-search"></i>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -108,8 +103,8 @@
                     <label>Trạng thái</label>
                     <select name="status" id="filterBookByStatus" class="form-control custom-select">
                         <option value="" selected>Sắp xếp theo trạng thái</option>
-                        <option value="available">Bình thường</option>
-                        <option value="lock">Khóa</option>
+                        <option value="1">Bình thường</option>
+                        <option value="0">Khóa</option>
                     </select>
                 </div>
                 <div style="width: 271px; margin-left: 30px">
@@ -170,9 +165,9 @@
                                     <div class="dropdown-menu" role="menu" style="">
                                         <a class="dropdown-item" href="{{route('editBookPage',['bookId'=>$book->id])}}">Sửa</a>
                                         @if($book->status === 1)
-                                            <button style="cursor: pointer" class="dropdown-item" id="actionStatusBook{{$book->id}}" onclick="lockBook({{$book->id}})">Khóa</button>
+                                            <button id="actionStatusBook{{$book->id}}" style="cursor: pointer" class="dropdown-item" data-toggle="modal" data-target="#exampleModal" data-id="{{$book->id}}" data-value="Lock">Khóa</button>
                                         @else
-                                            <button style="cursor: pointer" class="dropdown-item" id="actionStatusBook{{$book->id}}" onclick="unlockBook({{$book->id}})">Mở khóa</button>
+                                            <button id="actionStatusBook{{$book->id}}" style="cursor: pointer" class="dropdown-item" data-toggle="modal" data-target="#exampleModal" data-id="{{$book->id}}" data-value="Unlock">Mở khóa</button>
                                         @endif
 
                                     </div>
@@ -196,6 +191,31 @@
                 <div class="loader"></div>
             </div>
 
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Thông báo</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p id="notification"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Thoát</button>
+                            <button id="actionStatus" type="button" class="btn btn-primary"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+            <script>
+
+            </script>
             <script src="{{asset('dist/js/phongJs/lockBook.js')}}"></script>
             <script src="{{asset('dist/js/phongJs/manageBook.js')}}"></script>
 @include('admin.layout.footer')
