@@ -19,6 +19,7 @@ use http\Env\Response;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
@@ -524,16 +525,41 @@ class BookController extends Controller
 
     public function addBookToCart(Request $request) {
         try {
-            if (Session::get('books')) {
-                foreach (Session::get('books') as $bookInCart) {
-                    if ($bookInCart->id == $request->input('bookId')) {
-                        return \response()->json(['error'=>'Sách đã có trong giỏ hàng']);
-                    }
-                }
+//            dd(Session::get('cart'));
+            if (!Session::get('cart')) {
+                $collection = new Collection();
+                $collectionChild = new Collection();
+                $book = $this->bookRepository->find($request->input('bookId'));
+                $arr = [
+                    'book' => $book,
+                    'line' => 1,
+                    'quantityLine' => 1,
+                    'linePrice' => $book->price_rent
+                ];
+                $collectionChild->push($arr);
+                $totalPrice = $book->price_rent;
+                $collection->put('bookInCart',$collectionChild);
+                $collection->put('totalPrice',$totalPrice);
+                $currentDate = now()->format('d/m/Y');
+                $collection->put('dateRent',$currentDate->format('d/m/Y'));
+                $collection->put('numberDayRent',1);
+                Session::put('cart',$collection);
+                return \response()->json(['success','Thêm sách vào giỏ thành công']);
             }
+            $collection = Session::get('cart');
+            $collectionChild = $collection->get('bookInCart');
             $book = $this->bookRepository->find($request->input('bookId'));
-            Session::push('books',$book);
-            return \response()->json(['success'=>'Thêm vào giỏ hàng thành công']);
+            $arr = [
+                'book' => $book,
+                'line' => $collectionChild->count() + 1,
+                'quantityLine' => 1,
+                'linePrice' => $book->price_rent
+            ];
+            $collectionChild->push($arr);
+            $totalPrice = $collection->get('totalPrice') + $book->price_rent;
+            $collection->put('totalPrice',$totalPrice);
+            Session::put('cart',$collection);
+            return Session::get('cart');
         }catch (\Exception $e) {
             return \response()->json(['error'=>$e]);
         }
@@ -541,12 +567,14 @@ class BookController extends Controller
 
     public function showBookInCart() {
         try {
-            $books = Session::get('books');
-            return view('cart',['books'=>$books]);
+//            Session::forget('cart');
+            $cart = Session::get('cart');
+            return view('cart',['cart'=>$cart]);
         }catch (\Exception $e) {
             throw new \Exception($e);
         }
     }
+
 
     public function rentSingleBook(Request $request) {
         try {
@@ -595,6 +623,142 @@ class BookController extends Controller
             return \response()->json(['success'=>'Thuê sách thành công']);
         }catch (\Exception $e) {
             DB::rollBack();
+            return \response()->json(['error'=>$e]);
+        }
+    }
+
+    public function rentMultiBook(Request $request) {
+        try {
+//            $validation = Validator::make($request->all(), [
+//                'date' => 'required|date_format:d/m/Y|after:tomorrow'
+//            ],[
+//                'date.required' => 'Ngày mượn không được để trống',
+//                'date.date_format' => 'Sai định dạng ngày',
+//                'date.after' => 'Ngày mượn tối thiểu phải là ngày mai'
+//            ]);
+//
+//            if ($validation->fails()) {
+//                return \response()->json(['error'=>$validation->errors()]);
+//            }
+//
+//            $cart = Session::get('cart');
+//
+//            $currentDate = Carbon::now();
+//            $dateRent = Carbon::createFromFormat('d/m/Y', $request->input('dateRent'));
+//            $numberDayRent = $currentDate->diffInDays($dateRent);
+//
+//            $historyRentBook = new HistoryRentBook();
+//            $historyRentBook->rent_date = now()->format('Y/m/d');
+//            $historyRentBook->status = HistoryRentBook::statusPending;
+//            $historyRentBook->expiration_date = $dateRent->format('Y/m/d');
+//            $historyRentBook->total_price = $cart->get('totalPrice');
+//            $historyRentBook->user_id = session()->get('user')->id;
+//            $historyRentBookId = $this->historyRentBookRepository->add($historyRentBook);
+//
+//
+//            $bookInCart = $cart->get('bookInCart');
+
+        }catch (\Exception $e) {
+            return \response()->json(['error'=>$e]);
+        }
+    }
+
+    public function changeNumberBookInCart(Request $request) {
+        try {
+            $cart = Session::get('cart');
+            $bookInCart = $cart->get('bookInCart');
+            $bookInCart->transform(function ($item) use ($request,$cart) {
+                if ($item['line'] == $request->input('line')) {
+                    $item['quantityLine'] = $request->input('quantity');
+                    $item['linePrice'] = $item['book']->price_rent * $request->input('quantity')*$cart->get('numberDayRent');
+                }
+                return $item;
+            });
+            $cart->put('bookInCart',$bookInCart);
+            $totalPrice = 0;
+            foreach ($bookInCart as $book) {
+                $totalPrice += $book['linePrice'];
+            }
+            $cart->put('totalPrice',$totalPrice);
+            Session::put('cart',$cart);
+            return $cart;
+        }catch (\Exception $e) {
+            return \response()->json(['error'=>$e]);
+        }
+    }
+
+    public function changeDateRent(Request $request) {
+        try {
+            $validation = Validator::make($request->all(), [
+                'dateRent' => 'required|date_format:d/m/Y|after:tomorrow'
+            ],[
+                'dateRent.required' => 'Ngày thuê không được bỏ trống',
+                'dateRent.date_format' => 'Ngày thuê sai định dạng',
+                'dateRent.after' => 'Ngày thuê tối thiểu phải là ngày mai'
+            ]);
+
+            if ($validation->fails()) {
+                return \response()->json(['errorValidate'=>$validation->errors()]);
+            }
+
+            $currentDate = Carbon::now();
+            $dateRent = Carbon::createFromFormat('d/m/Y', $request->input('dateRent'));
+            $numberDayRent = $currentDate->diffInDays($dateRent);
+
+
+            $totalPrice = 0;
+
+            $cart = Session::get('cart');
+            $bookInCart = $cart->get('bookInCart');
+
+            $bookInCart = $bookInCart->map(function ($item) use($numberDayRent) {
+                $item['linePrice'] = $item['quantityLine']*$item['book']->price_rent*$numberDayRent;
+                return $item;
+            });
+
+            foreach($bookInCart as $book) {
+                $totalPrice += $book['book']->price_rent*$book['quantityLine']*$numberDayRent;
+            }
+
+            $cart->put('dateRent',$dateRent);
+
+            $cart->put('totalPrice',$totalPrice);
+
+            $cart->put('bookInCart',$bookInCart);
+
+            $cart->put('numberDayRent',$numberDayRent);
+
+            Session::put('cart',$cart);
+
+            return $cart;
+        }catch (\Exception $e) {
+            return \response()->json(['error'=>$e]);
+        }
+    }
+
+    public function removeBookInCart(Request $request) {
+        try {
+            $cart = Session::get('cart');
+            $bookInCart = $cart->get('bookInCart');
+            $book = $bookInCart->first(function ($item) use($request) {
+                return $item['line'] == $request->input('line');
+            });
+            $priceRemove = $book['linePrice'];
+            $bookInCart = $bookInCart->reject (function ($item) use ($request) {
+                return $item['line'] == $request->input('line');
+            })->values();
+            $bookInCart->transform(function ($item) use ($request) {
+                if ($item['line'] > $request->input('line')) {
+                    $item['line'] -= 1;
+                }
+                return $item;
+            });
+            $cart->put('bookInCart',$bookInCart);
+            $totalPrice = $cart->get('totalPrice')-$priceRemove;
+            $cart->put('totalPrice',$totalPrice);
+            Session::put('cart',$cart);
+            return $cart;
+        }catch (\Exception $e) {
             return \response()->json(['error'=>$e]);
         }
     }
