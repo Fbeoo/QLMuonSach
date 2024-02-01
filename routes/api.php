@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthorInfoController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\HistoryRentBookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -42,6 +43,8 @@ Route::get('/admin/filter/book/year_publish/{minYear}/to/{maxYear}',[BookControl
 
 Route::get('/admin/all/book',[BookController::class,'getBookForPagingInManageBookPage']);
 
+Route::get('/admin/detail-request/{requestId}',[HistoryRentBookController::class,'getDetailRequest']);
+
 //POST
 Route::post('/admin/add/book',[BookController::class,'addBook'])->name('addBook');
 
@@ -54,6 +57,18 @@ Route::post('/admin/filter/book',[BookController::class,'filterBook']);
 Route::post('/add-to-cart',[BookController::class,'addBookToCart']);
 
 Route::post('/rent-single-book',[BookController::class,'rentSingleBook']);
+
+Route::post('/change-number-book/{line}',[BookController::class,'changeNumberBookInCart']);
+
+Route::post('/remove-book-in-cart/{line}',[BookController::class,'removeBookInCart']);
+
+Route::post('/change-date-rent',[BookController::class,'changeDateRent']);
+
+Route::put('/admin/accept-request-rent-book',[HistoryRentBookController::class,'acceptRequestRentBook']);
+
+Route::put('/admin/refuse-request-rent-book',[HistoryRentBookController::class,'refuseRequestRentBook']);
+
+Route::put('/admin/mark-returned-book',[HistoryRentBookController::class,'markReturnedBook']);
 
 //PUT
 Route::post('/admin/edit/book',[BookController::class,'editBook'])->name('editBook');
