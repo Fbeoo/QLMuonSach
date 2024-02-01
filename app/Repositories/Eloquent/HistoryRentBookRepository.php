@@ -23,4 +23,15 @@ class HistoryRentBookRepository extends BaseRepository implements HistoryRentBoo
             throw new \Exception($e);
         }
     }
+
+    public function getDetailRequestRentBook($requestId)
+    {
+        try {
+            $detailRequest = $this->model->where('id',$requestId)->with('user','detailHistoryRentBook','detailHistoryRentBook.book')->get();
+            return $detailRequest;
+        }catch (\Exception $e) {
+            dd($e);
+            throw new \Exception($e);
+        }
+    }
 }
