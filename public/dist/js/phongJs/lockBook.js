@@ -1,3 +1,23 @@
+$(document).ready(function() {
+    $("#exampleModal").on("show.bs.modal", function(event) {
+        var button = $(event.relatedTarget);
+        var buttonActionStatus = document.getElementById('actionStatus');
+        if (button.data("value") === "Lock") {
+            $('#notification').text("Bạn có muốn khóa sách")
+            buttonActionStatus.textContent = "Khóa";
+            buttonActionStatus.onclick = function () {
+                lockBook(button.data("id"));
+            }
+        }
+        else if (button.data("value") === "Unlock") {
+            $('#notification').text("Bạn có muốn mở khóa sách")
+            buttonActionStatus.textContent = "Mở khóa";
+            buttonActionStatus.onclick = function () {
+                unlockBook(button.data("id"));
+            }
+        }
+    });
+});
 function lockBook(bookId) {
     var loaderContainer = document.getElementById("loaderContainer");
     loaderContainer.classList.remove("hidden");
@@ -29,7 +49,6 @@ function lockBook(bookId) {
 function unlockBook(bookId) {
     var loaderContainer = document.getElementById("loaderContainer");
     loaderContainer.classList.remove("hidden");
-    $('#actionStatusBook'+bookId).prop('disabled',true);
     $.ajax({
         url: 'http://localhost:8000/api/admin/unlock/book',
         method: 'PUT',
