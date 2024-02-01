@@ -28,19 +28,23 @@
                                 <th class="sorting sorting_asc" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending"></th>
                             </tr>
                             </thead>
-                            <tbody>
-                            @foreach($books as $book)
+                            <tbody id="cartContent">
+                            @foreach($cart->get('bookInCart') as $book)
                                 <tr class="odd">
                                     <td style="width: 150px; height: 150px">
-                                        <img style="max-width: 100%; max-height: 100%; padding-left: 25px" src="{{asset('storage/'.$book->thumbnail)}}">
+                                        <img style="max-width: 100%; max-height: 100%; padding-left: 25px" src="{{asset('storage/'.$book['book']->thumbnail)}}">
                                     </td>
-                                    <td style="text-align: center; vertical-align: middle">{{$book->name}}</td>
-                                    <td style="text-align: center; vertical-align: middle">{{$book->price_rent}} / 1 ngày</td>
+                                    <td style="text-align: center; vertical-align: middle">{{$book['book']->name}}</td>
+                                    <td style="text-align: center; vertical-align: middle">{{$book['book']->price_rent}} / 1 ngày</td>
                                     <td style="text-align: center; vertical-align: middle; width: 150px">
-                                        <input type="number" style="width: 80px;">
+                                        <input class="quantityBook" type="number" style="width: 80px;" value="{{$book['quantityLine']}}" data-line = "{{$book['line']}}">
                                     </td>
-                                    <td style="text-align: center; vertical-align: middle">{{$book->price_rent}}</td>
-                                    <td style="text-align: center; vertical-align: middle">x</td>
+                                    <td id="linePrice{{$book['line']}}" style="text-align: center; vertical-align: middle">{{$book['linePrice']}}</td>
+                                    <td style="text-align: center; vertical-align: middle">
+                                        <a style="cursor: pointer" class="removeBook" data-line="{{$book['line']}}">
+                                            <i class="fa fa-window-close"></i>
+                                        </a>
+                                    </td>
                                 </tr>
                             @endforeach
                             </tbody>
@@ -51,16 +55,16 @@
                                 Tổng tiền
                             </div>
                             <div class="col-6" style="text-align: right">
-                                10.000 VNĐ
+                                <p id="totalPrice">{{$cart->get('totalPrice')}}</p>
                             </div>
                         </div>
-                        <a class="btn btn-success" style="width: 100%; margin-top: 10px">Thuê</a>
+                        <a id="rentBook" class="btn btn-success" style="width: 100%; margin-top: 10px">Thuê</a>
                     </div>
                     </div>
                 <div class="col-lg-3 col-12">
                     <div style="display: flex; flex-direction: column;margin-top: 13px">
                         <label>Thời gian mượn</label>
-                        <input type="text" name="dateRent" value="10/24/1984" />
+                        <input id="dateRent" type="text" name="dateRent"/>
                     </div>
                 </div>
             </div>
@@ -68,16 +72,8 @@
     </div>
     <!-- /.card-body -->
 </div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script>
-    document.getElementById("add").addEventListener("click", function() {
-        document.getElementById("myInput").value++;
-    });
-
-    document.getElementById("subtract").addEventListener("click", function() {
-        document.getElementById("myInput").value--;
-    });
-</script>
 <script src="{{asset('dist/js/phongJs/cart.js')}}"></script>
 @include('layout.footer');
