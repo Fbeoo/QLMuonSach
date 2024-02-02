@@ -47,15 +47,22 @@ function acceptRequestRentBook(requestId) {
             console.log(xhr.responseText);
             alert('Lỗi: ' + xhr.responseText);
         },
-        success: function () {
-            alert('Chấp nhận yêu cầu thành công');
-            document.getElementById('statusRequest'+requestId+'Accept').innerHTML = 'Đánh dấu đã trả'
-            document.getElementById('statusRequest'+requestId+'Accept').dataset.value = 'Returned';
-            document.getElementById('statusRequest'+requestId+'Accept').id = 'statusRequest'+requestId+'Returned';
-            document.getElementById('statusRequest'+ requestId).innerHTML = 'Đang mượn'
-            document.getElementById('statusRequest'+requestId).style.color = "yellow"
-            document.getElementById('statusRequest'+requestId+'Refuse').parentNode.removeChild(document.getElementById('statusRequest'+requestId+'Refuse'));
-            loaderContainer.classList.add("hidden");
+        success: function (response) {
+            if (response.errorQuantity) {
+                alert('Số lượng sách không đủ đáp ứng yêu cầu mượn sách');
+                refuseRequestRentBook(requestId);
+                return;
+            }
+            else {
+                alert('Chấp nhận yêu cầu thành công');
+                document.getElementById('statusRequest'+requestId+'Accept').innerHTML = 'Đánh dấu đã trả'
+                document.getElementById('statusRequest'+requestId+'Accept').dataset.value = 'Returned';
+                document.getElementById('statusRequest'+requestId+'Accept').id = 'statusRequest'+requestId+'Returned';
+                document.getElementById('statusRequest'+ requestId).innerHTML = 'Đang mượn'
+                document.getElementById('statusRequest'+requestId).style.color = "yellow"
+                document.getElementById('statusRequest'+requestId+'Refuse').parentNode.removeChild(document.getElementById('statusRequest'+requestId+'Refuse'));
+                loaderContainer.classList.add("hidden");
+            }
         }
     });
 }
@@ -134,7 +141,7 @@ function showDetailRequest(requestId) {
                             <img style="max-width: 100%; max-height: 100%; padding-left: 25px" src="http://localhost:8000/storage/${response[0].detail_history_rent_book[i].book.thumbnail}">
                         </td>
                         <td style="text-align: center; vertical-align: middle">${response[0].detail_history_rent_book[i].book.name}</td>
-                        <td style="text-align: center; vertical-align: middle">${response[0].detail_history_rent_book[i].book.price_rent} / 1 ngày</td>
+                        <td style="text-align: center; vertical-align: middle">${Number(response[0].detail_history_rent_book[i].book.price_rent).toLocaleString('vi-VN')} / 1 ngày</td>
                         <td style="text-align: center; vertical-align: middle">${response[0].detail_history_rent_book[i].quantity}</td>
                     </tr>`
             }
