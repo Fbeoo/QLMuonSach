@@ -56,7 +56,7 @@
                                     <td>{{$request->id}}</td>
                                     <td>{{$request->rent_date}}</td>
                                     <td>{{$request->expiration_date}}</td>
-                                    <td>{{$request->total_price}}</td>
+                                    <td>{{number_format($request->total_price, 0, ',', '.')}}</td>
                                     <td>{{$request->user->name}}</td>
                                     @if($request->status === \App\Models\HistoryRentBook::statusPending)
                                         <td>
