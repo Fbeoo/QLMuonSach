@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\HistoryRentBook;
+use App\Repositories\BookRepositoryInterface;
+use App\Repositories\DetailHistoryRentBookRepositoryInterface;
+use App\Repositories\Eloquent\BookRepository;
 use App\Repositories\HistoryRentBookRepositoryInterface;
 use Illuminate\Http\Request;
 
@@ -11,12 +14,18 @@ class HistoryRentBookController extends Controller
 {
     protected $historyRentBookRepository;
 
+    protected $detailHistoryRentBookRepository;
+
+    protected $bookRepository;
+
     /**
      * @param $historyRentBookRepository
      */
-    public function __construct(HistoryRentBookRepositoryInterface $historyRentBookRepository)
+    public function __construct(HistoryRentBookRepositoryInterface $historyRentBookRepository, DetailHistoryRentBookRepositoryInterface $detailHistoryRentBookRepository, BookRepositoryInterface $bookRepository)
     {
         $this->historyRentBookRepository = $historyRentBookRepository;
+        $this->detailHistoryRentBookRepository = $detailHistoryRentBookRepository;
+        $this->bookRepository = $bookRepository;
     }
 
     public function showHistoryRentBook($userId) {
@@ -42,6 +51,18 @@ class HistoryRentBookController extends Controller
             $requestRentBook = $this->historyRentBookRepository->find($request->input('requestId'));
             if (!$requestRentBook) {
                 return response()->json(['error'=>'Không tìm thấy yêu cầu mượn sách']);
+            }
+            $detailRequest = $this->detailHistoryRentBookRepository->getDetailRequestRentBook($request->input('requestId'));
+            foreach ($detailRequest as $detail) {
+                $numberBookRenting = 0;
+                $bookRent = $this->bookRepository->find($detail->book_id);
+                $bookRenting = $this->detailHistoryRentBookRepository->getNumberOfBookRenting($detail->book_id);
+                foreach ($bookRenting as $renting) {
+                    $numberBookRenting += $renting->quantity;
+                }
+                if ($bookRent->quantity - $numberBookRenting < $detail->quantity) {
+                    return response()->json(['errorQuantity'=>'Số sách trong kho không đủ đáp ứng yêu cầu mượn']);
+                }
             }
             $requestRentBook->status = HistoryRentBook::statusBorrowing;
             $this->historyRentBookRepository->update($requestRentBook);
