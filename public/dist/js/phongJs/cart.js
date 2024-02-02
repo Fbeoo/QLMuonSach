@@ -104,32 +104,57 @@ function changeDateRent(dateRent) {
             alert('Lỗi: ' + xhr.responseText);
         },
         success: function (response) {
-            console.log(response)
-            $('#linePrice'+line).text(response.bookInCart[line-1].linePrice);
-            $('#totalPrice').text(response.totalPrice);
+            $('dateRentError').empty();
+            if (response.errorValidate) {
+                $('#dateRentError').text(response.errorValidate['dateRent'][0]);
+                $('#dateRentError').css('color', 'red');
+                return;
+            }
+            else if (response.error) {
+                alert(response.error);
+                return;
+            }
+            else {
+                for (var i=0;i<response.bookInCart.length;i++) {
+                    $('#linePrice'+(i+1)).text(response.bookInCart[i].linePrice);
+                }
+                $('#totalPrice').text(response.totalPrice);
+            }
         }
     });
 }
 
-// function RentMultiBook() {
-//     $.ajax({
-//         url: 'http://localhost:8000/api/change-number-book/' + line,
-//         method: 'POST',
-//         dataType: 'json',
-//         contentType: "application/json; charset=utf-8",
-//         data: JSON.stringify({
-//             "date" : document.getElementById('dateRent').value,
-//         }),
-//         error: function(xhr, textStatus, errorThrown) {
-//             console.log(xhr.responseText);
-//             alert('Lỗi: ' + xhr.responseText);
-//         },
-//         success: function (response) {
-//             $('#linePrice'+line).text(response.bookInCart[line-1].linePrice);
-//             $('#totalPrice').text(response.totalPrice);
-//         }
-//     });
-// }
+function rentMultiBook() {
+    $.ajax({
+        url: 'http://localhost:8000/api/rent-multi-book',
+        method: 'POST',
+        dataType: 'json',
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify({
+            "dateRent" : document.getElementById('dateRent').value,
+        }),
+        error: function(xhr, textStatus, errorThrown) {
+            console.log(xhr.responseText);
+            alert('Lỗi: ' + xhr.responseText);
+        },
+        success: function (response) {
+            $('#dateRentError').empty();
+            if (response.errorValidate) {
+                $('#dateRentError').text(response.errorValidate['dateRent'][0]);
+                $('#dateRentError').css('color', 'red');
+                return;
+            }
+            else if (response.error) {
+                alert(response.error);
+                return;
+            }
+            else {
+                alert('Thuê sách thành công');
+                window.location.href = "http://localhost:8000";
+            }
+        }
+    });
+}
 
 $('.quantityBook').change(function () {
     const inputElement = event.target;
@@ -148,5 +173,5 @@ removeBook.forEach(removeBook => {
 });
 
 document.getElementById('rentBook').addEventListener('click',function () {
-    console.log(document.getElementById('dateRent').value);
+    rentMultiBook(document.getElementById('dateRent').value);
 })
