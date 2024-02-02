@@ -18,4 +18,14 @@ class DetailHistoryRentBookRepository extends BaseRepository implements DetailHi
             throw new \Exception($e);
         }
     }
+
+    public function getDetailRequestRentBook($requestId)
+    {
+        try {
+            $detailRequest = $this->model->where('history_rent_book_id',$requestId)->get();
+            return $detailRequest;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
 }
