@@ -463,7 +463,6 @@ class BookController extends Controller
             $books = $this->bookRepository->filterBook($request->all());
             return \response()->json($books);
         }catch (\Exception $e) {
-            dd($e);
             return response()->json(['error'=>$e]);
         }
     }
@@ -511,7 +510,7 @@ class BookController extends Controller
      */
     public function getBookByCategory($categoryId) {
         $books = $this->bookRepository->getBookByCategoryForUser($categoryId);
-        return view ('index',['books'=>$books]);
+        return view ('allBook',['books'=>$books]);
     }
 
     public function showBookInAllBookPage() {
@@ -541,14 +540,34 @@ class BookController extends Controller
                 $collection->put('bookInCart',$collectionChild);
                 $collection->put('totalPrice',$totalPrice);
                 $currentDate = now()->format('d/m/Y');
-                $collection->put('dateRent',$currentDate->format('d/m/Y'));
+                $collection->put('dateRent',$currentDate);
                 $collection->put('numberDayRent',1);
+                $collection->put('totalBookInCart',1);
                 Session::put('cart',$collection);
-                return \response()->json(['success','Thêm sách vào giỏ thành công']);
+                return \response()->json(['success'=>'Thêm sách vào giỏ thành công']);
             }
             $collection = Session::get('cart');
             $collectionChild = $collection->get('bookInCart');
             $book = $this->bookRepository->find($request->input('bookId'));
+            foreach ($collectionChild as $bookInCart) {
+                if ($bookInCart['book']->id === $book->id) {
+                    $collectionChild->transform(function ($item) use ($book) {
+                        if ($item['book']->id === $book->id) {
+                            $item['quantityLine'] += 1;
+                            $item['linePrice'] += $book->price_rent;
+                        }
+                        return $item;
+                    });
+                    $totalPrice = $collection->get('totalPrice') + $book->price_rent;
+                    $collection->put('totalPrice',$totalPrice);
+                    $collection->put('bookInCart',$collectionChild);
+                    $totalBookInCart = $collection->get('totalBookInCart');
+                    $totalBookInCart += 1;
+                    $collection->put('totalBookInCart',$totalBookInCart);
+                    Session::put('cart',$collection);
+                    return \response()->json(['success'=>'Thêm sách vào giỏ thành công']);
+                }
+            }
             $arr = [
                 'book' => $book,
                 'line' => $collectionChild->count() + 1,
@@ -558,8 +577,11 @@ class BookController extends Controller
             $collectionChild->push($arr);
             $totalPrice = $collection->get('totalPrice') + $book->price_rent;
             $collection->put('totalPrice',$totalPrice);
+            $totalBookInCart = $collection->get('totalBookInCart');
+            $totalBookInCart += 1;
+            $collection->put('totalBookInCart',$totalBookInCart);
             Session::put('cart',$collection);
-            return Session::get('cart');
+            return \response()->json(['success'=>'Thêm sách vào giỏ thành công']);
         }catch (\Exception $e) {
             return \response()->json(['error'=>$e]);
         }
@@ -629,36 +651,45 @@ class BookController extends Controller
 
     public function rentMultiBook(Request $request) {
         try {
-//            $validation = Validator::make($request->all(), [
-//                'date' => 'required|date_format:d/m/Y|after:tomorrow'
-//            ],[
-//                'date.required' => 'Ngày mượn không được để trống',
-//                'date.date_format' => 'Sai định dạng ngày',
-//                'date.after' => 'Ngày mượn tối thiểu phải là ngày mai'
-//            ]);
-//
-//            if ($validation->fails()) {
-//                return \response()->json(['error'=>$validation->errors()]);
-//            }
-//
-//            $cart = Session::get('cart');
-//
-//            $currentDate = Carbon::now();
-//            $dateRent = Carbon::createFromFormat('d/m/Y', $request->input('dateRent'));
-//            $numberDayRent = $currentDate->diffInDays($dateRent);
-//
-//            $historyRentBook = new HistoryRentBook();
-//            $historyRentBook->rent_date = now()->format('Y/m/d');
-//            $historyRentBook->status = HistoryRentBook::statusPending;
-//            $historyRentBook->expiration_date = $dateRent->format('Y/m/d');
-//            $historyRentBook->total_price = $cart->get('totalPrice');
-//            $historyRentBook->user_id = session()->get('user')->id;
-//            $historyRentBookId = $this->historyRentBookRepository->add($historyRentBook);
-//
-//
-//            $bookInCart = $cart->get('bookInCart');
+            DB::beginTransaction();
+            $validation = Validator::make($request->all(), [
+                'dateRent' => 'required|date_format:d/m/Y|after:tomorrow'
+            ],[
+                'dateRent.required' => 'Ngày mượn không được để trống',
+                'dateRent.date_format' => 'Sai định dạng ngày',
+                'dateRent.after' => 'Ngày mượn tối thiểu phải là ngày mai'
+            ]);
 
+            if ($validation->fails()) {
+                return \response()->json(['error'=>$validation->errors()]);
+            }
+
+            $cart = Session::get('cart');
+
+            $dateRent = Carbon::createFromFormat('d/m/Y', $request->input('dateRent'));
+
+            $historyRentBook = new HistoryRentBook();
+            $historyRentBook->rent_date = now()->format('Y/m/d');
+            $historyRentBook->status = HistoryRentBook::statusPending;
+            $historyRentBook->expiration_date = $dateRent->format('Y/m/d');
+            $historyRentBook->total_price = $cart->get('totalPrice');
+            $historyRentBook->user_id = session()->get('user')->id;
+            $historyRentBookId = $this->historyRentBookRepository->add($historyRentBook);
+
+            $bookInCart = $cart->get('bookInCart');
+            foreach ($bookInCart as $book) {
+                $detailHistoryRentBook = new DetailHistoryRentBook();
+                $detailHistoryRentBook->book_id = $book['book']->id;
+                $detailHistoryRentBook->history_rent_book_id = $historyRentBookId;
+                $detailHistoryRentBook->quantity = $book['quantityLine'];
+                $this->detailHistoryRentBookRepository->add($detailHistoryRentBook);
+            }
+            DB::commit();
+            Session::forget('cart');
+
+            return \response()->json(['success'=>'Thuê sách thành công']);
         }catch (\Exception $e) {
+            DB::rollBack();
             return \response()->json(['error'=>$e]);
         }
     }
@@ -676,10 +707,13 @@ class BookController extends Controller
             });
             $cart->put('bookInCart',$bookInCart);
             $totalPrice = 0;
+            $totalBookInCart = 0;
             foreach ($bookInCart as $book) {
                 $totalPrice += $book['linePrice'];
+                $totalBookInCart += $book['quantityLine'];
             }
             $cart->put('totalPrice',$totalPrice);
+            $cart->put('totalBookInCart',$totalBookInCart);
             Session::put('cart',$cart);
             return $cart;
         }catch (\Exception $e) {
@@ -720,7 +754,7 @@ class BookController extends Controller
                 $totalPrice += $book['book']->price_rent*$book['quantityLine']*$numberDayRent;
             }
 
-            $cart->put('dateRent',$dateRent);
+            $cart->put('dateRent',now()->format('d/m/Y'));
 
             $cart->put('totalPrice',$totalPrice);
 
@@ -744,6 +778,7 @@ class BookController extends Controller
                 return $item['line'] == $request->input('line');
             });
             $priceRemove = $book['linePrice'];
+            $quantityBookRemove = $book['quantityLine'];
             $bookInCart = $bookInCart->reject (function ($item) use ($request) {
                 return $item['line'] == $request->input('line');
             })->values();
@@ -756,6 +791,8 @@ class BookController extends Controller
             $cart->put('bookInCart',$bookInCart);
             $totalPrice = $cart->get('totalPrice')-$priceRemove;
             $cart->put('totalPrice',$totalPrice);
+            $totalBookInCart = $cart->get('totalBookInCart')-$quantityBookRemove;
+            $cart->put('totalBookInCart',$totalBookInCart);
             Session::put('cart',$cart);
             return $cart;
         }catch (\Exception $e) {
