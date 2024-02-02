@@ -41,11 +41,18 @@ document.getElementById('rent').addEventListener('click',function () {
         },
         success: function (response) {
             console.log(response)
-            if (response.success) {
-                alert('Thuê sách thành công');
+            if (response.errorValidate) {
+                for (var key in response.errorValidate) {
+                    $('#'+key+"Error").text(response.errorValidate[key][0]);
+                }
+                return
             }
             else if (response.error) {
                 alert(response.error);
+                return;
+            }
+            else {
+                alert('Thuê sách thành công')
             }
         }
     });
