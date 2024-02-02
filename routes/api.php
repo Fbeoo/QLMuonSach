@@ -64,6 +64,8 @@ Route::post('/remove-book-in-cart/{line}',[BookController::class,'removeBookInCa
 
 Route::post('/change-date-rent',[BookController::class,'changeDateRent']);
 
+Route::post('/rent-multi-book',[BookController::class,'rentMultiBook']);
+
 Route::put('/admin/accept-request-rent-book',[HistoryRentBookController::class,'acceptRequestRentBook']);
 
 Route::put('/admin/refuse-request-rent-book',[HistoryRentBookController::class,'refuseRequestRentBook']);
@@ -76,5 +78,7 @@ Route::post('/admin/edit/book',[BookController::class,'editBook'])->name('editBo
 Route::put('/admin/lock/book',[BookController::class,'lockBook'])->name('lockBook');
 
 Route::put('/admin/unlock/book',[BookController::class,'unlockBook'])->name('unlockBook');
+
+
 
 
