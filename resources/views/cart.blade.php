@@ -5,6 +5,7 @@
         <h3 class="card-title">Giỏ hàng của bạn</h3>
     </div>
     <!-- /.card-header -->
+    @if($cart)
     <div class="card-body">
         <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4">
             <div class="row">
@@ -35,11 +36,11 @@
                                         <img style="max-width: 100%; max-height: 100%; padding-left: 25px" src="{{asset('storage/'.$book['book']->thumbnail)}}">
                                     </td>
                                     <td style="text-align: center; vertical-align: middle">{{$book['book']->name}}</td>
-                                    <td style="text-align: center; vertical-align: middle">{{$book['book']->price_rent}} / 1 ngày</td>
+                                    <td style="text-align: center; vertical-align: middle">{{number_format($book['book']->price_rent, 0, ',', '.')}} / 1 ngày</td>
                                     <td style="text-align: center; vertical-align: middle; width: 150px">
                                         <input class="quantityBook" type="number" style="width: 80px;" value="{{$book['quantityLine']}}" data-line = "{{$book['line']}}">
                                     </td>
-                                    <td id="linePrice{{$book['line']}}" style="text-align: center; vertical-align: middle">{{$book['linePrice']}}</td>
+                                    <td id="linePrice{{$book['line']}}" style="text-align: center; vertical-align: middle">{{number_format($book['linePrice'], 0, ',', '.')}}</td>
                                     <td style="text-align: center; vertical-align: middle">
                                         <a style="cursor: pointer" class="removeBook" data-line="{{$book['line']}}">
                                             <i class="fa fa-window-close"></i>
@@ -55,7 +56,7 @@
                                 Tổng tiền
                             </div>
                             <div class="col-6" style="text-align: right">
-                                <p id="totalPrice">{{$cart->get('totalPrice')}}</p>
+                                <p id="totalPrice">{{number_format($cart->get('totalPrice'), 0, ',', '.')}}</p>
                             </div>
                         </div>
                         <a id="rentBook" class="btn btn-success" style="width: 100%; margin-top: 10px">Thuê</a>
@@ -64,13 +65,17 @@
                 <div class="col-lg-3 col-12">
                     <div style="display: flex; flex-direction: column;margin-top: 13px">
                         <label>Thời gian mượn</label>
-                        <input id="dateRent" type="text" name="dateRent"/>
+                        <input id="dateRent" type="text" name="dateRent" value="{{$cart->get('dateRent')}}"/>
+                        <p id="dateRentError">
+
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <!-- /.card-body -->
+    @endif
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
