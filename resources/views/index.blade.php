@@ -47,11 +47,11 @@
                     @foreach($authors as $author)
                         <div class="filtr-item col-sm-2" style="rgb(233, 233, 233); text-align: center;">
                             <div>
-                                <div class="book_image" style="width: 200px; height: 200px; margin: auto; display: flex; justify-content: center;">
-                                    <img src="{{asset('storage/'.$author->author_image)}}" style="cursor: pointer;border-radius: 200px;max-width: 100%; max-height: 100%; object-fit: cover">
-                                </div>
+                                <a href="{{route('bookOfAuthor',['authorId'=>$author->id])}}" class="author_image" style="width: 200px; height: 200px; margin: auto; display: flex; justify-content: center;">
+                                    <img src="{{asset('storage/'.$author->author_image)}}" style="cursor: pointer;border-radius: 100px;max-width: 100%; max-height: 100%; object-fit: cover">
+                                </a>
                                 <div class="book_info" style="height: 80px; margin-top: 20px">
-                                    <h6 style="font-weight: bold" class="book_name"><a style="cursor: pointer">{{$author->author_name}}</a></h6>
+                                    <h6 style="font-weight: bold" class="book_name"><a href="{{route('bookOfAuthor',['authorId'=>$author->id])}}" style="cursor: pointer">{{$author->author_name}}</a></h6>
                                 </div>
                             </div>
                         </div>
