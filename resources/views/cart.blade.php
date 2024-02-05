@@ -39,6 +39,7 @@
                                     <td style="text-align: center; vertical-align: middle">{{number_format($book['book']->price_rent, 0, ',', '.')}} / 1 ngày</td>
                                     <td style="text-align: center; vertical-align: middle; width: 150px">
                                         <input class="quantityBook" type="number" style="width: 80px;" value="{{$book['quantityLine']}}" data-line = "{{$book['line']}}">
+{{--                                        <p style="color: red" id="quantityRentError"></p>--}}
                                     </td>
                                     <td id="linePrice{{$book['line']}}" style="text-align: center; vertical-align: middle">{{number_format($book['linePrice'], 0, ',', '.')}}</td>
                                     <td style="text-align: center; vertical-align: middle">
@@ -59,7 +60,11 @@
                                 <p id="totalPrice">{{number_format($cart->get('totalPrice'), 0, ',', '.')}}</p>
                             </div>
                         </div>
+                        <form id="formRentMultiBook" action="{{route('confirmRentBook')}}" method="post">
+                            @csrf
+                            <input type="hidden" name="typeRent" value="rentMultiBook">
                         <a id="rentBook" class="btn btn-success" style="width: 100%; margin-top: 10px">Thuê</a>
+                        </form>
                     </div>
                     </div>
                 <div class="col-lg-3 col-12">
