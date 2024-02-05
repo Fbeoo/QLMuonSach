@@ -67,10 +67,11 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="formRentBook">
+                <form id="formRentBook" action="{{route('confirmRentBook')}}" method="post">
+                    @csrf
                     <div class="form-group">
                         <input type="hidden" name="bookId" value="{{$book->id}}">
-                        <input type="hidden" name="price" value="{{$book->price_rent}}">
+                        <input type="hidden" name="typeRent" value="rentSingleBook">
                         <input type="hidden" name="numberBookAvailable" value="{{$numberBookAvailable}}">
                         <div class="row">
                             <div class="col-4">
@@ -78,16 +79,23 @@
                             </div>
                             <div class="col-8">
                                 <input type="text" name="dateRent"/>
+
                             </div>
                         </div>
+                        <p id="dateRentError">
+
+                        </p>
                         <div class="row">
                             <div class="col-4">
                                 <label for="inputProjectLeader">Số lượng</label>
                             </div>
                             <div class="col-8">
-                                <input type="number" name="quantityRent" min="1" max="{{$numberBookAvailable}}">
+                                <input type="number" name="quantityRent">
                             </div>
                         </div>
+                        <p id="quantityRentError">
+
+                        </p>
                     </div>
                 </form>
             </div>
