@@ -30,6 +30,7 @@ function changeNumberBook(line,quantity) {
         success: function (response) {
             $('#linePrice'+line).text(response.bookInCart[line-1].linePrice);
             $('#totalPrice').text(response.totalPrice);
+            $('#countBookInCart').text(response.totalBookInCart);
         }
     });
 }
@@ -70,6 +71,7 @@ function removeBookInCart(line) {
             }
             $('#cartContent').html(strHtml);
             $('#totalPrice').text(response.totalPrice);
+            $('#countBookInCart').text(response.totalBookInCart);
             removeBook = document.querySelectorAll('.removeBook');
             console.log(removeBook);
             removeBook.forEach(removeBook => {
@@ -126,7 +128,7 @@ function changeDateRent(dateRent) {
 
 function rentMultiBook() {
     $.ajax({
-        url: 'http://localhost:8000/api/rent-multi-book',
+        url: 'http://localhost:8000/api/validate-rent-multi-book',
         method: 'POST',
         dataType: 'json',
         contentType: "application/json; charset=utf-8",
@@ -139,6 +141,7 @@ function rentMultiBook() {
         },
         success: function (response) {
             $('#dateRentError').empty();
+            console.log(response);
             if (response.errorValidate) {
                 $('#dateRentError').text(response.errorValidate['dateRent'][0]);
                 $('#dateRentError').css('color', 'red');
@@ -149,8 +152,7 @@ function rentMultiBook() {
                 return;
             }
             else {
-                alert('Thuê sách thành công');
-                window.location.href = "http://localhost:8000";
+                $('#formRentMultiBook').submit();
             }
         }
     });
@@ -173,5 +175,5 @@ removeBook.forEach(removeBook => {
 });
 
 document.getElementById('rentBook').addEventListener('click',function () {
-    rentMultiBook(document.getElementById('dateRent').value);
+    rentMultiBook();
 })
