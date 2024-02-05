@@ -1,6 +1,38 @@
 @include('admin.layout.header')
 @include('admin.layout.sidebar')
 <style>
+    .pagination {
+        display: flex;
+        margin-top: 20px;
+    }
+
+    .pagination ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .pagination li {
+        display: inline-block;
+        margin-right: 5px;
+    }
+
+    .pagination li a {
+        display: block;
+        padding: 8px 12px;
+        text-decoration: none;
+        background-color: #f2f2f2;
+        color: #333;
+    }
+
+    .pagination li a:hover {
+        background-color: #ddd;
+    }
+
+    .pagination li a.active {
+        background-color: #4CAF50;
+        color: white;
+    }
     .loader-container {
         display: flex;
         justify-content: center;
@@ -32,6 +64,42 @@
         display: none;
     }
 </style>
+<form id="formFilterRequest">
+<div style="width: 60%; margin: auto; padding-top: 20px">
+    <div class="input-group" style="margin-top: 20px">
+        <input name="userEmail" id="userEmail" type="search" class="form-control form-control-lg" placeholder="Nhập email để tìm kiếm yêu cầu của khách hàng" style="height: 40px; width: 500px">
+        <div class="input-group-append" style="height: 40px">
+            <button class="btn btn-default" id="search">
+                <i class="fa fa-search"></i>
+            </button>
+        </div>
+    </div>
+    <div class="row" style="margin-top: 20px">
+        <div class="col-4">
+            <div class="form-group">
+                <label>Ngày mượn</label>
+                <input class="form-control" type="text" name="dateRentRange" value=""/>
+            </div>
+        </div>
+        <div class="col-4 form-group">
+            <div class="form-group">
+                <label>Ngày trả</label>
+                <input class="form-control" type="text" name="dateReturnRange"/>
+            </div>
+        </div>
+        <div class="col-4">
+            <label>Trạng thái</label>
+            <select name="requestStatus" id="filterRequestByStatus" class="form-control custom-select">
+                <option value="" selected>Sắp xếp theo trạng thái</option>
+                <option value="0">Chờ xử lý</option>
+                <option value="1">Đang mượn</option>
+                <option value="2">Đã trả</option>
+                <option value="3">Từ chối</option>
+            </select>
+        </div>
+    </div>
+</div>
+</form>
 <div class="card" style="width: 80%; margin: auto; margin-top: 20px">
     <div class="card-header">
         <h3 class="card-title">Yêu cầu mượn sách</h3>
@@ -50,7 +118,7 @@
                                 <th class="sorting sorting_asc" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Hành động</th>
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="showRequest">
                             @foreach($requestRent as $request)
                                 <tr class="odd">
                                     <td>{{$request->id}}</td>
@@ -155,10 +223,44 @@
         </div>
     </div>
 </div>
+<div class="pagination" style="align-items: center; justify-content: center">
+    <ul id="ulPagination">
+
+                        </ul>
+</div>
 <div id="loaderContainer" class="loader-container hidden">
     <div class="loader"></div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script>
+    $(function() {
+        $('input[name="dateRentRange"]').daterangepicker({
+            opens: 'left',
+            startDate: moment(),
+            endDate: moment(),
+            autoUpdateInput: false
+        });
+        $('input[name="dateRentRange"]').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+        });
+        $('input[name="dateRentRange"]').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
+
+        $('input[name="dateReturnRange"]').daterangepicker({
+            opens: 'left',
+            startDate: moment(),
+            endDate: moment(),
+            autoUpdateInput: false
+        });
+        $('input[name="dateReturnRange"]').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+        });
+        $('input[name="dateReturnRange"]').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
+    });
+</script>
 <script src="{{asset('dist/js/phongJs/requestRentBook.js')}}"></script>
 @include('admin.layout.footer')
