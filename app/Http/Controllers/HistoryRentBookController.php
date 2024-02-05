@@ -8,6 +8,7 @@ use App\Repositories\BookRepositoryInterface;
 use App\Repositories\DetailHistoryRentBookRepositoryInterface;
 use App\Repositories\Eloquent\BookRepository;
 use App\Repositories\HistoryRentBookRepositoryInterface;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class HistoryRentBookController extends Controller
@@ -43,6 +44,24 @@ class HistoryRentBookController extends Controller
             return view('admin.requestRentBook',['requestRent'=>$requestRent]);
         }catch (\Exception $e) {
             throw new \Exception($e);
+        }
+    }
+
+    public function showRequestRentBookOfUser($userId) {
+        try {
+            $requestRentBook = $this->historyRentBookRepository->getRequestRentBookOfUser($userId);
+            return $requestRentBook;
+        }catch (\Exception $e) {
+            return response()->json(['error'=>$e]);
+        }
+    }
+
+    public function getAllRequestRentBook() {
+        try {
+            $requestRentBook =  $this->historyRentBookRepository->getHistoryRentBookForAdmin();
+            return $requestRentBook;
+        }catch (\Exception $e) {
+            return response()->json(['error'=>$e]);
         }
     }
 
@@ -106,6 +125,37 @@ class HistoryRentBookController extends Controller
             $detailRequest = $this->historyRentBookRepository->getDetailRequestRentBook($requestId);
             return $detailRequest;
         }catch (\Exception $e) {
+            return response()->json(['error'=>$e]);
+        }
+    }
+
+    public function filterRequestRentBook (Request $request) {
+        try {
+            $minDateRent = $maxDateRent = $minDateReturn = $maxDateReturn = '';
+            if ($request->input('dateRentRange') !== null) {
+                $dateRentRange = $request->input('dateRentRange');
+                $dateRent = explode(' - ',$dateRentRange);
+                $minDateRent = Carbon::createFromFormat('d/m/Y',$dateRent[0])->format('Y/m/d');
+                $maxDateRent = Carbon::createFromFormat('d/m/Y',$dateRent[1])->format('Y/m/d');
+            }
+                if ($request->input('dateReturnRange') !== null) {
+                $dateReturnRange = $request->input('dateReturnRange');
+                $dateReturn = explode(' - ',$dateReturnRange);
+                $minDateReturn = Carbon::createFromFormat('d/m/Y',$dateReturn[0])->format('Y/m/d');
+                $maxDateReturn = Carbon::createFromFormat('d/m/Y',$dateReturn[1])->format('Y/m/d');
+            }
+            $arrFilter = [
+                'userEmail' => $request->input('userEmail'),
+                'requestStatus' => $request->input('requestStatus'),
+                'minDateRent' => $minDateRent,
+                'maxDateRent' => $maxDateRent,
+                'minDateReturn' => $minDateReturn,
+                'maxDateReturn' => $maxDateReturn
+            ];
+            $resultFilter = $this->historyRentBookRepository->filterRequestRentBook($arrFilter);
+            return $resultFilter;
+        }catch (\Exception $e) {
+            dd($e);
             return response()->json(['error'=>$e]);
         }
     }
