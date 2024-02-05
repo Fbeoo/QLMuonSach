@@ -15,17 +15,16 @@ use App\Repositories\DetailHistoryRentBookRepositoryInterface;
 use App\Repositories\Eloquent\BookRepository;
 use App\Repositories\HistoryRentBookRepositoryInterface;
 use Carbon\Carbon;
-use http\Env\Response;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use mysql_xdevapi\Exception;
 use function Illuminate\Tests\Integration\Routing\fail;
 use function Laravel\Prompts\error;
 use function Webmozart\Assert\Tests\StaticAnalysis\uuid;
@@ -525,15 +524,21 @@ class BookController extends Controller
     public function addBookToCart(Request $request) {
         try {
 //            dd(Session::get('cart'));
+            $book = $this->bookRepository->find($request->input('bookId'));
+            $detailHistoryRentBook = $this->detailHistoryRentBookRepository->getNumberOfBookRenting($request->input('bookId'));
+            $numberBookAvailable = $book->quantity;
+            foreach ($detailHistoryRentBook as $detail) {
+                $numberBookAvailable -= $detail->quantity;
+            }
             if (!Session::get('cart')) {
                 $collection = new Collection();
                 $collectionChild = new Collection();
-                $book = $this->bookRepository->find($request->input('bookId'));
                 $arr = [
                     'book' => $book,
                     'line' => 1,
                     'quantityLine' => 1,
-                    'linePrice' => $book->price_rent
+                    'linePrice' => $book->price_rent,
+                    'quantityAvailable' => $numberBookAvailable
                 ];
                 $collectionChild->push($arr);
                 $totalPrice = $book->price_rent;
@@ -541,14 +546,14 @@ class BookController extends Controller
                 $collection->put('totalPrice',$totalPrice);
                 $currentDate = now()->format('d/m/Y');
                 $collection->put('dateRent',$currentDate);
+                $collection->put('dateExpire',$currentDate);
                 $collection->put('numberDayRent',1);
                 $collection->put('totalBookInCart',1);
                 Session::put('cart',$collection);
-                return \response()->json(['success'=>'Thêm sách vào giỏ thành công']);
+                return \response()->json(['success'=>'Thêm sách vào giỏ thành công','cart'=>$collection]);
             }
             $collection = Session::get('cart');
             $collectionChild = $collection->get('bookInCart');
-            $book = $this->bookRepository->find($request->input('bookId'));
             foreach ($collectionChild as $bookInCart) {
                 if ($bookInCart['book']->id === $book->id) {
                     $collectionChild->transform(function ($item) use ($book) {
@@ -565,14 +570,16 @@ class BookController extends Controller
                     $totalBookInCart += 1;
                     $collection->put('totalBookInCart',$totalBookInCart);
                     Session::put('cart',$collection);
-                    return \response()->json(['success'=>'Thêm sách vào giỏ thành công']);
+                    return \response()->json(['success'=>'Thêm sách vào giỏ thành công','cart'=>$collection]);
                 }
             }
+
             $arr = [
                 'book' => $book,
                 'line' => $collectionChild->count() + 1,
                 'quantityLine' => 1,
-                'linePrice' => $book->price_rent
+                'linePrice' => $book->price_rent,
+                'quantityAvailable' => $numberBookAvailable
             ];
             $collectionChild->push($arr);
             $totalPrice = $collection->get('totalPrice') + $book->price_rent;
@@ -581,7 +588,7 @@ class BookController extends Controller
             $totalBookInCart += 1;
             $collection->put('totalBookInCart',$totalBookInCart);
             Session::put('cart',$collection);
-            return \response()->json(['success'=>'Thêm sách vào giỏ thành công']);
+            return \response()->json(['success'=>'Thêm sách vào giỏ thành công','cart'=>$collection]);
         }catch (\Exception $e) {
             return \response()->json(['error'=>$e]);
         }
@@ -601,37 +608,36 @@ class BookController extends Controller
     public function rentSingleBook(Request $request) {
         try {
             DB::beginTransaction();
-            $validation = Validator::make($request->all(),[
-                'dateRent' => 'required|date_format:d/m/Y|after:tomorrow',
-                'quantityRent' => 'required|integer|min:1'
-            ],[
-                'dateRent.required' => 'Ngày thuê không được để trống',
-                'dateRent.date_format' => 'Định dạng ngày không đúng',
-                'dateRent.after' => 'Ngày thuê tối thiểu phải là ngày mai',
+//            $validation = Validator::make($request->all(),[
+//                'dateRent' => 'required|date_format:d/m/Y|after:tomorrow',
+//                'quantityRent' => 'required|integer|min:1'
+//            ],[
+//                'dateRent.required' => 'Ngày thuê không được để trống',
+//                'dateRent.date_format' => 'Định dạng ngày không đúng',
+//                'dateRent.after' => 'Ngày thuê tối thiểu phải là ngày mai',
+//
+//                'quantityRent.required' => 'Số lượng thuê không được để trống',
+//                'quantityRent.integer' => 'Số lượng thuê phải là số nguyên',
+//                'quantityRent.min' => 'Số lượng thuê phải lớn hơn 0'
+//
+//            ]);
+//
+//            if (intval($request->input('numberBookAvailable'))<intval($request->input('quantityRent'))) {
+//                $validation->errors()->add('quantityRent','Số sách mượn vượt quá số lượng đang có trong kho');
+//            }
+//            if ($validation->fails()) {
+//                return \response()->json(['errorValidate'=>$validation->errors()]);
+//            }
 
-                'quantityRent.required' => 'Số lượng thuê không được để trống',
-                'quantityRent.integer' => 'Số lượng thuê phải là số nguyên',
-                'quantityRent.min' => 'Số lượng thuê phải lớn hơn 0'
-
-            ]);
-
-            if (intval($request->input('numberBookAvailable'))<intval($request->input('quantityRent'))) {
-                $validation->errors()->add('quantityRent','Số sách mượn vượt quá số lượng đang có trong kho');
-            }
-            if ($validation->fails()) {
-                return \response()->json(['errorValidate'=>$validation->errors()]);
-            }
 
             $historyRentBook = new HistoryRentBook();
 
-            $currentDate = Carbon::now();
-            $dateRent = Carbon::createFromFormat('d/m/Y', $request->input('dateRent'));
-            $numberDayRent = $currentDate->diffInDays($dateRent);
+            $dateRent = Carbon::createFromFormat('d/m/Y', $request->input('dateExpire'));
 
             $historyRentBook->rent_date = now()->format('Y/m/d');
             $historyRentBook->status = HistoryRentBook::statusPending;
             $historyRentBook->expiration_date = $dateRent->format('Y/m/d');
-            $historyRentBook->total_price =$numberDayRent*$request->input('price');
+            $historyRentBook->total_price =$request->input('totalPrice');
             $historyRentBook->user_id = session()->get('user')->id;
             $historyRentBookId = $this->historyRentBookRepository->add($historyRentBook);
 
@@ -652,17 +658,17 @@ class BookController extends Controller
     public function rentMultiBook(Request $request) {
         try {
             DB::beginTransaction();
-            $validation = Validator::make($request->all(), [
-                'dateRent' => 'required|date_format:d/m/Y|after:tomorrow'
-            ],[
-                'dateRent.required' => 'Ngày mượn không được để trống',
-                'dateRent.date_format' => 'Sai định dạng ngày',
-                'dateRent.after' => 'Ngày mượn tối thiểu phải là ngày mai'
-            ]);
-
-            if ($validation->fails()) {
-                return \response()->json(['error'=>$validation->errors()]);
-            }
+//            $validation = Validator::make($request->all(), [
+//                'dateRent' => 'required|date_format:d/m/Y|after:tomorrow'
+//            ],[
+//                'dateRent.required' => 'Ngày mượn không được để trống',
+//                'dateRent.date_format' => 'Sai định dạng ngày',
+//                'dateRent.after' => 'Ngày mượn tối thiểu phải là ngày mai'
+//            ]);
+//
+//            if ($validation->fails()) {
+//                return \response()->json(['error'=>$validation->errors()]);
+//            }
 
             $cart = Session::get('cart');
 
@@ -743,6 +749,9 @@ class BookController extends Controller
             $totalPrice = 0;
 
             $cart = Session::get('cart');
+
+            $cart->put('dateExpire',$dateRent->format('d/m/Y'));
+
             $bookInCart = $cart->get('bookInCart');
 
             $bookInCart = $bookInCart->map(function ($item) use($numberDayRent) {
@@ -797,6 +806,146 @@ class BookController extends Controller
             return $cart;
         }catch (\Exception $e) {
             return \response()->json(['error'=>$e]);
+        }
+    }
+
+    public function confirmRentBook(Request $request) {
+        try {
+            if ($request->input('typeRent') === 'rentSingleBook') {
+//                $validation = Validator::make($request->all(),[
+//                    'dateRent' => 'required|date_format:d/m/Y|after:tomorrow',
+//                    'quantityRent' => 'required|integer|min:1'
+//                ],[
+//                    'dateRent.required' => 'Ngày thuê không được để trống',
+//                    'dateRent.date_format' => 'Định dạng ngày không đúng',
+//                    'dateRent.after' => 'Ngày thuê tối thiểu phải là ngày mai',
+//
+//                    'quantityRent.required' => 'Số lượng thuê không được để trống',
+//                    'quantityRent.integer' => 'Số lượng thuê phải là số nguyên',
+//                    'quantityRent.min' => 'Số lượng thuê phải lớn hơn 0'
+//
+//                ]);
+//
+//                if (intval($request->input('numberBookAvailable'))<intval($request->input('quantityRent'))) {
+//                    $validation->errors()->add('quantityRent','Số sách mượn vượt quá số lượng đang có trong kho');
+//                }
+//                if ($validation->fails()) {
+//                    return \response()->json(['errorValidate'=>$validation->errors()]);
+//                }
+
+                $typeRent = $request->input('typeRent');
+
+                $currentDate = Carbon::now();
+                $dateRent = Carbon::createFromFormat('d/m/Y', $request->input('dateRent'));
+                $numberDayRent = $currentDate->diffInDays($dateRent);
+
+                $book = $this->bookRepository->find($request->input('bookId'));
+
+                $quantityRent = $request->input('quantityRent');
+
+                $totalPrice = $book->price_rent*$numberDayRent*$quantityRent;
+
+                return view('requestConfirmation',[
+                    'book'=>$book,
+                    'quantityRent'=>$quantityRent,
+                    'totalPrice'=>$totalPrice,
+                    'dateExpire'=>$dateRent->format('d/m/Y'),
+                    'dateRent' => $currentDate->format('d/m/Y'),
+                    'typeRent' => $typeRent
+                ]);
+            }
+            else if ($request->input('typeRent') === 'rentMultiBook') {
+//                $validation = Validator::make($request->all(), [
+//                    'dateRent' => 'required|date_format:d/m/Y|after:tomorrow'
+//                ],[
+//                    'dateRent.required' => 'Ngày mượn không được để trống',
+//                    'dateRent.date_format' => 'Sai định dạng ngày',
+//                    'dateRent.after' => 'Ngày mượn tối thiểu phải là ngày mai'
+//                ]);
+//
+//                if ($validation->fails()) {
+//                    return \response()->json(['error'=>$validation->errors()]);
+//                }
+
+                $cart = Session::get('cart');
+                $typeRent = $request->input('typeRent');
+                return view('requestConfirmation',[
+                    'cart' => $cart,
+                    'dateRent' => $cart->get('dateRent'),
+                    'dateExpire' => $cart->get('dateExpire'),
+                    'typeRent' => $typeRent
+                ]);
+            }
+            else {
+                return view('error.404');
+            }
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function validateRentSingleBook(Request $request) {
+        try {
+            $validation = Validator::make($request->all(),[
+                'dateRent' => 'required|date_format:d/m/Y|after:tomorrow',
+                'quantityRent' => 'required|integer|min:1'
+            ],[
+                'dateRent.required' => 'Ngày thuê không được để trống',
+                'dateRent.date_format' => 'Định dạng ngày không đúng',
+                'dateRent.after' => 'Ngày thuê tối thiểu phải là ngày mai',
+
+                'quantityRent.required' => 'Số lượng thuê không được để trống',
+                'quantityRent.integer' => 'Số lượng thuê phải là số nguyên',
+                'quantityRent.min' => 'Số lượng thuê phải lớn hơn 0'
+
+            ]);
+
+            if (intval($request->input('numberBookAvailable'))<intval($request->input('quantityRent'))) {
+                $validation->errors()->add('quantityRent','Số sách mượn vượt quá số lượng đang có trong kho');
+            }
+            if (count($validation->errors()) > 0) {
+                return \response()->json(['errorValidate'=>$validation->errors()]);
+            }
+            return \response()->json(['success'=>'Validate thành công']);
+        }catch (\Exception $e) {
+            return \response()->json(['error'=>$e]);
+        }
+    }
+
+    public function validateRentMultiBook(Request $request) {
+        try {
+            $cart = Session::get('cart');
+            $validation = Validator::make($request->all(), [
+                'dateRent' => 'required|date_format:d/m/Y|after:tomorrow'
+            ],[
+                'dateRent.required' => 'Ngày mượn không được để trống',
+                'dateRent.date_format' => 'Sai định dạng ngày',
+                'dateRent.after' => 'Ngày mượn tối thiểu phải là ngày mai'
+            ]);
+
+            $bookInCart = $cart->get('bookInCart');
+            foreach ($bookInCart as $book) {
+                if ($book['quantityAvailable'] < $book['quantityLine']) {
+                    $validation->errors()->add('quantityRent'.$book['line'],'Số lượng sách trong kho không đủ');
+                }
+            }
+
+            if (count($validation->errors()) > 0) {
+                return \response()->json(['errorValidate'=>$validation->errors()]);
+            }
+
+            return \response()->json(['success'=>'Validate thành công']);
+        }catch (\Exception $e) {
+            return \response()->json(['error'=>$e]);
+        }
+    }
+
+    public function searchBook(Request $request) {
+        try {
+            $resultSearch = $this->bookRepository->searchBook($request->input('bookNameSearch'));
+            return view('searchPage',['books'=>$resultSearch]);
+        }catch (\Exception $e) {
+            throw new \Exception($e);
         }
     }
 }
