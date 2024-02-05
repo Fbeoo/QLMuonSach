@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthorInfoController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\HistoryRentBookController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -45,6 +46,10 @@ Route::get('/admin/all/book',[BookController::class,'getBookForPagingInManageBoo
 
 Route::get('/admin/detail-request/{requestId}',[HistoryRentBookController::class,'getDetailRequest']);
 
+Route::get('/admin/all/request-rent-book',[HistoryRentBookController::class,'getAllRequestRentBook']);
+
+Route::get('/admin/all/request-rent-book/{userId}',[HistoryRentBookController::class,'showRequestRentBookOfUser']);
+
 //POST
 Route::post('/admin/add/book',[BookController::class,'addBook'])->name('addBook');
 
@@ -66,18 +71,31 @@ Route::post('/change-date-rent',[BookController::class,'changeDateRent']);
 
 Route::post('/rent-multi-book',[BookController::class,'rentMultiBook']);
 
+Route::post('/edit-profile',[UserController::class,'editProfile']);
+
+Route::post('/admin/filter/request-rent-book',[HistoryRentBookController::class,'filterRequestRentBook']);
+
 Route::put('/admin/accept-request-rent-book',[HistoryRentBookController::class,'acceptRequestRentBook']);
 
 Route::put('/admin/refuse-request-rent-book',[HistoryRentBookController::class,'refuseRequestRentBook']);
 
 Route::put('/admin/mark-returned-book',[HistoryRentBookController::class,'markReturnedBook']);
 
-//PUT
+Route::post('/confirm-rent-book',[BookController::class,'confirmRentBook']);
+
+Route::post('/validate-rent-single-book',[BookController::class,'validateRentSingleBook']);
+
+Route::post('/validate-rent-multi-book',[BookController::class,'validateRentMultiBook']);
+
 Route::post('/admin/edit/book',[BookController::class,'editBook'])->name('editBook');
 
 Route::put('/admin/lock/book',[BookController::class,'lockBook'])->name('lockBook');
 
 Route::put('/admin/unlock/book',[BookController::class,'unlockBook'])->name('unlockBook');
+
+Route::put('/admin/lock/user',[UserController::class,'lockUser']);
+
+Route::put('/admin/unlock/user',[UserController::class,'unlockUser']);
 
 
 
