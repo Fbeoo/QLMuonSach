@@ -69,7 +69,7 @@
 
 </style>
 <a type="button" class="btn btn-block btn-success" style="margin-left: auto; width: 10%; margin-top: 20px" href="{{route('addBookPage')}}">Thêm mới</a>
-<div style="display: flex; justify-content: center; align-items: center;">
+<div style="display: flex; justify-content: center; align-items: center;width: 80%">
 <div style="margin-left: 20px">
     <form id="formFilterBook" enctype="multipart/form-data">
     <div class="input-group" style="margin-top: 20px">
