@@ -1,6 +1,39 @@
 @include('layout.header')
 <x-sidebar/>
 <style>
+    .pagination {
+        display: flex;
+        margin-top: 20px;
+    }
+
+    .pagination ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .pagination li {
+        display: inline-block;
+        margin-right: 5px;
+    }
+
+    .pagination li a {
+        display: block;
+        padding: 8px 12px;
+        text-decoration: none;
+        background-color: #f2f2f2;
+        color: #333;
+    }
+
+    .pagination li a:hover {
+        background-color: #ddd;
+    }
+
+    .pagination li a.active {
+        background-color: #4CAF50;
+        color: white;
+    }
+
     .loader-container {
         display: flex;
         justify-content: center;
@@ -53,7 +86,7 @@
                                 <tr class="odd">
                                     <td>{{$history->id}}</td>
                                     <td>{{$history->rent_date}}</td>
-                                    <td>{{$history->total_price}}</td>
+                                    <td>{{number_format($history->total_price, 0, ',', '.')}}</td>
                                     @if($history->status === \App\Models\HistoryRentBook::statusPending)
                                         <td>
                                             <p id="statusRequest{{$history->id}}" style="color: blue">Đợi xác nhận</p>
@@ -146,7 +179,15 @@
         </div>
     </div>
 </div>
-
+<div class="pagination" style="align-items: center; justify-content: center">
+    <ul id="ulPagination">
+        @for($i = 1; $i <= $historyRent->lastPage(); $i++)
+            <li>
+                <a href="{{ route('historyRentBook', ['userId'=>session()->get('user')->id,'page' => $i]) }}">{{ $i }}</a>
+            </li>
+        @endfor
+    </ul>
+</div>
 <div id="loaderContainer" class="loader-container hidden">
     <div class="loader"></div>
 </div>    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
