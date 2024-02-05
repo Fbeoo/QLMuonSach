@@ -16,6 +16,9 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
+    const statusLock = 0;
+    const statusNormal = 1;
+
     /**
      * @var string
      */
