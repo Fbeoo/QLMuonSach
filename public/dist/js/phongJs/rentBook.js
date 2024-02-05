@@ -15,6 +15,7 @@ document.getElementById('addToCart').addEventListener('click',function () {
         success: function (response) {
             console.log(response)
             if (response.success) {
+                $('#countBookInCart').text(response.cart.totalBookInCart);
                 alert('Thêm vào giỏ hàng thành công')
             }
             else if (response.error) {
@@ -29,7 +30,7 @@ document.getElementById('rent').addEventListener('click',function () {
 
     var formDataRentBook = new FormData($('#formRentBook')[0]);
     $.ajax({
-        url: 'http://localhost:8000/api/rent-single-book',
+        url: 'http://localhost:8000/api/validate-rent-single-book',
         method: 'POST',
         dataType: 'json',
         contentType: false,
@@ -44,15 +45,12 @@ document.getElementById('rent').addEventListener('click',function () {
             if (response.errorValidate) {
                 for (var key in response.errorValidate) {
                     $('#'+key+"Error").text(response.errorValidate[key][0]);
+                    $('#'+key+'Error').css('color', 'red');
                 }
                 return
             }
-            else if (response.error) {
-                alert(response.error);
-                return;
-            }
-            else {
-                alert('Thuê sách thành công')
+            else if (response.success) {
+                $('#formRentBook').submit();
             }
         }
     });
