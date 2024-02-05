@@ -1,4 +1,6 @@
 $(document).ready(function() {
+    getPagination();
+
     $("#exampleModal").on("show.bs.modal", function(event) {
         var button = $(event.relatedTarget);
         var buttonValue = button.attr("data-value");
@@ -32,6 +34,101 @@ $(document).ready(function() {
         showDetailRequest(button.data("id"));
     });
 });
+function getPagination() {
+    $.ajax({
+        url: 'http://localhost:8000/api/admin/all/request-rent-book',
+        method: 'GET',
+        contentType: 'application/json',
+        error: function (response) {
+            console.log('error to call api');
+        },
+        success: function (response) {
+            var strHtmlPaging = '';
+            for (var i = 0; i < response.last_page; i++) {
+                strHtmlPaging += `<li><a style="cursor: pointer" onclick="loadPagination(${i + 1})">${i + 1}</a></li>`;
+            }
+            console.log(strHtmlPaging)
+            $('#ulPagination').html(strHtmlPaging);
+        }
+    });
+}
+
+function loadPagination(page) {
+    var loaderContainer = document.getElementById("loaderContainer");
+    loaderContainer.classList.remove("hidden");
+    $.ajax({
+        url: `http://localhost:8000/api/admin/all/request-rent-book/?page=${page}`,
+        method: 'GET',
+        contentType: 'json',
+        error: function(response) {
+            console.log('error to call api');
+        },
+        success: function(response) {
+            console.log(response)
+            var strHtml = '';
+            var strStatus = '';
+            var strBtnAction = '';
+            const statusPending = 0;
+            const statusBorrowing = 1;
+            const statusReturned = 2;
+            const statusRefuse = 3;
+            for (var i=0;i<response.data.length;i++) {
+                if (response.data[i].status === statusPending) {
+                    strStatus = `<td>
+                                            <p id="statusRequest${response.data[i].id}" style="color: blue">Đợi xác nhận</p>
+                                        </td>`
+                }
+                else if (response.data[i].status === statusBorrowing) {
+                    strStatus = `<td>
+                                            <p id="statusRequest${response.data[i].id}" style="color: yellow">Đang mượn</p>
+                                        </td>`
+                }
+                else if (response.data[i].status === statusReturned) {
+                    strStatus = `<td>
+                                            <p id="statusRequest${response.data[i].id}" style="color: green">Đã trả</p>
+                                        </td>`
+                }
+                else {
+                    strStatus = `<td>
+                                            <p id="statusRequest${response.data[i].id}" style="color: red">Từ chối</p>
+                                        </td>`
+                }
+                if (response.data[i].status !== statusRefuse && response.data[i].status !== statusReturned) {
+                    if (response.data[i].status === statusPending) {
+                        strBtnAction = `<button style="cursor: pointer" class="dropdown-item" id="statusRequest${response.data[i].id}Accept" data-toggle="modal" data-target="#exampleModal" data-id="${response.data[i].id}" data-value="Accept">Chấp nhận</button>
+                                                        <button style="cursor: pointer" class="dropdown-item" id="statusRequest${response.data[i].id}Refuse" data-toggle="modal" data-target="#exampleModal" data-id="${response.data[i].id}" data-value="Refuse">Từ chối</button>`
+                    }
+                    else if (response.data[i].status === statusBorrowing) {
+                        strBtnAction = `<button style="cursor: pointer" class="dropdown-item" id="statusRequest${response.data[i].id}Returned" data-toggle="modal" data-target="#exampleModal" data-id="${response.data[i].id}" data-value="Returned">Đánh dấu đã trả</button>`
+                    }
+                }
+                strHtml += `<tr class="odd">
+                                    <td>${response.data[i].id}</td>
+                                    <td>${response.data[i].rent_date}</td>
+                                    <td>${response.data[i].expiration_date}</td>
+                                    <td>${response.data[i].total_price}</td>
+                                    <td>${response.data[i].user.name}</td>
+                                    ${strStatus}
+                                    <td>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-warning">Hành động</button>
+                                            <button type="button" class="btn btn-warning dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
+                                                <span class="sr-only">Toggle Dropdown</span>
+                                            </button>
+                                            <div class="dropdown-menu" role="menu" style="">
+                                                <button style="cursor: pointer" class="dropdown-item" id="detailRequest{{$request->id}}" data-toggle="modal" data-target=".viewDetailRequestModal" data-id="{{$request->id}}">Xem chi tiết</button>
+                                                ${strBtnAction}
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>`
+            }
+            console.log(strHtml)
+            $('#showRequest').html(strHtml);
+            loaderContainer.classList.add("hidden");
+        }
+    });
+}
 function acceptRequestRentBook(requestId) {
     var loaderContainer = document.getElementById("loaderContainer");
     loaderContainer.classList.remove("hidden");
@@ -119,33 +216,202 @@ function markReturnedBook(requestId) {
 }
 
 function showDetailRequest(requestId) {
-    $('#detailRequest').empty();
+        $('#detailRequest').empty();
+        $.ajax({
+            url: 'http://localhost:8000/api/admin/detail-request/'+ requestId,
+            method: 'GET',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({
+                "requestId" : requestId,
+            }),
+            error: function(xhr, textStatus, errorThrown) {
+                console.log(xhr.responseText);
+                alert('Lỗi: ' + xhr.responseText);
+            },
+            success: function (response) {
+                var strHtml = '';
+                for (var i=0;i<response[0].detail_history_rent_book.length;i++) {
+                    strHtml +=
+                        `<tr>
+                            <td style="width: 150px; height: 150px">
+                                <img style="max-width: 100%; max-height: 100%; padding-left: 25px" src="http://localhost:8000/storage/${response[0].detail_history_rent_book[i].book.thumbnail}">
+                            </td>
+                            <td style="text-align: center; vertical-align: middle">${response[0].detail_history_rent_book[i].book.name}</td>
+                            <td style="text-align: center; vertical-align: middle">${Number(response[0].detail_history_rent_book[i].book.price_rent).toLocaleString('vi-VN')} / 1 ngày</td>
+                            <td style="text-align: center; vertical-align: middle">${response[0].detail_history_rent_book[i].quantity}</td>
+                        </tr>`
+                }
+                $('#detailRequest').html(strHtml);
+            }
+        });
+}
+var formData;
+document.getElementById('search').addEventListener('click',function () {
+    event.preventDefault();
+
+    formData = new FormData($('#formFilterRequest')[0]);
+    var loaderContainer = document.getElementById("loaderContainer");
+    loaderContainer.classList.remove("hidden");
     $.ajax({
-        url: 'http://localhost:8000/api/admin/detail-request/'+ requestId,
-        method: 'GET',
+        url: 'http://localhost:8000/api/admin/filter/request-rent-book',
+        method: 'POST',
         dataType: 'json',
-        contentType: "application/json; charset=utf-8",
-        data: JSON.stringify({
-            "requestId" : requestId,
-        }),
+        contentType: false,
+        processData: false,
+        data: formData,
         error: function(xhr, textStatus, errorThrown) {
             console.log(xhr.responseText);
             alert('Lỗi: ' + xhr.responseText);
         },
         success: function (response) {
+            console.log(response);
             var strHtml = '';
-            for (var i=0;i<response[0].detail_history_rent_book.length;i++) {
-                strHtml +=
-                    `<tr>
-                        <td style="width: 150px; height: 150px">
-                            <img style="max-width: 100%; max-height: 100%; padding-left: 25px" src="http://localhost:8000/storage/${response[0].detail_history_rent_book[i].book.thumbnail}">
-                        </td>
-                        <td style="text-align: center; vertical-align: middle">${response[0].detail_history_rent_book[i].book.name}</td>
-                        <td style="text-align: center; vertical-align: middle">${Number(response[0].detail_history_rent_book[i].book.price_rent).toLocaleString('vi-VN')} / 1 ngày</td>
-                        <td style="text-align: center; vertical-align: middle">${response[0].detail_history_rent_book[i].quantity}</td>
-                    </tr>`
+            var strStatus = '';
+            var strBtnAction = '';
+            const statusPending = 0;
+            const statusBorrowing = 1;
+            const statusReturned = 2;
+            const statusRefuse = 3;
+            for (var i=0;i<response.data.length;i++) {
+                if (response.data[i].status === statusPending) {
+                    strStatus = `<td>
+                                            <p id="statusRequest${response.data[i].id}" style="color: blue">Đợi xác nhận</p>
+                                        </td>`
+                }
+                else if (response.data[i].status === statusBorrowing) {
+                    strStatus = `<td>
+                                            <p id="statusRequest${response.data[i].id}" style="color: yellow">Đang mượn</p>
+                                        </td>`
+                }
+                else if (response.data[i].status === statusReturned) {
+                    strStatus = `<td>
+                                            <p id="statusRequest${response.data[i].id}" style="color: green">Đã trả</p>
+                                        </td>`
+                }
+                else {
+                    strStatus = `<td>
+                                            <p id="statusRequest${response.data[i].id}" style="color: red">Từ chối</p>
+                                        </td>`
+                }
+                if (response.data[i].status !== statusRefuse && response.data[i].status !== statusReturned) {
+                    if (response.data[i].status === statusPending) {
+                        strBtnAction = `<button style="cursor: pointer" class="dropdown-item" id="statusRequest${response.data[i].id}Accept" data-toggle="modal" data-target="#exampleModal" data-id="${response.data[i].id}" data-value="Accept">Chấp nhận</button>
+                                                        <button style="cursor: pointer" class="dropdown-item" id="statusRequest${response.data[i].id}Refuse" data-toggle="modal" data-target="#exampleModal" data-id="${response.data[i].id}" data-value="Refuse">Từ chối</button>`
+                    }
+                    else if (response.data[i].status === statusBorrowing) {
+                        strBtnAction = `<button style="cursor: pointer" class="dropdown-item" id="statusRequest${response.data[i].id}Returned" data-toggle="modal" data-target="#exampleModal" data-id="${response.data[i].id}" data-value="Returned">Đánh dấu đã trả</button>`
+                    }
+                }
+                strHtml += `<tr class="odd">
+                                    <td>${response.data[i].id}</td>
+                                    <td>${response.data[i].rent_date}</td>
+                                    <td>${response.data[i].expiration_date}</td>
+                                    <td>${response.data[i].total_price}</td>
+                                    <td>${response.data[i].user.name}</td>
+                                    ${strStatus}
+                                    <td>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-warning">Hành động</button>
+                                            <button type="button" class="btn btn-warning dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
+                                                <span class="sr-only">Toggle Dropdown</span>
+                                            </button>
+                                            <div class="dropdown-menu" role="menu" style="">
+                                                <button style="cursor: pointer" class="dropdown-item" id="detailRequest{{$request->id}}" data-toggle="modal" data-target=".viewDetailRequestModal" data-id="{{$request->id}}">Xem chi tiết</button>
+                                                ${strBtnAction}
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>`
             }
-            $('#detailRequest').html(strHtml);
+            $('#showRequest').html(strHtml);
+            var strHtmlPaging = '';
+            for (var i = 0; i < response.last_page; i++) {
+                strHtmlPaging += `<li><a style="cursor: pointer" onclick="loadPaginationForFilter(${i + 1})">${i + 1}</a></li>`;
+            }
+            console.log(strHtmlPaging)
+            $('#ulPagination').html(strHtmlPaging);
+            loaderContainer.classList.add("hidden");
+        }
+    });
+})
+
+function loadPaginationForFilter(page) {
+    var loaderContainer = document.getElementById("loaderContainer");
+    loaderContainer.classList.remove("hidden");
+    $.ajax({
+        url: `http://localhost:8000/api/admin/filter/request-rent-book?page=${page}`,
+        method: 'POST',
+        dataType: 'json',
+        contentType: false,
+        processData: false,
+        data: formData,
+        error: function (response) {
+            console.log('error to call api');
+        },
+        success: function (response) {
+            console.log(response);
+            var strHtml = '';
+            var strStatus = '';
+            var strBtnAction = '';
+            const statusPending = 0;
+            const statusBorrowing = 1;
+            const statusReturned = 2;
+            const statusRefuse = 3;
+            for (var i=0;i<response.data.length;i++) {
+                if (response.data[i].status === statusPending) {
+                    strStatus = `<td>
+                                            <p id="statusRequest${response.data[i].id}" style="color: blue">Đợi xác nhận</p>
+                                        </td>`
+                }
+                else if (response.data[i].status === statusBorrowing) {
+                    strStatus = `<td>
+                                            <p id="statusRequest${response.data[i].id}" style="color: yellow">Đang mượn</p>
+                                        </td>`
+                }
+                else if (response.data[i].status === statusReturned) {
+                    strStatus = `<td>
+                                            <p id="statusRequest${response.data[i].id}" style="color: green">Đã trả</p>
+                                        </td>`
+                }
+                else {
+                    strStatus = `<td>
+                                            <p id="statusRequest${response.data[i].id}" style="color: red">Từ chối</p>
+                                        </td>`
+                }
+                if (response.data[i].status !== statusRefuse && response.data[i].status !== statusReturned) {
+                    if (response.data[i].status === statusPending) {
+                        strBtnAction = `<button style="cursor: pointer" class="dropdown-item" id="statusRequest${response.data[i].id}Accept" data-toggle="modal" data-target="#exampleModal" data-id="${response.data[i].id}" data-value="Accept">Chấp nhận</button>
+                                                        <button style="cursor: pointer" class="dropdown-item" id="statusRequest${response.data[i].id}Refuse" data-toggle="modal" data-target="#exampleModal" data-id="${response.data[i].id}" data-value="Refuse">Từ chối</button>`
+                    }
+                    else if (response.data[i].status === statusBorrowing) {
+                        strBtnAction = `<button style="cursor: pointer" class="dropdown-item" id="statusRequest${response.data[i].id}Returned" data-toggle="modal" data-target="#exampleModal" data-id="${response.data[i].id}" data-value="Returned">Đánh dấu đã trả</button>`
+                    }
+                }
+                strHtml += `<tr class="odd">
+                                    <td>${response.data[i].id}</td>
+                                    <td>${response.data[i].rent_date}</td>
+                                    <td>${response.data[i].expiration_date}</td>
+                                    <td>${response.data[i].total_price}</td>
+                                    <td>${response.data[i].user.name}</td>
+                                    ${strStatus}
+                                    <td>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-warning">Hành động</button>
+                                            <button type="button" class="btn btn-warning dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
+                                                <span class="sr-only">Toggle Dropdown</span>
+                                            </button>
+                                            <div class="dropdown-menu" role="menu" style="">
+                                                <button style="cursor: pointer" class="dropdown-item" id="detailRequest{{$request->id}}" data-toggle="modal" data-target=".viewDetailRequestModal" data-id="{{$request->id}}">Xem chi tiết</button>
+                                                ${strBtnAction}
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>`
+            }
+            console.log(strHtml);
+            $('#showRequest').html(strHtml);
+            loaderContainer.classList.add("hidden");
         }
     });
 }
