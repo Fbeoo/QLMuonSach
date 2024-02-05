@@ -43,9 +43,18 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/author/{authorId}',[AuthorBookController::class,'showBookOfAuthor'])->name('bookOfAuthor');
 
-    Route::get('/cart',[BookController::class,'showBookInCart']);
+    Route::get('/cart',[BookController::class,'showBookInCart'])->name('cart');
 
     Route::get('/history/{userId}',[HistoryRentBookController::class,'showHistoryRentBook'])->name('historyRentBook');
+
+    Route::get('/account',function () {
+        return view('userInformation');
+    })->name('profile');
+
+    Route::post('/confirm-rent-book',[BookController::class,'confirmRentBook'])->name('confirmRentBook');
+
+    Route::post('/search/book',[BookController::class,'searchBook'])->name('searchBook');
+
 });
 
     //POST
@@ -77,6 +86,8 @@ Route::prefix('admin')->group(function () {
         Route::get('/add/book',[BookController::class,'addBookPage'])->name('addBookPage');
 
         Route::get('/request/rent-book',[HistoryRentBookController::class,'showRequestRentBook'])->name('requestRentBook');
+
+        Route::get('/manage/user',[UserController::class,'showAllUser'])->name('manageUser');
         //POST
 
         //PUT
@@ -84,7 +95,6 @@ Route::prefix('admin')->group(function () {
 
     });
 });
-
 
 
 
