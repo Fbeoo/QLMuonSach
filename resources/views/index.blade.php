@@ -51,7 +51,7 @@
                                     <img src="{{asset('storage/'.$author->author_image)}}" style="cursor: pointer;border-radius: 100px;max-width: 100%; max-height: 100%; object-fit: cover">
                                 </a>
                                 <div class="book_info" style="height: 80px; margin-top: 20px">
-                                    <h6 style="font-weight: bold" class="book_name"><a href="{{route('bookOfAuthor',['authorId'=>$author->id])}}" style="cursor: pointer">{{$author->author_name}}</a></h6>
+                                    <h6 style="font-weight: bold" class="book_name"><a href="{{route('bookOfAuthor',['authorId'=>$author->id])}}" style="cursor: pointer; color: black">{{$author->author_name}}</a></h6>
                                 </div>
                             </div>
                         </div>
