@@ -6,7 +6,7 @@
             <img src="{{asset('dist/img/user2-160x160.jpg')}}" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-            <a href="#" class="d-block">{{session()->get('user')->name}}</a>
+            <a id="nameUser" href="{{route('profile')}}" class="d-block">{{session()->get('user')->name}}</a>
         </div>
     </div>
     <!-- Sidebar Menu -->
@@ -14,6 +14,14 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
             <!-- Add icons to the links using the .nav-icon class
                  with font-awesome or any other icon font library -->
+            <li class="nav-item">
+                <a href="{{route('home')}}" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <p>
+                        Trang chủ
+                    </p>
+                </a>
+            </li>
             <li class="nav-item ">
                 <a href="#" class="nav-link">
                     <i class="fas fa-book"></i>
