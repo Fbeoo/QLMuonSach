@@ -6,4 +6,8 @@ interface HistoryRentBookRepositoryInterface extends EloquentRepositoryInterface
     public function getHistoryRentBookForAdmin();
 
     public function getDetailRequestRentBook($requestId);
+
+    public function filterRequestRentBook($arrFilter);
+
+    public function getRequestRentBookOfUser($userId);
 }
