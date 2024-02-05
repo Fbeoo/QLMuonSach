@@ -206,7 +206,7 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface {
         try {
             $books = $this->model;
             if ($arrFilter['name']!="") {
-                $books = $books->where('name',$arrFilter['name']);
+                $books = $books->where('name','like','%'.$arrFilter['name'].'%');
             }
             if ($arrFilter['status']!="") {
                 $books = $books->where('status',$arrFilter['status']);
@@ -228,4 +228,13 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface {
         }
     }
 
+    public function searchBook($name)
+    {
+        try {
+            $resultSearch = $this->model->where('name','like','%'.$name.'%')->paginate(10);
+            return $resultSearch;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
 }

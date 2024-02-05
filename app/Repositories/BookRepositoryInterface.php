@@ -40,5 +40,6 @@ interface BookRepositoryInterface extends EloquentRepositoryInterface {
 
     public function filterBook($arrFilter);
 
+    public function searchBook($name);
 
 }
