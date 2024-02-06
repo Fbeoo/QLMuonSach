@@ -36,6 +36,15 @@ class UserController extends Controller
         return redirect()->route('login');
     }
 
+    public function getAllUser() {
+        try {
+            $users = $this->userRepository->getAllUser();
+            return $users;
+        }catch (\Exception $e) {
+            return response()->json(['error'=>$e]);
+        }
+    }
+
     public function showAllUser() {
         try {
             $users = $this->userRepository->getAllUser();
@@ -83,9 +92,9 @@ class UserController extends Controller
         }
     }
 
-    public function lockUser($userId) {
+    public function lockUser(Request $request) {
         try {
-            $user = $this->userRepository->find($userId);
+            $user = $this->userRepository->find($request->input('id'));
 
             $user->status = User::statusLock;
 
@@ -97,9 +106,9 @@ class UserController extends Controller
         }
     }
 
-    public function unlockUser($userId) {
+    public function unlockUser(Request $request) {
         try {
-            $user = $this->userRepository->find($userId);
+            $user = $this->userRepository->find($request->input('id'));
 
             $user->status = User::statusNormal;
 
@@ -107,6 +116,16 @@ class UserController extends Controller
 
             return response()->json(['success'=>'Mở khóa người dùng thành công']);
         }catch (\Exception $e) {
+            return response()->json(['error'=>$e]);
+        }
+    }
+
+    public function filterUser(Request $request) {
+        try {
+            $resultFilter = $this->userRepository->filterUser($request->all());
+            return $resultFilter;
+        }catch (\Exception $e) {
+            dd($e);
             return response()->json(['error'=>$e]);
         }
     }
