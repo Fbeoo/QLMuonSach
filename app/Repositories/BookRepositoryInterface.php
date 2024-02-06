@@ -42,4 +42,6 @@ interface BookRepositoryInterface extends EloquentRepositoryInterface {
 
     public function searchBook($name);
 
+    public function countTotalBook();
+
 }
