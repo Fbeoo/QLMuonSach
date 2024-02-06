@@ -75,9 +75,7 @@ Route::prefix('admin')->group(function () {
     Route::post('/logout',[AdminController::class,'logout'])->name('admin.logout');
     Route::middleware('auth.check.admin')->group(function () {
         //GET
-        Route::get('/dashboard',function () {
-            return view('admin.dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard',[AdminController::class,'showDashBoard'])->name('dashboard');
 
         Route::get('/manage/book',[BookController::class,'getBookForManageBookPage'])->name('manageBook');
 
@@ -88,6 +86,10 @@ Route::prefix('admin')->group(function () {
         Route::get('/request/rent-book',[HistoryRentBookController::class,'showRequestRentBook'])->name('requestRentBook');
 
         Route::get('/manage/user',[UserController::class,'showAllUser'])->name('manageUser');
+
+        Route::get('/calendar',function () {
+            return view('admin.calendarPage');
+        })->name('calendarPage');
         //POST
 
         //PUT
@@ -95,7 +97,6 @@ Route::prefix('admin')->group(function () {
 
     });
 });
-
 
 
 
