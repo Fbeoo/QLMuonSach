@@ -50,6 +50,10 @@ Route::get('/admin/all/request-rent-book',[HistoryRentBookController::class,'get
 
 Route::get('/admin/all/request-rent-book/{userId}',[HistoryRentBookController::class,'showRequestRentBookOfUser']);
 
+Route::get('/admin/all/request-rent-book/status/borrowing',[HistoryRentBookController::class,'getRequestRentBookHaveStatusBorrowing']);
+
+Route::get('/admin/all/user',[UserController::class,'getAllUser']);
+
 //POST
 Route::post('/admin/add/book',[BookController::class,'addBook'])->name('addBook');
 
@@ -88,6 +92,8 @@ Route::post('/validate-rent-single-book',[BookController::class,'validateRentSin
 Route::post('/validate-rent-multi-book',[BookController::class,'validateRentMultiBook']);
 
 Route::post('/admin/edit/book',[BookController::class,'editBook'])->name('editBook');
+
+Route::post('/admin/filter/user',[UserController::class,'filterUser']);
 
 Route::put('/admin/lock/book',[BookController::class,'lockBook'])->name('lockBook');
 
