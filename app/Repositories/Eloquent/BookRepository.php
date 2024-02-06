@@ -237,4 +237,19 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface {
             throw new \Exception($e);
         }
     }
+
+
+    public function countTotalBook()
+    {
+        try {
+            $books = $this->model->get();
+            $countTotalBook = 0;
+            foreach ($books as $book) {
+                $countTotalBook += $book->quantity;
+            }
+            return $countTotalBook;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
 }
