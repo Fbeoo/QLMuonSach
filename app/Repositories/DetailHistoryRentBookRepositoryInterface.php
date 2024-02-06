@@ -5,4 +5,8 @@ interface DetailHistoryRentBookRepositoryInterface extends EloquentRepositoryInt
 
     public function getDetailRequestRentBook($requestId);
 
+    public function countBookBorrowing();
+
+    public function countBookMissing();
+
 }

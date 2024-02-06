@@ -28,4 +28,38 @@ class DetailHistoryRentBookRepository extends BaseRepository implements DetailHi
             throw new \Exception($e);
         }
     }
+
+    public function countBookBorrowing()
+    {
+        try {
+            $detailHistoryRentBookBorrowing = $this->model->whereHas('historyRentBook',function ($query) {
+                $query->where('status',HistoryRentBook::statusBorrowing)
+                    ->where('expiration_date','>=',now()->format('Y/m/d'));
+            })->get();
+            $countBook = 0;
+            foreach ($detailHistoryRentBookBorrowing as $detail) {
+                $countBook += $detail->quantity;
+            }
+            return $countBook;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function countBookMissing()
+    {
+        try {
+            $detailHistoryRentBookMissing = $this->model->whereHas('historyRentBook',function ($query) {
+                $query->where('status',HistoryRentBook::statusBorrowing)
+                    ->where('expiration_date','<',now()->format('Y/m/d'));
+            })->get();
+            $countBook = 0;
+            foreach ($detailHistoryRentBookMissing as $detail) {
+                $countBook += $detail->quantity;
+            }
+            return $countBook;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
 }
