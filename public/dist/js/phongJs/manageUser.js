@@ -1,4 +1,6 @@
 $(document).ready(function () {
+    getPagination();
+
     $(".viewRequestOfUserModal").on("show.bs.modal", function(event) {
         var button = $(event.relatedTarget);
         loadRequestOfUser(button.data("id"));
@@ -9,7 +11,105 @@ $(document).ready(function () {
         console.log(button.data("id"))
         showDetailRequest(button.data("id"));
     });
+
+    $("#confirmActionStatusUser").on("show.bs.modal", function(event) {
+        var button = $(event.relatedTarget);
+        var buttonActionStatus = document.getElementById('actionStatus');
+        if (button.attr("data-value") === "Lock") {
+            $('#notification').text("Bạn có muốn khóa người dùng")
+            buttonActionStatus.textContent = "Khóa";
+            buttonActionStatus.onclick = function () {
+                lockUser(button.data("id"));
+            }
+        }
+        else if (button.attr("data-value") === "Unlock") {
+            $('#notification').text("Bạn có muốn mở khóa người dùng")
+            buttonActionStatus.textContent = "Mở khóa";
+            buttonActionStatus.onclick = function () {
+                unlockUser(button.data("id"));
+            }
+        }
+    });
 })
+
+function getPagination() {
+    $.ajax({
+        url: 'http://localhost:8000/api/admin/all/user',
+        method: 'GET',
+        dataType: 'json',
+        contentType: "application/json; charset=utf-8",
+        error: function(xhr, textStatus, errorThrown) {
+            console.log(xhr.responseText);
+            alert('Lỗi: ' + xhr.responseText);
+        },
+        success: function (response) {
+            strHtmlPaging = '';
+            for (var i=0;i<response.last_page;i++) {
+                strHtmlPaging += `<li><a style="cursor: pointer" onclick="loadPagination(${i + 1})">${i + 1}</a></li>`
+            }
+            $('#ulPagination').html(strHtmlPaging);
+        }
+    });
+}
+
+function loadPagination(page) {
+    var loaderContainer = document.getElementById("loaderContainer");
+    loaderContainer.classList.remove("hidden");
+    $.ajax({
+        url: 'http://localhost:8000/api/admin/all/user?page='+page,
+        method: 'GET',
+        dataType: 'json',
+        contentType: "application/json; charset=utf-8",
+        error: function(xhr, textStatus, errorThrown) {
+            console.log(xhr.responseText);
+            alert('Lỗi: ' + xhr.responseText);
+        },
+        success: function (response) {
+            var strHtml = '';
+            const statusLock = 0;
+            const statusNormal = 1;
+            for (var i=0;i<response.data.length;i++) {
+                var userStatus = '';
+                var actionStatus = '';
+                if (response.data[i].status === statusLock) {
+                    userStatus = `<p id="userStatus${response.data[i].id}" style="color: red">Khóa</p>`
+                    actionStatus = `<a id="actionStatus${response.data[i].id}" style="cursor: pointer" class="dropdown-item" data-toggle="modal" data-target="#confirmActionStatusUser" data-id = "${response.data[i].id}" data-value = "Unlock">Mở khóa</a>`
+                }
+                else if (response.data[i].status === statusNormal) {
+                    userStatus = `<p id="userStatus${response.data[i].id}" style="color: green">Bình thường</p>`
+                    actionStatus = `<a id="actionStatus${response.data[i].id}" style="cursor: pointer" class="dropdown-item" data-toggle="modal" data-target="#confirmActionStatusUser" data-id = "${response.data[i].id}" data-value = "Lock">Khóa</a>`
+                }
+                strHtml += `<tr>
+                                <td>${response.data[i].id}</td>
+                                <td>${response.data[i].name}</td>
+                                <td>${response.data[i].mail}</td>
+                                <td style="text-align: center">${response.data[i].requestStatusPending}</td>
+                                <td style="text-align: center">${response.data[i].requestStatusBorrowing}</td>
+                                <td style="text-align: center">${response.data[i].requestStatusReturned}</td>
+                                <td style="text-align: center">${response.data[i].requestStatusRefuse}</td>
+                                <td>
+                                    ${userStatus}
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-warning">Hành động</button>
+                                        <button type="button" class="btn btn-warning dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </button>
+                                        <div class="dropdown-menu" role="menu" style="">
+                                            <a style="cursor: pointer" class="dropdown-item" data-toggle="modal" data-target=".viewRequestOfUserModal" data-id = "${response.data[i].id}">Xem yêu cầu mượn</a>
+                                            ${actionStatus}
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>`
+            }
+            $('#user').html(strHtml);
+            loaderContainer.classList.add("hidden");
+        }
+    });
+}
+
 function loadRequestOfUser(userId) {
     $('#allRequestOfUser').empty();
     $('#ulPaginationRequestOfUser').empty();
@@ -204,7 +304,11 @@ function lockUser(userId) {
         },
         success: function () {
             alert('Khóa người dùng thành công');
-
+            document.getElementById('actionStatus'+userId).innerHTML = 'Mở khóa';
+            document.getElementById('actionStatus'+userId).setAttribute('data-value', 'Unlock');
+            document.getElementById('userStatus'+userId).innerHTML = 'Khóa'
+            document.getElementById('userStatus'+userId).style.color = 'red'
+            loaderContainer.classList.add("hidden");
         }
     });
 }
@@ -225,7 +329,142 @@ function unlockUser(userId) {
             alert('Lỗi: ' + xhr.responseText);
         },
         success: function () {
+            alert('Mở khóa người dùng thành công')
+            console.log('actionStatus'+userId)
+            document.getElementById('actionStatus'+userId).innerHTML = 'Khóa';
+            document.getElementById('actionStatus'+userId).setAttribute('data-value', 'Lock');
+            document.getElementById('userStatus'+userId).innerHTML = 'Bình thường'
+            document.getElementById('userStatus'+userId).style.color = 'green'
+            loaderContainer.classList.add("hidden");
+        }
+    });
+}
 
+var formDataFilterUser;
+document.getElementById('search').addEventListener('click',function () {
+    event.preventDefault();
+
+    formDataFilterUser = new FormData($('#formFilterUser')[0]);
+
+    var loaderContainer = document.getElementById("loaderContainer");
+    loaderContainer.classList.remove("hidden");
+    $.ajax({
+        url: 'http://localhost:8000/api/admin/filter/user',
+        method: 'POST',
+        dataType: 'json',
+        contentType: false,
+        processData: false,
+        data: formDataFilterUser,
+        error: function(xhr, textStatus, errorThrown) {
+            console.log(xhr.responseText);
+            alert('Lỗi: ' + xhr.responseText);
+        },
+        success: function (response) {
+            console.log(response)
+            var strHtml = '';
+            var strHtmlPaging = '';
+            const statusLock = 0;
+            const statusNormal = 1;
+            for (var i=0;i<response.data.length;i++) {
+                var userStatus = '';
+                var actionStatus = '';
+                if (response.data[i].status === statusLock) {
+                    userStatus = `<p id="userStatus${response.data[i].id}" style="color: red">Khóa</p>`
+                    actionStatus = `<a id="actionStatus${response.data[i].id}" style="cursor: pointer" class="dropdown-item" data-toggle="modal" data-target="#confirmActionStatusUser" data-id = "${response.data[i].id}" data-value = "Unlock">Mở khóa</a>`
+                }
+                else if (response.data[i].status === statusNormal) {
+                    userStatus = `<p id="userStatus${response.data[i].id}" style="color: green">Bình thường</p>`
+                    actionStatus = `<a id="actionStatus${response.data[i].id}" style="cursor: pointer" class="dropdown-item" data-toggle="modal" data-target="#confirmActionStatusUser" data-id = "${response.data[i].id}" data-value = "Lock">Khóa</a>`
+                }
+                strHtml += `<tr>
+                                <td>${response.data[i].id}</td>
+                                <td>${response.data[i].name}</td>
+                                <td>${response.data[i].mail}</td>
+                                <td style="text-align: center">${response.data[i].requestStatusPending}</td>
+                                <td style="text-align: center">${response.data[i].requestStatusBorrowing}</td>
+                                <td style="text-align: center">${response.data[i].requestStatusReturned}</td>
+                                <td style="text-align: center">${response.data[i].requestStatusRefuse}</td>
+                                <td>
+                                    ${userStatus}
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-warning">Hành động</button>
+                                        <button type="button" class="btn btn-warning dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </button>
+                                        <div class="dropdown-menu" role="menu" style="">
+                                            <a style="cursor: pointer" class="dropdown-item" data-toggle="modal" data-target=".viewRequestOfUserModal" data-id = "${response.data[i].id}">Xem yêu cầu mượn</a>
+                                            ${actionStatus}
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>`
+            }
+            for (var i=0;i<response.last_page;i++) {
+                strHtmlPaging += `<li><a style="cursor: pointer" onclick="loadPaginationForFilter(${i + 1})">${i + 1}</a></li>`
+            }
+            $('#ulPagination').html(strHtmlPaging);
+            $('#user').html(strHtml);
+            loaderContainer.classList.add("hidden");
+        }
+    });
+})
+
+function loadPaginationForFilter(page) {
+    $.ajax({
+        url: 'http://localhost:8000/api/admin/filter/user?page='+page,
+        method: 'POST',
+        dataType: 'json',
+        contentType: false,
+        processData: false,
+        data: formDataFilterUser,
+        error: function(xhr, textStatus, errorThrown) {
+            console.log(xhr.responseText);
+            alert('Lỗi: ' + xhr.responseText);
+        },
+        success: function (response) {
+            var strHtml = '';
+            const statusLock = 0;
+            const statusNormal = 1;
+            for (var i=0;i<response.data.length;i++) {
+                var userStatus = '';
+                var actionStatus = '';
+                if (response.data[i].status === statusLock) {
+                    userStatus = `<p id="userStatus${response.data[i].id}" style="color: red">Khóa</p>`
+                    actionStatus = `<a id="actionStatus${response.data[i].id}" style="cursor: pointer" class="dropdown-item" data-toggle="modal" data-target="#confirmActionStatusUser" data-id = "${response.data[i].id}" data-value = "Unlock">Mở khóa</a>`
+                }
+                else if (response.data[i].status === statusNormal) {
+                    userStatus = `<p id="userStatus${response.data[i].id}" style="color: green">Bình thường</p>`
+                    actionStatus = `<a id="actionStatus${response.data[i].id}" style="cursor: pointer" class="dropdown-item" data-toggle="modal" data-target="#confirmActionStatusUser" data-id = "${response.data[i].id}" data-value = "Lock">Khóa</a>`
+                }
+                strHtml += `<tr>
+                                <td>${response.data[i].id}</td>
+                                <td>${response.data[i].name}</td>
+                                <td>${response.data[i].mail}</td>
+                                <td style="text-align: center">${response.data[i].requestStatusPending}</td>
+                                <td style="text-align: center">${response.data[i].requestStatusBorrowing}</td>
+                                <td style="text-align: center">${response.data[i].requestStatusReturned}</td>
+                                <td style="text-align: center">${response.data[i].requestStatusRefuse}</td>
+                                <td>
+                                    ${userStatus}
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-warning">Hành động</button>
+                                        <button type="button" class="btn btn-warning dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </button>
+                                        <div class="dropdown-menu" role="menu" style="">
+                                            <a style="cursor: pointer" class="dropdown-item" data-toggle="modal" data-target=".viewRequestOfUserModal" data-id = "${response.data[i].id}">Xem yêu cầu mượn</a>
+                                            ${actionStatus}
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>`
+            }
+            $('#user').html(strHtml);
+            loaderContainer.classList.add("hidden");
         }
     });
 }
