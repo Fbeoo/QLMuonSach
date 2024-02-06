@@ -1,5 +1,6 @@
 <?php
 namespace App\Repositories\Eloquent;
+use App\Models\HistoryRentBook;
 use App\Repositories\HistoryRentBookRepositoryInterface;
 use function MongoDB\BSON\toRelaxedExtendedJSON;
 use function PHPUnit\TestFixture\func;
@@ -65,6 +66,25 @@ class HistoryRentBookRepository extends BaseRepository implements HistoryRentBoo
         try {
             $requestRentBook = $this->model->where('user_id',$userId)->paginate(5);
             return $requestRentBook;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function getRequestRentBookHaveStatusBorrowing()
+    {
+        try {
+            $requestRentBook = $this->model->where('status',HistoryRentBook::statusBorrowing)->with('user')->get();
+            return $requestRentBook;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function countRequestRentBookHaveStatusPending() {
+        try {
+            $countRequest = $this->model->where('status',HistoryRentBook::statusPending)->count();
+            return $countRequest;
         }catch (\Exception $e) {
             throw new \Exception($e);
         }
