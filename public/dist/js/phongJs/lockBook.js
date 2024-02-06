@@ -2,14 +2,14 @@ $(document).ready(function() {
     $("#exampleModal").on("show.bs.modal", function(event) {
         var button = $(event.relatedTarget);
         var buttonActionStatus = document.getElementById('actionStatus');
-        if (button.data("value") === "Lock") {
+        if (button.attr("data-value") === "Lock") {
             $('#notification').text("Bạn có muốn khóa sách")
             buttonActionStatus.textContent = "Khóa";
             buttonActionStatus.onclick = function () {
                 lockBook(button.data("id"));
             }
         }
-        else if (button.data("value") === "Unlock") {
+        else if (button.attr("data-value") === "Unlock") {
             $('#notification').text("Bạn có muốn mở khóa sách")
             buttonActionStatus.textContent = "Mở khóa";
             buttonActionStatus.onclick = function () {
@@ -36,11 +36,9 @@ function lockBook(bookId) {
         success: function () {
             alert('Khóa sách thành công');
             document.getElementById('actionStatusBook'+bookId).innerHTML = 'Mở khóa'
+            document.getElementById('actionStatusBook'+bookId).dataset.value = 'Unlock'
             document.getElementById('statusBook'+ bookId).innerHTML = 'Khóa'
             document.getElementById('statusBook'+bookId).style.color = "red"
-            document.getElementById('actionStatusBook'+bookId).onclick = function () {
-                unlockBook(bookId);
-            };
             loaderContainer.classList.add("hidden");
         }
     });
@@ -64,11 +62,9 @@ function unlockBook(bookId) {
         success: function () {
             alert('Mở khóa sách thành công');
             document.getElementById('actionStatusBook'+bookId).innerHTML = 'Khóa'
+            document.getElementById('actionStatusBook'+bookId).innerHTML = 'Lock'
             document.getElementById('statusBook'+ bookId).innerHTML = 'Bình thường'
             document.getElementById('statusBook'+bookId).style.color = "green"
-            document.getElementById('actionStatusBook'+bookId).onclick = function () {
-                lockBook(bookId);
-            };
             loaderContainer.classList.add("hidden");
         }
     });
