@@ -155,7 +155,15 @@ class HistoryRentBookController extends Controller
             $resultFilter = $this->historyRentBookRepository->filterRequestRentBook($arrFilter);
             return $resultFilter;
         }catch (\Exception $e) {
-            dd($e);
+            return response()->json(['error'=>$e]);
+        }
+    }
+
+    public function getRequestRentBookHaveStatusBorrowing() {
+        try {
+            $requestRentBook = $this->historyRentBookRepository->getRequestRentBookHaveStatusBorrowing();
+            return $requestRentBook;
+        }catch (\Exception $e) {
             return response()->json(['error'=>$e]);
         }
     }
