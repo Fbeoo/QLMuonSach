@@ -65,6 +65,18 @@
         display: none;
     }
 </style>
+<div style="width: 60%; margin: auto; padding-top: 20px">
+    <form id="formFilterUser">
+    <div class="input-group" style="margin-top: 20px">
+        <input name="contentSearch" type="search" class="form-control form-control-lg" placeholder="Nhập tên hoặc email để tìm kiếm khách hàng" style="height: 40px; width: 500px">
+        <div class="input-group-append" style="height: 40px">
+            <button class="btn btn-default" id="search">
+                <i class="fa fa-search"></i>
+            </button>
+        </div>
+    </div>
+    </form>
+</div>
 <div class="card" style="width: 80%; margin: auto; margin-top: 40px; margin-bottom: 40px">
     <div class="card-header">
         <h3 class="card-title">Quản lý người dùng</h3>
@@ -110,7 +122,12 @@
                                         </button>
                                         <div class="dropdown-menu" role="menu" style="">
                                             <a style="cursor: pointer" class="dropdown-item" data-toggle="modal" data-target=".viewRequestOfUserModal" data-id = "{{$user->id}}">Xem yêu cầu mượn</a>
-                                            <a style="cursor: pointer" class="dropdown-item" data-toggle="modal" data-target="#confirmActionStatusUser" data-id = "{{$user->id}}">Khóa</a>
+                                            @if($user->status === \App\Models\User::statusNormal)
+                                                <a id="actionStatus{{$user->id}}" style="cursor: pointer" class="dropdown-item" data-toggle="modal" data-target="#confirmActionStatusUser" data-id = "{{$user->id}}" data-value = "Lock">Khóa</a>
+                                            @elseif($user->status === \App\Models\User::statusLock)
+                                                <a id="actionStatus{{$user->id}}" style="cursor: pointer" class="dropdown-item" data-toggle="modal" data-target="#confirmActionStatusUser" data-id = "{{$user->id}}" data-value = "Unlock">Mở khóa</a>
+                                            @endif
+
                                         </div>
                                     </div>
                                 </td>
@@ -126,11 +143,7 @@
 </div>
 <div class="pagination" style="align-items: center; justify-content: center">
     <ul id="ulPagination">
-        @for($i = 1; $i <= $users->lastPage(); $i++)
-            <li>
-                <a href="{{ route('manageUser', ['page' => $i]) }}">{{ $i }}</a>
-            </li>
-        @endfor
+
     </ul>
 </div>
 <div class="modal fade" id="confirmActionStatusUser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
