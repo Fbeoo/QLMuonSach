@@ -54,6 +54,8 @@ Route::get('/admin/all/request-rent-book/status/borrowing',[HistoryRentBookContr
 
 Route::get('/admin/all/user',[UserController::class,'getAllUser']);
 
+Route::get('/request-borrowing-book/{userId}',[HistoryRentBookController::class,'getRequestBorrowingOfUser']);
+
 //POST
 Route::post('/admin/add/book',[BookController::class,'addBook'])->name('addBook');
 
