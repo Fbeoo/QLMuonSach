@@ -89,4 +89,16 @@ class HistoryRentBookRepository extends BaseRepository implements HistoryRentBoo
             throw new \Exception($e);
         }
     }
+
+    public function getRequestBorrowingOfUser($userId)
+    {
+        try {
+            $requestRentBook = $this->model->where('user_id',$userId)
+                ->where('status',HistoryRentBook::statusBorrowing)
+                ->get();
+            return $requestRentBook;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
 }

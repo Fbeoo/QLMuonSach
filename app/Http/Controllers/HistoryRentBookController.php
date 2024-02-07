@@ -168,4 +168,21 @@ class HistoryRentBookController extends Controller
         }
     }
 
+    public function showCalendarReturnBook() {
+        try {
+            return view('calendarReturnBook');
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function getRequestBorrowingOfUser($userId) {
+        try {
+            $requestRentBook = $this->historyRentBookRepository->getRequestBorrowingOfUser($userId);
+            return $requestRentBook;
+        }catch (\Exception $e) {
+            return response()->json(['error'=>$e]);
+        }
+    }
+
 }
