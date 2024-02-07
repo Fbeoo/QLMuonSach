@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthorInfoController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\HistoryRentBookController;
 use App\Http\Controllers\UserController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,8 +30,24 @@ Route::get('/403', function () {
     return view('error.403');
 })->name('403');
 
+Route::get('/register',function () {
+    return view('register');
+})->name('register');
+
+Route::post('/register',[UserController::class,'register'])->name('register');
+
 Route::middleware(['auth'])->group(function () {
     // GET
+    Route::get('/email/verify', function () {
+        return view('verifyEmail');
+    })->name('verification.notice');
+
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+
+        return redirect('/home');
+    })->name('verification.verify');
+
     Route::get('/', [BookController::class,'getBookForHomePage'])->name('home');
 
     Route::get('/author',[AuthorInfoController::class,'showAuthorInAllAuthorPage'])->name('allAuthor');
@@ -46,6 +63,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/cart',[BookController::class,'showBookInCart'])->name('cart');
 
     Route::get('/history/{userId}',[HistoryRentBookController::class,'showHistoryRentBook'])->name('historyRentBook');
+
+    Route::get('/calendar-return-book',[HistoryRentBookController::class,'showCalendarReturnBook'])->name('calendarReturnBook');
 
     Route::get('/account',function () {
         return view('userInformation');
