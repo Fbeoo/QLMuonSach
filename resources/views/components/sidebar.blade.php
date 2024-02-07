@@ -60,6 +60,14 @@
                     </p>
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="{{route('calendarReturnBook')}}" class="nav-link">
+                    <i class="fas fa-history"></i>
+                    <p>
+                        Lịch trả sách
+                    </p>
+                </a>
+            </li>
         </ul>
     </nav>
     <!-- /.sidebar-menu -->
