@@ -106,7 +106,7 @@ function loadPagination(page) {
                                     <td>${response.data[i].id}</td>
                                     <td>${response.data[i].rent_date}</td>
                                     <td>${response.data[i].expiration_date}</td>
-                                    <td>${response.data[i].total_price}</td>
+                                    <td>${Number(response.data[i].total_price).toLocaleString('vi-VN')}</td>
                                     <td>${response.data[i].user.name}</td>
                                     ${strStatus}
                                     <td>
@@ -307,7 +307,7 @@ document.getElementById('search').addEventListener('click',function () {
                                     <td>${response.data[i].id}</td>
                                     <td>${response.data[i].rent_date}</td>
                                     <td>${response.data[i].expiration_date}</td>
-                                    <td>${response.data[i].total_price}</td>
+                                    <td>${Number(response.data[i].total_price).toLocaleString('vi-VN')}</td>
                                     <td>${response.data[i].user.name}</td>
                                     ${strStatus}
                                     <td>
@@ -392,7 +392,7 @@ function loadPaginationForFilter(page) {
                                     <td>${response.data[i].id}</td>
                                     <td>${response.data[i].rent_date}</td>
                                     <td>${response.data[i].expiration_date}</td>
-                                    <td>${response.data[i].total_price}</td>
+                                    <td>${Number(response.data[i].total_price).toLocaleString('vi-VN')}</td>
                                     <td>${response.data[i].user.name}</td>
                                     ${strStatus}
                                     <td>
