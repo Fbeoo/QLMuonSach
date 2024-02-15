@@ -22,7 +22,7 @@ class DetailHistoryRentBookRepository extends BaseRepository implements DetailHi
     public function getDetailRequestRentBook($requestId)
     {
         try {
-            $detailRequest = $this->model->where('history_rent_book_id',$requestId)->get();
+            $detailRequest = $this->model->where('history_rent_book_id',$requestId)->with('book')->get();
             return $detailRequest;
         }catch (\Exception $e) {
             throw new \Exception($e);

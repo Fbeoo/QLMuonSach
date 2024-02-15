@@ -69,7 +69,7 @@ class HistoryRentBookController extends Controller
         try {
             $requestRentBook = $this->historyRentBookRepository->find($request->input('requestId'));
             if (!$requestRentBook) {
-                return response()->json(['error'=>'Không tìm thấy yêu cầu mượn sách']);
+                return response()->json(['error'=>@trans('message.requestRentBookNotAvailable')]);
             }
             $detailRequest = $this->detailHistoryRentBookRepository->getDetailRequestRentBook($request->input('requestId'));
             foreach ($detailRequest as $detail) {
@@ -80,12 +80,12 @@ class HistoryRentBookController extends Controller
                     $numberBookRenting += $renting->quantity;
                 }
                 if ($bookRent->quantity - $numberBookRenting < $detail->quantity) {
-                    return response()->json(['errorQuantity'=>'Số sách trong kho không đủ đáp ứng yêu cầu mượn']);
+                    return response()->json(['errorQuantity'=>@trans('message.quantityRentMoreThanBookAvailable')]);
                 }
             }
             $requestRentBook->status = HistoryRentBook::statusBorrowing;
             $this->historyRentBookRepository->update($requestRentBook);
-            return response()->json(['success'=>'Chấp nhận  yêu cầu mượn sách thành công']);
+            return response()->json(['success'=>@trans('message.acceptRequestRentBookSuccessfully')]);
         }catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -95,11 +95,11 @@ class HistoryRentBookController extends Controller
         try {
             $requestRentBook = $this->historyRentBookRepository->find($request->input('requestId'));
             if (!$requestRentBook) {
-                return response()->json(['error'=>'Không tìm thấy yêu cầu mượn sách']);
+                return response()->json(['error'=>@trans('message.requestRentBookNotAvailable')]);
             }
             $requestRentBook->status = HistoryRentBook::statusRefuse;
             $this->historyRentBookRepository->update($requestRentBook);
-            return response()->json(['success'=>'Từ chối yêu cầu mượn sách thành công']);
+            return response()->json(['success'=>@trans('message.refuseRequestRentBookSuccessfully')]);
         }catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -109,12 +109,12 @@ class HistoryRentBookController extends Controller
         try {
             $requestRentBook = $this->historyRentBookRepository->find($request->input('requestId'));
             if (!$requestRentBook) {
-                return response()->json(['error'=>'Không tìm thấy yêu cầu mượn sách']);
+                return response()->json(['error'=>@trans('message.requestRentBookNotAvailable')]);
             }
             $requestRentBook->status = HistoryRentBook::statusReturned;
             $requestRentBook->return_date = now()->format('Y/m/d');
             $this->historyRentBookRepository->update($requestRentBook);
-            return response()->json(['success'=>'Đánh dấu người mượn trả sách thành công']);
+            return response()->json(['success'=>@trans('message.markToReturnedRequestRentBookSuccessfully')]);
         }catch (\Exception $e) {
             throw new \Exception($e);
         }

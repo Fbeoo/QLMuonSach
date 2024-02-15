@@ -202,12 +202,12 @@ class BookController extends Controller
 
             $categoryChildren = $this->categoryRepository->find($request->input('categoryChildren'));
             if (!$categoryChildren) {
-                return response()->json(['error'=>'Không có danh mục này']);
+                return response()->json(['error'=>@trans('message.categoryNotAvailable')]);
             }
 
             $author = $this->authorInfoRepository->find($request->input('authorId'));
             if (!$author) {
-                return response()->json(['error'=>'Không có tác giả này']);
+                return response()->json(['error'=>@trans('message.authorNotAvailable')]);
             }
 
             $book->name = $request->input('bookName');
@@ -225,7 +225,7 @@ class BookController extends Controller
             $this->authorBookRepository->update($authorBook[0]);
             DB::commit();
 
-            return response()->json(['success' => 'Sửa sách thành công']);
+            return response()->json(['success' => @trans('message.updateBookSuccessfully')]);
         }catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error',$e]);
@@ -305,12 +305,12 @@ class BookController extends Controller
 
             $categoryChildren = $this->categoryRepository->find($request->input('categoryChildren'));
             if (!$categoryChildren) {
-                return response()->json(['error'=>'Không có danh mục này']);
+                return response()->json(['error'=>@trans('categoryNotAvailable')]);
             }
 
             $author = $this->authorInfoRepository->find($request->input('authorId'));
             if (!$author) {
-                return response()->json(['error'=>'Không có tác giả này']);
+                return response()->json(['error'=>@trans('authorNotAvailable')]);
             }
 
             $path = $request->file('thumbnail')->store('public/img');
@@ -333,7 +333,7 @@ class BookController extends Controller
             $this->authorBookRepository->add($authorBook);
             DB::commit();
 
-            return response()->json(['success' => 'Thêm sách thành công']);
+            return response()->json(['success' => @trans('message.addBookSuccessfully')]);
         }catch (\Exception $e) {
             DB::rollBack();
             return \response()->json(['error'=>$e]);
@@ -348,12 +348,12 @@ class BookController extends Controller
         try {
             $book = $this->bookRepository->find($request->input('id'));
             if (!$book) {
-                return \response()->json(['error'=>'Không tồn tại sách']);
+                return \response()->json(['error'=>@trans('message.bookNotAvailable')]);
             }
                 $book->status = Book::statusLock;
             $this->bookRepository->update($book);
 
-            return response()->json(['success' => 'Khóa sách thành công']);
+            return response()->json(['success' => @trans('message.lockBookSuccessfully')]);
         }catch (\Exception $e) {
             return \response()->json(['error'=>$e]);
         }
@@ -367,12 +367,12 @@ class BookController extends Controller
         try {
             $book = $this->bookRepository->find($request->input('id'));
             if (!$book) {
-                return response()->json(['error'=>'Không tồn tại sách']);
+                return response()->json(['error'=>@trans('message.bookNotAvailable')]);
             }
             $book->status = Book::statusAvailable;
             $this->bookRepository->update($book);
 
-            return response()->json(['message' => 'Mở khóa sách thành công']);
+            return response()->json(['message' => @trans('message.unlockBookSuccessfully')]);
         }catch (\Exception $e) {
             return \response()->json(['error'=>$e]);
         }
@@ -436,7 +436,7 @@ class BookController extends Controller
                 'maxYear' => 'required|min:1|integer'
             ]);
             if ($request->input('minYear')>$request->input('maxYear')) {
-                $validation->errors()->add('minYear','Năm nhỏ không thể lớn hơn năm lớn');
+                $validation->errors()->add('minYear',@trans('message.filterRangeYearValidateError'));
             }
             if ($validation->fails()) {
                 return response()->json(['errorValidate'=>$validation->errors()]);
@@ -550,7 +550,7 @@ class BookController extends Controller
                 $collection->put('numberDayRent',1);
                 $collection->put('totalBookInCart',1);
                 Session::put('cart',$collection);
-                return \response()->json(['success'=>'Thêm sách vào giỏ thành công','cart'=>$collection]);
+                return \response()->json(['success'=>@trans('message.addBookToCartSuccessfully'),'cart'=>$collection]);
             }
             $collection = Session::get('cart');
             $collectionChild = $collection->get('bookInCart');
@@ -570,7 +570,7 @@ class BookController extends Controller
                     $totalBookInCart += 1;
                     $collection->put('totalBookInCart',$totalBookInCart);
                     Session::put('cart',$collection);
-                    return \response()->json(['success'=>'Thêm sách vào giỏ thành công','cart'=>$collection]);
+                    return \response()->json(['success'=>@trans('message.addBookToCartSuccessfully'),'cart'=>$collection]);
                 }
             }
 
@@ -588,7 +588,7 @@ class BookController extends Controller
             $totalBookInCart += 1;
             $collection->put('totalBookInCart',$totalBookInCart);
             Session::put('cart',$collection);
-            return \response()->json(['success'=>'Thêm sách vào giỏ thành công','cart'=>$collection]);
+            return \response()->json(['success'=>@trans('message.addBookToCartSuccessfully'),'cart'=>$collection]);
         }catch (\Exception $e) {
             return \response()->json(['error'=>$e]);
         }
@@ -648,7 +648,7 @@ class BookController extends Controller
             $this->detailHistoryRentBookRepository->add($detailHistoryRentBook);
 
             DB::commit();
-            return \response()->json(['success'=>'Thuê sách thành công']);
+            return \response()->json(['success'=>@trans('message.rentBookSuccessfully')]);
         }catch (\Exception $e) {
             DB::rollBack();
             return \response()->json(['error'=>$e]);
@@ -693,7 +693,7 @@ class BookController extends Controller
             DB::commit();
             Session::forget('cart');
 
-            return \response()->json(['success'=>'Thuê sách thành công']);
+            return \response()->json(['success'=>@trans('message.rentBookSuccessfully')]);
         }catch (\Exception $e) {
             DB::rollBack();
             return \response()->json(['error'=>$e]);
@@ -732,9 +732,9 @@ class BookController extends Controller
             $validation = Validator::make($request->all(), [
                 'dateRent' => 'required|date_format:d/m/Y|after:tomorrow'
             ],[
-                'dateRent.required' => 'Ngày thuê không được bỏ trống',
-                'dateRent.date_format' => 'Ngày thuê sai định dạng',
-                'dateRent.after' => 'Ngày thuê tối thiểu phải là ngày mai'
+                'dateRent.required' => @trans('message.dateRentRequired'),
+                'dateRent.date_format' => @trans('message.dateRentDateFormat'),
+                'dateRent.after' => @trans('message.dateRentAfter')
             ]);
 
             if ($validation->fails()) {
@@ -890,23 +890,23 @@ class BookController extends Controller
                 'dateRent' => 'required|date_format:d/m/Y|after:tomorrow',
                 'quantityRent' => 'required|integer|min:1'
             ],[
-                'dateRent.required' => 'Ngày thuê không được để trống',
-                'dateRent.date_format' => 'Định dạng ngày không đúng',
-                'dateRent.after' => 'Ngày thuê tối thiểu phải là ngày mai',
+                'dateRent.required' => @trans('message.dateRentRequired'),
+                'dateRent.date_format' => @trans('message.dateRentDateFormat'),
+                'dateRent.after' => @trans('message.dateRentAfter'),
 
-                'quantityRent.required' => 'Số lượng thuê không được để trống',
-                'quantityRent.integer' => 'Số lượng thuê phải là số nguyên',
-                'quantityRent.min' => 'Số lượng thuê phải lớn hơn 0'
+                'quantityRent.required' => @trans('message.quantityRentRequired'),
+                'quantityRent.integer' => @trans('message.quantityRentInteger'),
+                'quantityRent.min' => @trans('message.quantityRentMin')
 
             ]);
 
             if (intval($request->input('numberBookAvailable'))<intval($request->input('quantityRent'))) {
-                $validation->errors()->add('quantityRent','Số sách mượn vượt quá số lượng đang có trong kho');
+                $validation->errors()->add('quantityRent',@trans('message.quantityRentMoreThanBookAvailable'));
             }
             if (count($validation->errors()) > 0) {
                 return \response()->json(['errorValidate'=>$validation->errors()]);
             }
-            return \response()->json(['success'=>'Validate thành công']);
+            return \response()->json(['success'=>@trans('message.validateSuccessfully')]);
         }catch (\Exception $e) {
             return \response()->json(['error'=>$e]);
         }
@@ -918,15 +918,15 @@ class BookController extends Controller
             $validation = Validator::make($request->all(), [
                 'dateRent' => 'required|date_format:d/m/Y|after:tomorrow'
             ],[
-                'dateRent.required' => 'Ngày mượn không được để trống',
-                'dateRent.date_format' => 'Sai định dạng ngày',
-                'dateRent.after' => 'Ngày mượn tối thiểu phải là ngày mai'
+                'dateRent.required' => @trans('message.dateRentRequired'),
+                'dateRent.date_format' => @trans('message.dateRentDateFormat'),
+                'dateRent.after' => @trans('message.dateRentAfter')
             ]);
 
             $bookInCart = $cart->get('bookInCart');
             foreach ($bookInCart as $book) {
                 if ($book['quantityAvailable'] < $book['quantityLine']) {
-                    $validation->errors()->add('quantityRent'.$book['line'],'Số lượng sách trong kho không đủ');
+                    $validation->errors()->add('quantityRent'.$book['line'],@trans('message.quantityRentMoreThanBookAvailable'));
                 }
             }
 
@@ -934,7 +934,7 @@ class BookController extends Controller
                 return \response()->json(['errorValidate'=>$validation->errors()]);
             }
 
-            return \response()->json(['success'=>'Validate thành công']);
+            return \response()->json(['success'=>@trans('message.validateSuccessfully')]);
         }catch (\Exception $e) {
             return \response()->json(['error'=>$e]);
         }

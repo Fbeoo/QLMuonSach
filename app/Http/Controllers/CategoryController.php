@@ -44,7 +44,7 @@ class CategoryController extends Controller
         try {
             $categoryChildren = $this->categoryRepository->getCategoryChildByCategoryParentId($categoryParentId);
             if (!$categoryChildren) {
-                return response()->json(['error'=>'Không tìm thấy thể loại']);
+                return response()->json(['error'=>@trans('message.categoryNotAvailable')]);
             }
             return $categoryChildren;
         }catch (\Exception $e) {

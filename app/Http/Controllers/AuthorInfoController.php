@@ -34,7 +34,7 @@ class AuthorInfoController extends Controller
         try {
             $author = $this->authorInfoRepository->getALl();
             if (!$author) {
-                return response()->json(['error'=>'Không có tác giả']);
+                return response()->json(['error'=>@trans('message.authorNotAvailable')]);
             }
             return $author;
         }catch (\Exception $e) {
@@ -63,7 +63,7 @@ class AuthorInfoController extends Controller
             $authorInfo->author_name = $request->input('authorName');
             $authorInfo->author_image = Str::after($path,'/');
             $this->authorInfoRepository->add($authorInfo);
-            return response()->json(['success','Thêm tác giả thành công']);
+            return response()->json(['success',@trans('message.addAuthorSuccessfully')]);
         }catch (\Exception $e) {
             return response()->json(['error'=>$e]);
         }
