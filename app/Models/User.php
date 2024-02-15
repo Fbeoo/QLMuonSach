@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -12,12 +13,15 @@ use Laravel\Sanctum\HasApiTokens;
 /**
  *
  */
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     const statusLock = 0;
     const statusNormal = 1;
+
+    const statusInactive = 2;
+
 
     /**
      * @var string
@@ -27,18 +31,20 @@ class User extends Authenticatable
      * @var string
      */
     protected $guarded = 'web';
+
+    protected $email = 'mail';
     /**
      * @var string[]
      */
     protected $fillable = [
         'name',
         'dob',
-        'password',
         'mail',
         'address',
-        'status'
+        'status',
+        'password',
+        'remember_token',
     ];
-
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
