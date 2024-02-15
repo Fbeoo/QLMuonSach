@@ -33,5 +33,66 @@ return [
     'authorIdValidateRequired' => 'Tác giả không được để trống',
 
     'authorNameValidateRequired' => 'Tên tác giả không được để trống',
-    'authorNameValidateAlpha' => 'Tên tác giả phải là chữ'
+    'authorNameValidateAlpha' => 'Tên tác giả phải là chữ',
+
+    'authorNotAvailable' => 'Không có tác giả',
+    'addAuthorSuccessfully' => 'Thêm tác giả thành công',
+
+    'categoryNotAvailable' => 'Không có danh mục này',
+
+    'updateBookSuccessfully' => 'Sửa sách thành công',
+    'addBookSuccessfully' => 'Thêm sách thành công',
+    'bookNotAvailable' => 'Sách không tồn tại',
+    'lockBookSuccessfully' => 'Khóa sách thành công',
+    'unlockBookSuccessfully' => 'Mở khóa sách thành công',
+    'addBookToCartSuccessfully' => 'Thêm sách vào giỏ thành công',
+    'rentBookSuccessfully' => 'Mượn sách thành công',
+
+    'filterRangeYearValidateError' => 'Khoảng năm không hợp lệ',
+
+    'dateRentRequired' => 'Ngày thuê không được bỏ trống',
+    'dateRentDateFormat' => 'Ngày thuê không đúng định dạng',
+    'dateRentAfter' => 'Ngày thuê tối thiểu phải là 1 ngày',
+
+    'quantityRentRequired' => 'Số lượng thuê không được để trống',
+    'quantityRentInteger' => 'Số lượng thuê phải là số nguyên',
+    'quantityRentMin' => 'Số lượng thuê phải lớn hơn 0',
+    'quantityRentMoreThanBookAvailable' => 'Số lượng mượn vượt quá sách trong kho',
+
+    'validateSuccessfully' => 'Validate thành công',
+
+    'requestRentBookNotAvailable' => 'Yêu cầu mượn sách không tồn tại',
+    'acceptRequestRentBookSuccessfully' => 'Chấp nhận yêu cầu mượn sách thành công',
+    'refuseRequestRentBookSuccessfully' => 'Từ chối yêu cầu mượn sách thành công' ,
+    'markToReturnedRequestRentBookSuccessfully' => 'Đánh dấu người mượn đã trả sách thành công',
+
+    'nameRequired' => 'Tên không được để trống',
+
+    'mailRequired' => 'Địa chỉ email không được để trống',
+    'mailEmail' => 'Sai định dạng email',
+    'mailExist' => 'Email đã tồn tại',
+
+    'dobRequired' => 'Ngày sinh không được để trống',
+    'dobDateFormat' => 'Ngày sinh không đúng định dạng',
+
+    'addressRequired' => 'Địa chỉ không được để trống',
+
+    'passwordRequired' => 'Mật khẩu không được để trống',
+
+    'confirmPasswordRequired' => 'Xác nhận mật khẩu không được để trống',
+
+    'passwordNotMatch' => 'Mật khẩu và xác nhận mật khẩu không khớp',
+
+    'registerAccountSuccessfully' => 'Đăng kí tài khoản thành công hãy vào email để kích hoạt tài khoản',
+
+    'activeAccountSuccessfully' => 'Kích hoạt tài khoản thành công',
+
+    'updateInformationSuccessfully' => 'Sửa thông tin thành công',
+
+    'lockUserSuccessfully' => 'Khóa người dùng thành công',
+    'unlockUserSuccessfully' => 'Mở khóa người dùng thành công',
+
+    'verifyEmail' => 'Xác thực tài khoản',
+    'resendVerifyEmailSuccessfully' => 'Gửi lại yêu cầu kích hoạt tài khoản thành công',
+
 ];
