@@ -62,9 +62,9 @@
                                             <img style="max-width: 100%; max-height: 100%; padding-left: 25px" src="http://localhost:8000/storage/{{$book->thumbnail}}">
                                         </td>
                                         <td style="text-align: center; vertical-align: middle">{{$book->name}}</td>
-                                        <td style="text-align: center; vertical-align: middle">{{$book->price_rent}}</td>
+                                        <td style="text-align: center; vertical-align: middle">{{number_format($book->price_rent, 0, ',', '.')}}</td>
                                         <td style="text-align: center; vertical-align: middle; width: 150px">{{$quantityRent}}</td>
-                                        <td style="text-align: center; vertical-align: middle; width: 150px">{{$totalPrice}}</td>
+                                        <td style="text-align: center; vertical-align: middle; width: 150px">{{number_format($totalPrice, 0, ',', '.')}}</td>
                                     </tr>
                                 @elseif($typeRent === 'rentMultiBook')
                                     @foreach($cart->get('bookInCart') as $book)
@@ -73,7 +73,7 @@
                                                 <img style="max-width: 100%; max-height: 100%; padding-left: 25px" src="http://localhost:8000/storage/{{$book['book']->thumbnail}}">
                                             </td>
                                             <td style="text-align: center; vertical-align: middle">{{$book['book']->name}}</td>
-                                            <td style="text-align: center; vertical-align: middle">{{$book['book']->price_rent}}</td>
+                                            <td style="text-align: center; vertical-align: middle">{{number_format($book['book']->price_rent, 0, ',', '.')}}</td>
                                             <td style="text-align: center; vertical-align: middle; width: 150px">{{$book['quantityLine']}}</td>
                                             <td style="text-align: center; vertical-align: middle; width: 150px">{{$book['linePrice']}}</td>
                                         </tr>
@@ -96,7 +96,7 @@
                         <div class="col-10">
                             Tổng tiền
                         </div>
-                        <div class="col-2">{{$totalPrice}}</div>
+                        <div class="col-2">{{number_format($totalPrice, 0, ',', '.')}}</div>
                     </div>
                 </div>
             </div>
@@ -118,7 +118,7 @@
                             Tổng tiền
                         </div>
                         <div class="col-2">
-                            {{$cart->get('totalPrice')}}
+                            {{number_format($cart->get('totalPrice'), 0, ',', '.')}}
                         </div>
                     </div>
                 </div>
