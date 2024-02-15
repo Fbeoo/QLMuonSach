@@ -37,7 +37,7 @@ function showDetailRequest(requestId) {
                             <img style="max-width: 100%; max-height: 100%; padding-left: 25px" src="http://localhost:8000/storage/${response[0].detail_history_rent_book[i].book.thumbnail}">
                         </td>
                         <td style="text-align: center; vertical-align: middle">${response[0].detail_history_rent_book[i].book.name}</td>
-                        <td style="text-align: center; vertical-align: middle">${response[0].detail_history_rent_book[i].book.price_rent} / 1 ngày</td>
+                        <td style="text-align: center; vertical-align: middle">${Number(response[0].detail_history_rent_book[i].book.price_rent).toLocaleString('vi-VN')} / 1 ngày</td>
                         <td style="text-align: center; vertical-align: middle">${response[0].detail_history_rent_book[i].quantity}</td>
                     </tr>`
             }
