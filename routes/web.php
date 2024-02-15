@@ -7,6 +7,8 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\HistoryRentBookController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,7 +21,6 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
 //User
     //GET
 Route::get('/login',function () {
@@ -36,17 +37,16 @@ Route::get('/register',function () {
 
 Route::post('/register',[UserController::class,'register'])->name('register');
 
+Route::get('/verify/email/notice',function () {
+    return view('noticeVerifyEmail');
+})->name('noticeVerifyEmail');
+
+Route::post('/resend/verify/email',[UserController::class,'resendVerifyEmail'])->name('resendVerifyEmail');
+
+Route::get('/verify/email/{token}',[UserController::class,'verifyEmail']);
+
 Route::middleware(['auth'])->group(function () {
     // GET
-    Route::get('/email/verify', function () {
-        return view('verifyEmail');
-    })->name('verification.notice');
-
-    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-        $request->fulfill();
-
-        return redirect('/home');
-    })->name('verification.verify');
 
     Route::get('/', [BookController::class,'getBookForHomePage'])->name('home');
 
@@ -116,8 +116,6 @@ Route::prefix('admin')->group(function () {
 
     });
 });
-
-
 
 
 
