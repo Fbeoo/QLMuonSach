@@ -152,7 +152,7 @@ function loadRequestOfUser(userId) {
                                     <td>${response.data[i].id}</td>
                                     <td>${response.data[i].rent_date}</td>
                                     <td>${response.data[i].expiration_date}</td>
-                                    <td>${response.data[i].total_price}</td>
+                                    <td>${Number(response.data[i].total_price).toLocaleString('vi-VN')}</td>
                                     ${strStatusRequest}
                                     <td>
                                         <div class="btn-group">
@@ -228,7 +228,7 @@ function loadPaginationForRequestOfUser(page,userId) {
                                     <td>${response.data[i].id}</td>
                                     <td>${response.data[i].rent_date}</td>
                                     <td>${response.data[i].expiration_date}</td>
-                                    <td>${response.data[i].total_price}</td>
+                                    <td>${Number(response.data[i].total_price).toLocaleString('vi-VN')}</td>
                                     ${strStatusRequest}
                                     <td>
                                         <div class="btn-group">
