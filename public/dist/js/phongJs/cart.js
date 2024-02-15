@@ -57,7 +57,7 @@ function removeBookInCart(line) {
                                         <img style="max-width: 100%; max-height: 100%; padding-left: 25px" src="http://localhost:8000/storage/${response.bookInCart[i].book.thumbnail}">
                                     </td>
                                     <td style="text-align: center; vertical-align: middle">${response.bookInCart[i].book.name}</td>
-                                    <td style="text-align: center; vertical-align: middle">${response.bookInCart[i].book.price_rent} / 1 ngày</td>
+                                    <td style="text-align: center; vertical-align: middle">${Number(response.bookInCart[i].book.price_rent).toLocaleString('vi-VN')} / 1 ngày</td>
                                     <td style="text-align: center; vertical-align: middle; width: 150px">
                                         <input class="quantityBook" type="number" style="width: 80px;" value="${response.bookInCart[i].quantityLine}" data-line = "${response.bookInCart[i].line}">
                                     </td>
