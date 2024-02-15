@@ -64,4 +64,24 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface {
             throw new Exception($e);
         }
     }
+
+    public function getUserByToken($token)
+    {
+        try {
+            $user = $this->model->where('remember_token',$token)->get();
+            return $user;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function getUserByMail($mail)
+    {
+        try {
+            $user = $this->model->where('mail',$mail)->get();
+            return $user;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
 }
