@@ -23,7 +23,6 @@
     <div class="card">
         <div class="card-body register-card-body">
             <p class="login-box-msg">Register a new membership</p>
-
             <form action="{{route('register')}}" method="post">
                 @csrf
                 <div class="input-group mb-3">
@@ -34,6 +33,11 @@
                         </div>
                     </div>
                 </div>
+                @if(isset($error))
+                    @if($error->first('name'))
+                        <p style="color: red">{{$error->first('name')}}</p>
+                    @endif
+                @endif
                 <div class="input-group mb-3">
                     <input type="email" class="form-control" placeholder="Email" name="mail">
                     <div class="input-group-append">
@@ -42,6 +46,11 @@
                         </div>
                     </div>
                 </div>
+                @if(isset($error))
+                    @if($error->first('mail'))
+                        <p style="color: red">{{$error->first('mail')}}</p>
+                    @endif
+                @endif
                 <div class="input-group mb-3">
                     <input type="text" class="form-control" placeholder="Address" name="address">
                     <div class="input-group-append">
@@ -50,6 +59,11 @@
                         </div>
                     </div>
                 </div>
+                @if(isset($error))
+                    @if($error->first('address'))
+                        <p style="color: red">{{$error->first('name')}}</p>
+                    @endif
+                @endif
                 <div class="input-group mb-3">
                     <input type="password" class="form-control" placeholder="Password" name="password">
                     <div class="input-group-append">
@@ -58,6 +72,11 @@
                         </div>
                     </div>
                 </div>
+                @if(isset($error))
+                    @if($error->first('password'))
+                        <p style="color: red">{{$error->first('password')}}</p>
+                    @endif
+                @endif
                 <div class="input-group mb-3">
                     <input type="password" class="form-control" placeholder="Retype password" name="confirmPassword">
                     <div class="input-group-append">
@@ -66,6 +85,11 @@
                         </div>
                     </div>
                 </div>
+                @if(isset($error))
+                    @if($error->first('confirmPassword'))
+                        <p style="color: red">{{$error->first('confirmPassword')}}</p>
+                    @endif
+                @endif
                 <div class="row">
                     <div class="col-8">
 
