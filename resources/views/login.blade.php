@@ -17,15 +17,19 @@
 <body class="hold-transition login-page">
 <div class="login-box">
     <div class="login-logo">
-        <a href="../../index2.html"><b>Admin</b>LTE</a>
+        <b>Admin</b>LTE
     </div>
     <!-- /.login-logo -->
     <div class="card">
         <div class="card-body login-card-body">
-            <p class="login-box-msg">Sign in to start your session</p>
             @if ($errors->has('mail'))
-                <div class="error-message" style="color: red">
+                <div class="error-message" style="text-align: center">
                     {{ $errors->first('mail') }}
+                </div>
+            @endif
+            @if (\Illuminate\Support\Facades\Session::has('success'))
+                <div class="alert alert-success" style="color: red">
+                    {{ \Illuminate\Support\Facades\Session::get('success') }}
                 </div>
             @endif
             <form action="{{route('login')}}" method="post">
@@ -65,10 +69,10 @@
             <!-- /.social-auth-links -->
 
             <p class="mb-1">
-                <a href="forgot-password.html">I forgot my password</a>
+                <a href="{{route('forgotPassword')}}">I forgot my password</a>
             </p>
             <p class="mb-0">
-                <a href="register.html" class="text-center">Register a new membership</a>
+                <a href="{{route('register')}}" class="text-center">Register a new membership</a>
             </p>
         </div>
         <!-- /.login-card-body -->
