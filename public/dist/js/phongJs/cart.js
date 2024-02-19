@@ -28,8 +28,8 @@ function changeNumberBook(line,quantity) {
             alert('Lỗi: ' + xhr.responseText);
         },
         success: function (response) {
-            $('#linePrice'+line).text(response.bookInCart[line-1].linePrice);
-            $('#totalPrice').text(response.totalPrice);
+            $('#linePrice'+line).text(Number(response.bookInCart[line-1].linePrice).toLocaleString('vi-VN'));
+            $('#totalPrice').text(Number(response.totalPrice).toLocaleString('vi-VN'));
             $('#countBookInCart').text(response.totalBookInCart);
         }
     });
@@ -61,7 +61,7 @@ function removeBookInCart(line) {
                                     <td style="text-align: center; vertical-align: middle; width: 150px">
                                         <input class="quantityBook" type="number" style="width: 80px;" value="${response.bookInCart[i].quantityLine}" data-line = "${response.bookInCart[i].line}">
                                     </td>
-                                    <td id="linePrice${response.bookInCart[i].line}" style="text-align: center; vertical-align: middle">${response.bookInCart[i].linePrice}</td>
+                                    <td id="linePrice${response.bookInCart[i].line}" style="text-align: center; vertical-align: middle">${Number(response.bookInCart[i].linePrice).toLocaleString('vi-VN')}</td>
                                     <td style="text-align: center; vertical-align: middle">
                                         <a style="cursor: pointer" class="removeBook" data-line="${response.bookInCart[i].line}">
                                             <i class="fa fa-window-close"></i>
@@ -70,7 +70,7 @@ function removeBookInCart(line) {
                                 </tr>`
             }
             $('#cartContent').html(strHtml);
-            $('#totalPrice').text(response.totalPrice);
+            $('#totalPrice').text(Number(response.totalPrice).toLocaleString('vi-VN'));
             $('#countBookInCart').text(response.totalBookInCart);
             removeBook = document.querySelectorAll('.removeBook');
             console.log(removeBook);
@@ -118,9 +118,9 @@ function changeDateRent(dateRent) {
             }
             else {
                 for (var i=0;i<response.bookInCart.length;i++) {
-                    $('#linePrice'+(i+1)).text(response.bookInCart[i].linePrice);
+                    $('#linePrice'+(i+1)).text(Number(response.bookInCart[i].linePrice).toLocaleString('vi-VN'));
                 }
-                $('#totalPrice').text(response.totalPrice);
+                $('#totalPrice').text(Number(response.totalPrice).toLocaleString('vi-VN'));
             }
         }
     });
