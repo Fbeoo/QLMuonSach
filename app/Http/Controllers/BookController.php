@@ -948,4 +948,19 @@ class BookController extends Controller
             throw new \Exception($e);
         }
     }
+
+    public function countBookInCart() {
+        try {
+            if (\session()->has('cart')) {
+                $cart = \session()->get('cart');
+                $totalBookInCart = $cart['totalBookInCart'];
+                return $totalBookInCart;
+            }
+            else {
+                return 0;
+            }
+        }catch (\Exception $e) {
+            return response()->json(['error'=>$e]);
+        }
+    }
 }
