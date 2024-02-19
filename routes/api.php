@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthorInfoController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CategoryController;
@@ -31,6 +32,8 @@ Route::get('/category/children/{categoryParentId}',[CategoryController::class,'g
 Route::get('/author',[AuthorInfoController::class,'getAllAuthor']);
 
 Route::get('/admin/search/book/{bookName}',[BookController::class,'getBookByName']);
+
+Route::get('/count/book-in-cart',[BookController::class,'countBookInCart']);
 
 Route::get('/admin/sort/book/year_publish/{type}',[BookController::class,'sortBookByYearPublish']);
 
@@ -96,6 +99,8 @@ Route::post('/validate-rent-multi-book',[BookController::class,'validateRentMult
 Route::post('/admin/edit/book',[BookController::class,'editBook'])->name('editBook');
 
 Route::post('/admin/filter/user',[UserController::class,'filterUser']);
+
+Route::post('/admin/export-report',[AdminController::class,'exportReport']);
 
 Route::put('/admin/lock/book',[BookController::class,'lockBook'])->name('lockBook');
 
