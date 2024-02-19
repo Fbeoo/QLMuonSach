@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ExportCountBookRent;
 use App\Http\Controllers\Controller;
 use App\Repositories\BookRepositoryInterface;
 use App\Repositories\DetailHistoryRentBookRepositoryInterface;
 use App\Repositories\HistoryRentBookRepositoryInterface;
 use App\Repositories\UserRepositoryInterface;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 /**
  *
@@ -68,6 +71,21 @@ class AdminController extends Controller
             ]);
         }catch (\Exception $e) {
             throw new \Exception($e);
+        }
+    }
+
+    public function exportReport(Request $request) {
+        try {
+            if ($request->input('typeReport') === 'bookRent') {
+                $dateReportRange = $request->input('dateRangeReport');
+                $dateReport = explode(' - ',$dateReportRange);
+                $minDate = Carbon::createFromFormat('d/m/Y',$dateReport[0])->format('Y/m/d');
+                $maxDate = Carbon::createFromFormat('d/m/Y',$dateReport[1])->format('Y/m/d');
+                $book = $this->bookRepository->getStatiѕticsOfBook($minDate,$maxDate);
+                return Excel::download(new ExportCountBookRent($book), 'report.xlsx');
+            }
+        }catch (\Exception $e) {
+            return response()->json(['error'=>$e]);
         }
     }
 }
