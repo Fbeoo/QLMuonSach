@@ -27,6 +27,10 @@ Route::get('/login',function () {
     return view('login');
 })->name('login');
 
+Route::get('/forgot-password',function () {
+    return view('forgotPassword');
+})->name('forgotPassword');
+
 Route::get('/403', function () {
     return view('error.403');
 })->name('403');
@@ -35,15 +39,31 @@ Route::get('/register',function () {
     return view('register');
 })->name('register');
 
-Route::post('/register',[UserController::class,'register'])->name('register');
+Route::get('/verify/email/{token}',[UserController::class,'verifyEmail']);
 
 Route::get('/verify/email/notice',function () {
     return view('noticeVerifyEmail');
 })->name('noticeVerifyEmail');
 
+Route::get('/forgot-password/notice',function () {
+    return view('noticeForgotPassword');
+})->name('noticeForgotPassword');
+
+Route::get('/reset-password/{token}',[UserController::class,'redirectToPageResetPassword'])->name('redirectToPageResetPassword');
+
+Route::get('/reset-password',function () {
+    return view('resetPassword');
+})->name('resetPassword');
+
+Route::post('/register',[UserController::class,'register'])->name('register');
+
 Route::post('/resend/verify/email',[UserController::class,'resendVerifyEmail'])->name('resendVerifyEmail');
 
-Route::get('/verify/email/{token}',[UserController::class,'verifyEmail']);
+Route::post('/forgot-password',[UserController::class,'forgotPassword'])->name('forgotPassword');
+
+Route::post('/reset-password',[UserController::class,'resetPassword'])->name('resetPassword');
+
+Route::post('/resend/reset-password',[UserController::class,'resendResetPassword'])->name('resendResetPassword');
 
 Route::middleware(['auth'])->group(function () {
     // GET
@@ -109,6 +129,10 @@ Route::prefix('admin')->group(function () {
         Route::get('/calendar',function () {
             return view('admin.calendarPage');
         })->name('calendarPage');
+
+        Route::get('/report',function () {
+            return view('admin.exportReport');
+        })->name('report');
         //POST
 
         //PUT
@@ -121,4 +145,4 @@ Route::prefix('admin')->group(function () {
 
 
 
-
+Route::get('users/export/', [AdminController::class, 'exportReport']);
