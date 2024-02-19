@@ -63,7 +63,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="/test" class="nav-link">
+                <a href="{{route('report')}}" class="nav-link">
                     <i class="fas fa-chart-bar"></i>
                     <p>
                         Báo cáo
