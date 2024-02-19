@@ -95,4 +95,13 @@ return [
     'verifyEmail' => 'Xác thực tài khoản',
     'resendVerifyEmailSuccessfully' => 'Gửi lại yêu cầu kích hoạt tài khoản thành công',
 
+    'accountLocked' => 'Tài khoản của bạn đã bị khóa',
+
+    'userNotExist' => 'Không tồn tại người dùng có email này',
+
+    'forgotPassword' => 'Lấy lại mật khẩu',
+
+    'resetPasswordSuccessfully' => 'Lấy lại mật khẩu thành công',
+    'resendResetPasswordSuccessfully' => 'Gửi lại yêu cầu lấy lại mật khẩu thành công',
+
 ];
