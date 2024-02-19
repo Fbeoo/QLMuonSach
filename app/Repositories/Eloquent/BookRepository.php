@@ -252,4 +252,33 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface {
             throw new \Exception($e);
         }
     }
+
+    public function getStatiѕticsOfBook($minDate, $maxDate) {
+        try {
+
+            $book = $this->model->leftJoin('detail_history_rent_book','detail_history_rent_book.book_id','book.id')
+                ->leftJoin('history_rent_book','detail_history_rent_book.history_rent_book_id','history_rent_book.id')
+                ->selectRaw('book.name,
+                            coalesce(sum(case when history_rent_book.status=1
+                                and expiration_date > now()
+                                and history_rent_book.rent_date >= "'.$minDate.'"
+                                and history_rent_book.rent_date <= "'.$maxDate.'"
+                                then detail_history_rent_book.quantity end),0)
+                                as countBorrowing,
+                            coalesce(sum(case when history_rent_book.status=2
+                                and history_rent_book.rent_date >= "'.$minDate.'"
+                                and history_rent_book.rent_date <= "'.$maxDate.'"
+                                then detail_history_rent_book.quantity end),0)
+                                as countReturned,
+                            coalesce(sum(case when history_rent_book.status=1
+                                and expiration_date < now()
+                                then detail_history_rent_book.quantity end),0)
+                                as countMissing'
+                )
+                ->groupBy('name')->get();
+            return $book;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
 }

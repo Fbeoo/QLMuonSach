@@ -44,4 +44,6 @@ interface BookRepositoryInterface extends EloquentRepositoryInterface {
 
     public function countTotalBook();
 
+    public function getStatiѕticsOfBook($minDate, $maxDate);
+
 }
