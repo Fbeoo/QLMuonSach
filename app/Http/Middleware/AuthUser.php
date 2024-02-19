@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +19,12 @@ class AuthUser
     {
         $credentials = $request->only('mail','password');
         if (Auth::guard('web')->attempt($credentials)) {
+            if (Auth::user()->status === User::statusInactive) {
+                return redirect()->route('noticeVerifyEmail')->with('user',Auth::user());
+            }
+            else if (Auth::user()->status === User::statusLock) {
+                return back()->with('notificationLock',@trans('message.accountLocked'));
+            }
             $request->session()->regenerate();
             $request->session()->put('user',Auth::user());
             return redirect()->route('home');
