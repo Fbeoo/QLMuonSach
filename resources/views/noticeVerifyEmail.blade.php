@@ -16,13 +16,12 @@
 </head>
 <body class="hold-transition login-page">
 <div class="login-box" style="width: 25%">
-    {{dd(session('user'))}}
     <!-- /.login-logo -->
     <div class="card">
         <div class="card-body login-card-body">
-            @if(isset($success))
+            @if(\Illuminate\Support\Facades\Session::has('success'))
                 <div class="alert alert-success" role="alert" style="text-align: center">
-                    {{$success}}
+                    {{\Illuminate\Support\Facades\Session::get('success')}}
                 </div>
             @endif
             <p class="login-box-msg">Hãy truy cập Email để có thể kích hoạt tài khoản</p>
@@ -30,7 +29,7 @@
                 @csrf
                 <div class="row">
                     <div class="col-12">
-{{--                        <input type="hidden" name="mail" value="{{$user->mail}}">--}}
+                        <input type="hidden" name="mail" value="{{\Illuminate\Support\Facades\Session::get('user')->mail}}">
                         <button type="submit" class="btn btn-primary btn-block">Gửi lại yêu cầu kích hoạt tài khoản</button>
                     </div>
                     <!-- /.col -->
