@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\UsersExport;
 use App\Http\Controllers\Controller;
 use App\Mail\RegisterMail;
 use App\Models\User;
@@ -13,7 +14,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 use MongoDB\Driver\Session;
+use function PHPUnit\Framework\isEmpty;
 
 class UserController extends Controller
 {
@@ -54,7 +57,8 @@ class UserController extends Controller
             }
 
             $checkEmailExist = $this->userRepository->getUserByMail($request->input('mail'));
-            if ($checkEmailExist) {
+            if ($checkEmailExist !== []) {
+                dd('1');
                 $validation->errors()->add('mail',@trans('message.mailExist'));
             }
 
@@ -78,7 +82,7 @@ class UserController extends Controller
                 $message->to($user->mail);
             });
 
-            return view('noticeVerifyEmail',['user'=>$user]);
+            return redirect()->route('noticeVerifyEmail')->with('user',$user);
         }catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -110,7 +114,94 @@ class UserController extends Controller
                     $message->subject(@trans('message.verifyEmail'));
                     $message->to($user->mail);
                 });
-                return view('noticeVerifyEmail',['user'=>$user,'success'=>@trans('message.resendVerifyEmailSuccessfully')]);
+                return back()->with(['user'=>$user,'success'=>@trans('message.resendVerifyEmailSuccessfully')]);
+            }
+            else {
+                return view('404');
+            }
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function forgotPassword(Request $request) {
+        try {
+            $user = $this->userRepository->getUserByMail($request->input('mail'))[0];
+            if (!$user) {
+                return back()->with('userNotExist',@trans('message.userNotExist'));
+            }
+            $user->remember_token = Str::random(40);
+            $this->userRepository->update($user);
+            Mail::send('resetPasswordMessage', compact('user') , function ($message) use($user) {
+                $message->subject(@trans('message.forgotPassword'));
+                $message->to($user->mail);
+            });
+            return redirect()->route('noticeForgotPassword')->with('user',$user);
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function redirectToPageResetPassword($token) {
+        try {
+            $user = $this->userRepository->getUserByToken($token)[0];
+            if ($user) {
+                return redirect()->route('resetPassword')->with(['user'=>$user,'token'=>$token]);
+            }
+            else {
+                return view('404');
+            }
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function resetPassword(Request $request) {
+        try {
+            $validation = Validator::make($request->all(),[
+                'password' => 'required',
+                'confirmPassword' => 'required'
+            ], [
+                'password.required' => @trans('message.passwordRequired'),
+
+                'confirmPassword.required' => @trans('message.confirmPasswordRequired')
+            ]);
+
+            if ($request->input('password') !== $request->input('confirmPassword')) {
+                $validation->errors()->add('confirmPassword',@trans('message.passwordNotMatch'));
+            }
+
+            if (count($validation->errors()) > 0) {
+                return back()->with('errorValidate',$validation->errors());
+            }
+
+            $user = $this->userRepository->getUserByToken($request->input('token'))[0];
+
+            if ($user) {
+                $user->password = bcrypt($request->input('password'));
+                $user->remember_token = '';
+                $this->userRepository->update($user);
+                return redirect()->route('login')->with('success',@trans('message.resetPasswordSuccessfully'));
+            }
+            else {
+                return view('404');
+            }
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function resendResetPassword(Request $request) {
+        try {
+            $user = $this->userRepository->getUserByMail($request->input('mail'))[0];
+            if ($user) {
+                $user->remember_token = Str::random(40);
+                $this->userRepository->update($user);
+                Mail::send('resetPasswordMessage',compact('user'),function ($message) use($user){
+                    $message->subject(@trans('message.forgotPassword'));
+                    $message->to($user->mail);
+                });
+                return back()->with(['user'=>$user,'success'=>@trans('message.resendResetPasswordSuccessfully')]);
             }
             else {
                 return view('404');
@@ -222,5 +313,9 @@ class UserController extends Controller
         }catch (\Exception $e) {
             return response()->json(['error'=>$e]);
         }
+    }
+
+    public function export() {
+        return Excel::download(new UsersExport, 'users.xlsx');
     }
 }
