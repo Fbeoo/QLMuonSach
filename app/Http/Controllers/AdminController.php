@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ExportCountBookMissing;
 use App\Exports\ExportCountBookRent;
+use App\Exports\ExportRequestRentBookInDay;
 use App\Http\Controllers\Controller;
 use App\Repositories\BookRepositoryInterface;
 use App\Repositories\DetailHistoryRentBookRepositoryInterface;
@@ -82,7 +84,15 @@ class AdminController extends Controller
                 $minDate = Carbon::createFromFormat('d/m/Y',$dateReport[0])->format('Y/m/d');
                 $maxDate = Carbon::createFromFormat('d/m/Y',$dateReport[1])->format('Y/m/d');
                 $book = $this->bookRepository->getStatiѕticsOfBook($minDate,$maxDate);
-                return Excel::download(new ExportCountBookRent($book), 'report.xlsx');
+                return Excel::download(new ExportCountBookRent($book,$dateReport[0],$dateReport[1]), 'report.xlsx');
+            }
+            else if ($request->input('typeReport') === 'bookMissing') {
+                $book = $this->bookRepository->getInformationBookMissing();
+                return Excel::download(new ExportCountBookMissing($book),'report.xlsx');
+            }
+            else if ($request->input('typeReport') === 'requestRentInDay') {
+                $requestRentBook = $this->historyRentBookRepository->getRequestRentBookInDay();
+                return Excel::download(new ExportRequestRentBookInDay($requestRentBook),'report.xlsx');
             }
         }catch (\Exception $e) {
             return response()->json(['error'=>$e]);
