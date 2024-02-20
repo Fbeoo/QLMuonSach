@@ -46,4 +46,6 @@ interface BookRepositoryInterface extends EloquentRepositoryInterface {
 
     public function getStatiѕticsOfBook($minDate, $maxDate);
 
+    public function getInformationBookMissing();
+
 }

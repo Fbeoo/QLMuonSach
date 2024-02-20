@@ -255,27 +255,50 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface {
 
     public function getStatiѕticsOfBook($minDate, $maxDate) {
         try {
-
-            $book = $this->model->leftJoin('detail_history_rent_book','detail_history_rent_book.book_id','book.id')
+            $book = $this->model
+                ->leftJoin('detail_history_rent_book','detail_history_rent_book.book_id','book.id')
                 ->leftJoin('history_rent_book','detail_history_rent_book.history_rent_book_id','history_rent_book.id')
-                ->selectRaw('book.name,
-                            coalesce(sum(case when history_rent_book.status=1
-                                and expiration_date > now()
+                ->join('author_book','author_book.book_id','book.id')
+                ->join('author_info','author_info.id','author_book.author_id')
+                ->join('category','category.id','book.category_id')
+                ->selectRaw('book.id,book.name,category.category_name,author_info.author_name,
+                            coalesce(sum(case when(history_rent_book.status = 1 or history_rent_book.status=2)
                                 and history_rent_book.rent_date >= "'.$minDate.'"
                                 and history_rent_book.rent_date <= "'.$maxDate.'"
                                 then detail_history_rent_book.quantity end),0)
-                                as countBorrowing,
-                            coalesce(sum(case when history_rent_book.status=2
+                                as countBookRentInMonth,
+                            coalesce(sum(case when(history_rent_book.status = 1 or history_rent_book.status=2)
                                 and history_rent_book.rent_date >= "'.$minDate.'"
                                 and history_rent_book.rent_date <= "'.$maxDate.'"
-                                then detail_history_rent_book.quantity end),0)
-                                as countReturned,
-                            coalesce(sum(case when history_rent_book.status=1
-                                and expiration_date < now()
-                                then detail_history_rent_book.quantity end),0)
-                                as countMissing'
+                                then detail_history_rent_book.quantity*book.price_rent end),0)
+                                as totalPriceRentInMonth'
                 )
-                ->groupBy('name')->get();
+                ->groupBy('book.name','book.id','category.category_name','author_info.author_name')->get();
+            return $book;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function getInformationBookMissing()
+    {
+        try {
+            $book = $this->model
+                ->leftJoin('detail_history_rent_book','book.id','detail_history_rent_book.book_id')
+                ->leftJoin('history_rent_book','detail_history_rent_book.history_rent_book_id','history_rent_book.id')
+                ->join('author_book','author_book.book_id','book.id')
+                ->join('author_info','author_info.id','author_book.author_id')
+                ->join('category','category.id','book.category_id')
+                ->selectRaw('book.id,book.name,
+                            category.category_name,
+                            author_info.author_name,
+                            coalesce(sum(case when history_rent_book.status = 1
+                                and history_rent_book.expiration_date < now()
+                                then detail_history_rent_book.quantity end),0)
+                                as countBookMissing'
+                )
+                ->groupBy('book.id','book.name','category.category_name','author_info.author_name')
+                ->get();
             return $book;
         }catch (\Exception $e) {
             throw new \Exception($e);
