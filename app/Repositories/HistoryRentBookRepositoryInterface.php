@@ -16,4 +16,6 @@ interface HistoryRentBookRepositoryInterface extends EloquentRepositoryInterface
     public function countRequestRentBookHaveStatusPending();
 
     public function getRequestBorrowingOfUser($userId);
+
+    public function getRequestRentBookInDay();
 }

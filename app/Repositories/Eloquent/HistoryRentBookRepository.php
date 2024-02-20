@@ -101,4 +101,16 @@ class HistoryRentBookRepository extends BaseRepository implements HistoryRentBoo
             throw new \Exception($e);
         }
     }
+
+    public function getRequestRentBookInDay() {
+        try {
+            $requestRentBook = $this->model
+                ->where('rent_date',now()->format('Y/m/d'))
+                ->with('detailHistoryRentBook','detailHistoryRentBook.book','user')
+                ->get();
+            return $requestRentBook;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
 }
