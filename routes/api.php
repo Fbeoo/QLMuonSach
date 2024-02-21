@@ -102,6 +102,8 @@ Route::post('/admin/filter/user',[UserController::class,'filterUser']);
 
 Route::post('/admin/export-report',[AdminController::class,'exportReport']);
 
+Route::post('/admin/export-invoice',[AdminController::class,'exportInvoice']);
+
 Route::put('/admin/lock/book',[BookController::class,'lockBook'])->name('lockBook');
 
 Route::put('/admin/unlock/book',[BookController::class,'unlockBook'])->name('unlockBook');
