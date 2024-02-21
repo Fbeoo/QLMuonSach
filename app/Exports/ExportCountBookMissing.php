@@ -11,6 +11,8 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Events\BeforeSheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class ExportCountBookMissing implements FromCollection, WithHeadings, WithStyles,WithEvents,ShouldAutoSize
@@ -50,9 +52,35 @@ class ExportCountBookMissing implements FromCollection, WithHeadings, WithStyles
                        'bold' => true
                    ]
                ]);
+
                $event->sheet->getStyle('A2:E'.$lastRow)->applyFromArray([
                    'font' => [
                        'size' => '13'
+                   ],
+                   'borders' => [
+                       'allBorders' => [
+                           'borderStyle' => Border::BORDER_THIN,
+                           'color' => [
+                               'rgb' => '000000'
+                           ]
+                       ]
+                   ]
+               ]);
+
+               $event->sheet->mergeCells('A'.$lastRow.':D'.$lastRow);
+               $event->sheet->getStyle('A'.$lastRow)->applyFromArray([
+                   'font' => [
+                       'bold' => 'true'
+                   ],
+                   'alignment' => [
+                       'horizontal' => Alignment::HORIZONTAL_CENTER,
+                       'vertical' => Alignment::VERTICAL_CENTER
+                   ],
+                   'fill' => [
+                       'fillType' => Fill::FILL_SOLID,
+                       'color' => [
+                           'rgb' => '0099ff'
+                       ]
                    ]
                ]);
             },
@@ -79,6 +107,18 @@ class ExportCountBookMissing implements FromCollection, WithHeadings, WithStyles
             'font' => [
                 'bold' => true,
                 'size' => 20
+            ]
+        ]);
+
+        $sheet->getStyle('A2:E2')->applyFromArray([
+            'font' => [
+                'bold' => true
+            ],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'color' => [
+                    'rgb' => '0099ff'
+                ]
             ]
         ]);
     }
