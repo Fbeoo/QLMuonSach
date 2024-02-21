@@ -34,6 +34,8 @@ $(document).ready(function() {
         showDetailRequest(button.data("id"));
     });
 });
+
+var exportInvoice = document.querySelectorAll('.exportInvoice');
 function getPagination() {
     $.ajax({
         url: 'http://localhost:8000/api/admin/all/request-rent-book',
@@ -47,7 +49,6 @@ function getPagination() {
             for (var i = 0; i < response.last_page; i++) {
                 strHtmlPaging += `<li><a style="cursor: pointer" onclick="loadPagination(${i + 1})">${i + 1}</a></li>`;
             }
-            console.log(strHtmlPaging)
             $('#ulPagination').html(strHtmlPaging);
         }
     });
@@ -64,7 +65,6 @@ function loadPagination(page) {
             console.log('error to call api');
         },
         success: function(response) {
-            console.log(response)
             var strHtml = '';
             var strStatus = '';
             var strBtnAction = '';
@@ -116,16 +116,22 @@ function loadPagination(page) {
                                                 <span class="sr-only">Toggle Dropdown</span>
                                             </button>
                                             <div class="dropdown-menu" role="menu" style="">
-                                                <button style="cursor: pointer" class="dropdown-item" id="detailRequest{{$request->id}}" data-toggle="modal" data-target=".viewDetailRequestModal" data-id="{{$request->id}}">Xem chi tiết</button>
+                                                <button style="cursor: pointer" class="dropdown-item" id="detailRequest${response.data[i].id}" data-toggle="modal" data-target=".viewDetailRequestModal" data-id="${response.data[i].id}">Xem chi tiết</button>
                                                 ${strBtnAction}
+                                                <button style="cursor: pointer" class="dropdown-item exportInvoice" data-id="${response.data[i].id}">Xuất hóa đơn</button>
                                             </div>
                                         </div>
                                     </td>
                                 </tr>`
             }
-            console.log(strHtml)
             $('#showRequest').html(strHtml);
             loaderContainer.classList.add("hidden");
+            exportInvoice = document.querySelectorAll('.exportInvoice');
+            exportInvoice.forEach(exportInvoice => {
+                exportInvoice.addEventListener('click', function(event) {
+                    exportInvoiceUser(exportInvoice.dataset.id)
+                });
+            });
         }
     });
 }
@@ -265,7 +271,6 @@ document.getElementById('search').addEventListener('click',function () {
             alert('Lỗi: ' + xhr.responseText);
         },
         success: function (response) {
-            console.log(response);
             var strHtml = '';
             var strStatus = '';
             var strBtnAction = '';
@@ -317,8 +322,9 @@ document.getElementById('search').addEventListener('click',function () {
                                                 <span class="sr-only">Toggle Dropdown</span>
                                             </button>
                                             <div class="dropdown-menu" role="menu" style="">
-                                                <button style="cursor: pointer" class="dropdown-item" id="detailRequest{{$request->id}}" data-toggle="modal" data-target=".viewDetailRequestModal" data-id="{{$request->id}}">Xem chi tiết</button>
+                                                <button style="cursor: pointer" class="dropdown-item" id="detailRequest${response.data[i].id}" data-toggle="modal" data-target=".viewDetailRequestModal" data-id="${response.data[i].id}">Xem chi tiết</button>
                                                 ${strBtnAction}
+                                                <button style="cursor: pointer" class="dropdown-item exportInvoice" data-id="${response.data[i].id}">Xuất hóa đơn</button>
                                             </div>
                                         </div>
                                     </td>
@@ -329,9 +335,14 @@ document.getElementById('search').addEventListener('click',function () {
             for (var i = 0; i < response.last_page; i++) {
                 strHtmlPaging += `<li><a style="cursor: pointer" onclick="loadPaginationForFilter(${i + 1})">${i + 1}</a></li>`;
             }
-            console.log(strHtmlPaging)
             $('#ulPagination').html(strHtmlPaging);
             loaderContainer.classList.add("hidden");
+            exportInvoice = document.querySelectorAll('.exportInvoice');
+            exportInvoice.forEach(exportInvoice => {
+                exportInvoice.addEventListener('click', function(event) {
+                    exportInvoiceUser(exportInvoice.dataset.id)
+                });
+            });
         }
     });
 })
@@ -350,7 +361,6 @@ function loadPaginationForFilter(page) {
             console.log('error to call api');
         },
         success: function (response) {
-            console.log(response);
             var strHtml = '';
             var strStatus = '';
             var strBtnAction = '';
@@ -402,16 +412,56 @@ function loadPaginationForFilter(page) {
                                                 <span class="sr-only">Toggle Dropdown</span>
                                             </button>
                                             <div class="dropdown-menu" role="menu" style="">
-                                                <button style="cursor: pointer" class="dropdown-item" id="detailRequest{{$request->id}}" data-toggle="modal" data-target=".viewDetailRequestModal" data-id="{{$request->id}}">Xem chi tiết</button>
+                                                <button style="cursor: pointer" class="dropdown-item" id="detailRequest${response.data[i].id}" data-toggle="modal" data-target=".viewDetailRequestModal" data-id="${response.data[i].id}">Xem chi tiết</button>
                                                 ${strBtnAction}
+                                                <button style="cursor: pointer" class="dropdown-item exportInvoice" data-id="${response.data[i].id}">Xuất hóa đơn</button>
                                             </div>
                                         </div>
                                     </td>
                                 </tr>`
             }
-            console.log(strHtml);
             $('#showRequest').html(strHtml);
             loaderContainer.classList.add("hidden");
+            exportInvoice = document.querySelectorAll('.exportInvoice');
+            exportInvoice.forEach(exportInvoice => {
+                exportInvoice.addEventListener('click', function(event) {
+                    exportInvoiceUser(exportInvoice.dataset.id)
+                });
+            });
         }
     });
+}
+exportInvoice.forEach(exportInvoice => {
+    exportInvoice.addEventListener('click', function(event) {
+        exportInvoiceUser(exportInvoice.dataset.id)
+    });
+});
+
+function exportInvoiceUser(requestId) {
+    $.ajax({
+        url : 'http://localhost:8000/api/admin/export-invoice',
+        method : 'POST',
+        contentType: "application/json; charset=utf-8",
+        xhrFields: {
+            responseType: 'blob' // Để xác định kiểu dữ liệu là blob (file)
+        },
+        data : JSON.stringify({
+            "requestId" : requestId,
+        }),
+        error: function(xhr, status, error) {
+            console.log(xhr.responseText);
+            console.log(status);
+            console.log(error);
+        },
+        success: function (response) {
+            var a = document.createElement('a');
+            var url = window.URL.createObjectURL(response);
+            a.href = url;
+            a.download = 'invoice.xlsx';
+            document.body.append(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        },
+    })
 }
