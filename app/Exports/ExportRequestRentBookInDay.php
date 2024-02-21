@@ -12,6 +12,9 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Events\BeforeSheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Borders;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class ExportRequestRentBookInDay implements FromCollection, WithMapping, WithHeadings,ShouldAutoSize, WithStyles,WithEvents
@@ -110,6 +113,18 @@ class ExportRequestRentBookInDay implements FromCollection, WithMapping, WithHea
                 'size' => 20
             ]
         ]);
+
+        $sheet->getStyle('A3:K3')->applyFromArray([
+            'font' => [
+                'bold' => 'true'
+            ],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => [
+                    'rgb' => '0099ff',
+                ],
+            ],
+        ]);
     }
 
     public function registerEvents(): array
@@ -120,15 +135,42 @@ class ExportRequestRentBookInDay implements FromCollection, WithMapping, WithHea
 
                 $event->sheet->setCellValue('I'.$lastRow,$this->totalBookRent);
                 $event->sheet->setCellValue('K'.$lastRow,$this->totalPrice);
+                $event->sheet->setCellValue('A'.$lastRow,'Tổng');
 
                 $event->sheet->getStyle('I'.$lastRow.':K'.$lastRow)->applyFromArray([
                     'font' => [
                         'bold' => true,
-                    ]
+                    ],
                 ]);
+
                 $event->sheet->getStyle('A3:K'.$lastRow)->applyFromArray([
                     'font' => [
                         'size' => '13'
+                    ],
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                            'color' => [
+                                'rgb' => '000000'
+                            ]
+                        ]
+                    ]
+                ]);
+
+                $event->sheet->mergeCells('A'.$lastRow.':H'.$lastRow);
+                $event->sheet->getStyle('A'.$lastRow)->applyFromArray([
+                    'font' => [
+                        'bold' => 'true'
+                    ],
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'color' => [
+                            'rgb' => '0099ff'
+                        ]
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER
                     ]
                 ]);
             },
