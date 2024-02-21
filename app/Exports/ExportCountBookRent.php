@@ -14,6 +14,7 @@ use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Events\BeforeSheet;
 use Maatwebsite\Excel\Events\BeforeWriting;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Font;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
@@ -85,6 +86,18 @@ class ExportCountBookRent implements FromCollection, WithHeadings, ShouldAutoSiz
                 'size' => '20',
             ]
         ]);
+
+        $sheet->getStyle('A3:F3')->applyFromArray([
+            'font' => [
+                'bold' => true
+            ],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => [
+                    'rgb' => '0099ff'
+                ]
+            ]
+        ]);
     }
     public function registerEvents(): array
     {
@@ -95,14 +108,39 @@ class ExportCountBookRent implements FromCollection, WithHeadings, ShouldAutoSiz
                 $event->sheet->setCellValue('A' . $lastRow, 'Tổng');
                 $event->sheet->setCellValue('E' . $lastRow, $this->totalBookRent);
                 $event->sheet->setCellValue('F' . $lastRow, $this->totalPrice);
+
                 $event->sheet->getStyle('E'.$lastRow.':F'.$lastRow)->applyFromArray([
                     'font' => [
                         'bold' => true,
                     ]
                 ]);
+
                 $event->sheet->getStyle('A3:F'.$lastRow)->applyFromArray([
                     'font' => [
                         'size' => '13'
+                    ],
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                            'color' => ['rgb' => '000000'],
+                        ],
+                    ],
+                ]);
+
+                $event->sheet->mergeCells('A'.$lastRow.':D'.$lastRow);
+                $event->sheet->getStyle('A'.$lastRow)->applyFromArray([
+                    'font' => [
+                        'bold' => true
+                    ],
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => [
+                            'color' => '0099ff'
+                        ]
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER
                     ]
                 ]);
             },
