@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ExportInvoiceRentBook;
 use App\Http\Controllers\Controller;
 use App\Models\AuthorBook;
 use App\Models\Book;
@@ -25,6 +26,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 use function Illuminate\Tests\Integration\Routing\fail;
 use function Laravel\Prompts\error;
 use function Webmozart\Assert\Tests\StaticAnalysis\uuid;
@@ -741,10 +743,9 @@ class BookController extends Controller
                 return \response()->json(['errorValidate'=>$validation->errors()]);
             }
 
-            $currentDate = Carbon::now();
+            $currentDate = Carbon::now()->startOfDay();
             $dateRent = Carbon::createFromFormat('d/m/Y', $request->input('dateRent'));
             $numberDayRent = $currentDate->diffInDays($dateRent);
-
 
             $totalPrice = 0;
 
@@ -822,7 +823,9 @@ class BookController extends Controller
 //
 //                    'quantityRent.required' => 'Số lượng thuê không được để trống',
 //                    'quantityRent.integer' => 'Số lượng thuê phải là số nguyên',
-//                    'quantityRent.min' => 'Số lượng thuê phải lớn hơn 0'
+//       .
+//
+//             'quantityRent.min' => 'Số lượng thuê phải lớn hơn 0'
 //
 //                ]);
 //
@@ -835,7 +838,7 @@ class BookController extends Controller
 
                 $typeRent = $request->input('typeRent');
 
-                $currentDate = Carbon::now();
+                $currentDate = Carbon::now()->startOfDay();
                 $dateRent = Carbon::createFromFormat('d/m/Y', $request->input('dateRent'));
                 $numberDayRent = $currentDate->diffInDays($dateRent);
 
