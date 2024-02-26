@@ -69,6 +69,9 @@
 
 </style>
 <a type="button" class="btn btn-block btn-success" style="margin-left: auto; width: 10%; margin-top: 20px" href="{{route('addBookPage')}}">Thêm mới</a>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalImportFile">
+    Thêm sách bằng file excel
+</button>
 <div style="display: flex; justify-content: center; align-items: center;width: 80%">
 <div style="margin-left: 20px">
     <form id="formFilterBook" enctype="multipart/form-data">
@@ -208,6 +211,28 @@
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Thoát</button>
                             <button id="actionStatus" type="button" class="btn btn-primary"></button>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modalImportFile" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form id="formImportFile">
+                            <div class="modal-body">
+                                <input type="file" name="nameFileImport">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <a class="btn btn-primary" id="import">Save change</a>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
