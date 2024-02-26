@@ -104,6 +104,8 @@ Route::post('/admin/export-report',[AdminController::class,'exportReport']);
 
 Route::post('/admin/export-invoice',[AdminController::class,'exportInvoice']);
 
+Route::post('/admin/add/book/excel',[BookController::class,'addBookByExcelFile']);
+
 Route::put('/admin/lock/book',[BookController::class,'lockBook'])->name('lockBook');
 
 Route::put('/admin/unlock/book',[BookController::class,'unlockBook'])->name('unlockBook');
