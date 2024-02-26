@@ -19,4 +19,8 @@ interface CategoryRepositoryInterface extends EloquentRepositoryInterface {
      * @return mixed
      */
     public function getCategoryChildByCategoryParentId($categoryParentId);
+
+    public function getCategoryParentByName($categoryName);
+
+    public function getCategoryChildrenByName($categoryName,$categoryParentId);
 }
