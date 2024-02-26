@@ -245,3 +245,37 @@ function loadPaginationAfterFilter(page) {
         }
     });
 }
+
+document.getElementById('import').addEventListener('click',function () {
+    event.preventDefault();
+
+    var formDataImportBook = new FormData($('#formImportFile')[0]);
+
+    var loaderContainer = document.getElementById("loaderContainer");
+    loaderContainer.classList.remove("hidden");
+    $.ajax({
+        url: 'http://localhost:8000/api/admin/add/book/excel',
+        method: 'POST',
+        dataType: 'json',
+        contentType: false,
+        processData: false,
+        data: formDataImportBook,
+        success: function (response) {
+            if (response.errorValidateExcel) {
+                alert(response.errorValidateExcel)
+                loaderContainer.classList.add("hidden");
+                return
+            }
+            if (response.errorValidate) {
+                alert(response.errorValidate)
+                loaderContainer.classList.add("hidden");
+                return
+            }
+            if (response.success) {
+                alert(response.success);
+                loaderContainer.classList.add("hidden");
+                location.reload();
+            }
+        }
+    })
+})
