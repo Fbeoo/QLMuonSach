@@ -24,4 +24,17 @@ class AuthorInfoRepository extends BaseRepository implements AuthorInfoRepositor
             throw new \Exception($e);
         }
     }
+
+    public function getAuthorByName($authorName)
+    {
+        try {
+            $author = $this->model
+                ->where('author_name',$authorName)
+                ->get()
+                ->first();
+            return $author;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
 }
