@@ -47,14 +47,22 @@ document.getElementById('export').addEventListener('click',function () {
             console.log(error);
         },
         success: function (response) {
-            var a = document.createElement('a');
-            var url = window.URL.createObjectURL(response.download);
-            a.href = url;
-            a.download = response.fileName;
-            document.body.append(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
+            if (response.errorValidate) {
+                for (var key in response.errorValidate) {
+                    strHtml = `<p style="color: red">${response.errorValidate[key][0]}</p>`
+                    $('#'+key+"Error").html(strHtml);
+                }
+            }
+            else {
+                var a = document.createElement('a');
+                var url = window.URL.createObjectURL(response);
+                a.href = url;
+                a.download = 'report.xlsx';
+                document.body.append(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+            }
         },
     })
 })
