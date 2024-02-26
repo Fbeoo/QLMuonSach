@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\ExportInvoiceRentBook;
 use App\Http\Controllers\Controller;
+use App\Imports\BookImport;
 use App\Models\AuthorBook;
 use App\Models\Book;
 use App\Models\DetailHistoryRentBook;
@@ -22,11 +23,14 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Validators\ValidationException;
+use PHPUnit\Exception;
 use function Illuminate\Tests\Integration\Routing\fail;
 use function Laravel\Prompts\error;
 use function Webmozart\Assert\Tests\StaticAnalysis\uuid;
@@ -330,7 +334,7 @@ class BookController extends Controller
             $bookId = $this->bookRepository->add($book);
 
             $authorBook = new AuthorBook();
-            $authorBook->book_id = $bookId;
+            $authorBook->book_id = $bookId->id;
             $authorBook->author_id = $request->input('authorId');
             $this->authorBookRepository->add($authorBook);
             DB::commit();
@@ -646,7 +650,7 @@ class BookController extends Controller
             $detailHistoryRentBook = new DetailHistoryRentBook();
             $detailHistoryRentBook->quantity = $request->input('quantityRent');
             $detailHistoryRentBook->book_id = $request->input('bookId');
-            $detailHistoryRentBook->history_rent_book_id = $historyRentBookId;
+            $detailHistoryRentBook->history_rent_book_id = $historyRentBookId->id;
             $this->detailHistoryRentBookRepository->add($detailHistoryRentBook);
 
             DB::commit();
@@ -688,7 +692,7 @@ class BookController extends Controller
             foreach ($bookInCart as $book) {
                 $detailHistoryRentBook = new DetailHistoryRentBook();
                 $detailHistoryRentBook->book_id = $book['book']->id;
-                $detailHistoryRentBook->history_rent_book_id = $historyRentBookId;
+                $detailHistoryRentBook->history_rent_book_id = $historyRentBookId->id;
                 $detailHistoryRentBook->quantity = $book['quantityLine'];
                 $this->detailHistoryRentBookRepository->add($detailHistoryRentBook);
             }
@@ -964,6 +968,26 @@ class BookController extends Controller
             }
         }catch (\Exception $e) {
             return response()->json(['error'=>$e]);
+        }
+    }
+
+    public function addBookByExcelFile(Request $request) {
+        try {
+            $validation = Validator::make($request->all(),[
+                'nameFileImport' => 'required|mimes:xlsx|max:4096'
+            ],[
+                'nameFileImport.required' => 'File không được để trống',
+                'nameFileImport.mimes' => 'Phần mở rộng của file phải là xlsx',
+                'nameFileImport.max' => 'Dung lượng file không được quá 4MB'
+            ]);
+
+            if ($validation->fails()) {
+                return response()->json(['errorValidate' => $validation->errors()]);
+            }
+            Excel::import(new BookImport($this->categoryRepository,$this->authorInfoRepository,$this->authorBookRepository,$this->bookRepository), $request->file('nameFileImport'));
+            return response()->json(['success' => 'Thêm sách thành công']);
+        }catch (ValidationException $e) {
+            return response()->json(['errorValidateExcel' => $e]);
         }
     }
 }
