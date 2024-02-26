@@ -58,7 +58,7 @@ class BaseRepository implements EloquentRepositoryInterface {
     {
         try {
             $createRecord = $this->model->create($model->getAttributes());
-            return $createRecord->id;
+            return $createRecord;
         }catch (\Exception $e) {
             throw new \Exception($e);
         }
