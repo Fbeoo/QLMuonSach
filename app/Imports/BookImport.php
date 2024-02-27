@@ -161,37 +161,37 @@ class BookImport implements ToCollection, WithHeadingRow, WithValidation
     public function customValidationMessages()
     {
         return [
-            'name.required' => 'Cột name đang có ô trống',
+            'name.required' => @trans('message.columnNameExcelRequired'),
 
-            'year_publish.required' => 'Cột year_publish đang có ô trống',
-            'year_publish.integer' => 'Cột year_publish đang có ô không phải dạng số',
-            'year_publish.min' => 'Cột year_publish đang có ô nhỏ hơn 1',
+            'year_publish.required' => @trans('message.columnYearPublishExcelRequired'),
+            'year_publish.integer' => @trans('message.columnYearPublishExcelInteger'),
+            'year_publish.min' => @trans('message.columnYearPublishExcelMin'),
 
-            'price_rent.required' => 'Cột price_rent đang có ô trống',
-            'price_rent.integer' => 'Cột price_rent đang có ô không phải dạng số',
-            'price_rent.min' => 'Cột price_rent đang có ô nhỏ hơn 1',
+            'price_rent.required' => @trans('message.columnPriceRentExcelRequired'),
+            'price_rent.integer' => @trans('message.columnPriceRentExcelInteger'),
+            'price_rent.min' => @trans('message.columnPriceRentExcelMin'),
 
-            'weight.required' => 'Cột weight đang có ô trống',
-            'weight.integer' => 'Cột weight đang có ô không phải dạng số',
-            'weight.min' => 'Cột weight đang có ô nhỏ hơn 1',
+            'weight.required' => @trans('message.columnWeightExcelRequired'),
+            'weight.integer' => @trans('message.columnWeightExcelInteger'),
+            'weight.min' => @trans('message.columnWeightExcelMin'),
 
-            'total_page.required' => 'Cột total_page đang có ô trống',
-            'total_page.integer' => 'Cột total_page đang có ô không phải dạng số',
-            'total_page.min' => 'Cột total_page đang có ô nhỏ hơn 1',
+            'total_page.required' => @trans('message.columnTotalPageExcelRequired'),
+            'total_page.integer' => @trans('message.columnTotalPageExcelInteger'),
+            'total_page.min' => @trans('message.columnTotalPageExcelMin'),
 
-            'quantity.required' => 'Cột quantity đang có ô trống',
-            'quantity.integer' => 'Cột quantity đang có ô không phải dạng số',
-            'quantity.min' => 'Cột quantity đang có ô nhỏ hơn 1',
+            'quantity.required' => @trans('message.columnQuantityExcelRequired'),
+            'quantity.integer' => @trans('message.columnQuantityExcelInteger'),
+            'quantity.min' => @trans('message.columnQuantityExcelMin'),
 
-            'category_children.required' => 'Cột category_children đang có ô trống',
+            'category_children.required' => @trans('message.columnCategoryChildrenExcelRequired'),
 
-            'category_parent.required' => 'Cột category_parent đang có ô trống',
+            'category_parent.required' => @trans('message.columnCategoryParentExcelRequired'),
 
-            'author.required' => 'Cột author đang có ô trống',
+            'author.required' => @trans('message.columnAuthorExcelRequired'),
 
-            'thumbnail.required' => 'Cột thumbnail đang cố ô trống',
+            'thumbnail.required' => @trans('message.columnThumbnailExcelRequired'),
 
-            'description.required' => 'Cột description đang có ô trống'
+            'description.required' => @trans('message.columnDescriptionExcelRequired')
         ];
     }
 }
