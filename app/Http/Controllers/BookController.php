@@ -223,8 +223,8 @@ class BookController extends Controller
             $book->total_page = $request->input('totalPage');
             $book->quantity = $request->input('quantity');
             $book->description = $request->input('description');
-            $this->bookRepository->update($book);
             $book->category_id = $request->input('categoryChildren');
+            $this->bookRepository->update($book);
 
             $authorBook = $this->authorBookRepository->getAuthorBook($request->input('bookId'));
             $authorBook[0]->author_id = $request->input('authorId');
@@ -987,7 +987,7 @@ class BookController extends Controller
             Excel::import(new BookImport($this->categoryRepository,$this->authorInfoRepository,$this->authorBookRepository,$this->bookRepository), $request->file('nameFileImport'));
             return response()->json(['success' => 'Thêm sách thành công']);
         }catch (ValidationException $e) {
-            return response()->json(['errorValidateExcel' => $e]);
+            return response()->json(['errorValidateExcel' => $e->getMessage()]);
         }
     }
 }
