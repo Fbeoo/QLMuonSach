@@ -267,7 +267,11 @@ document.getElementById('import').addEventListener('click',function () {
                 return
             }
             if (response.errorValidate) {
-                alert(response.errorValidate)
+                var strError = '';
+                for (var i=0;i<response.errorValidate.nameFileImport.length;i++) {
+                    strError += response.errorValidate.nameFileImport[i]+'\n';
+                }
+                alert(strError)
                 loaderContainer.classList.add("hidden");
                 return
             }
