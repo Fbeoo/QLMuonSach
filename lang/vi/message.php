@@ -104,4 +104,35 @@ return [
     'resetPasswordSuccessfully' => 'Lấy lại mật khẩu thành công',
     'resendResetPasswordSuccessfully' => 'Gửi lại yêu cầu lấy lại mật khẩu thành công',
 
+    'columnNameExcelRequired' => 'Cột name đang có ô trống',
+
+    'columnYearPublishExcelRequired' => 'Cột year_publish đang có ô trống',
+    'columnYearPublishExcelInteger' => 'Cột year_publish đang có ô không phải số nguyên',
+    'columnYearPublishExcelMin' => 'Cột year_publish đang có ô không lớn hơn 0',
+
+    'columnWeightExcelRequired' => 'Cột weight đang có ô trống',
+    'columnWeightExcelInteger' => 'Cột weight đang có ô không phải số nguyên',
+    'columnWeightExcelMin' => 'Cột weight đang có ô không lớn hơn 0',
+
+    'columnPriceRentExcelRequired' => 'Cột price_rent đang có ô trống',
+    'columnPriceRentExcelInteger' => 'Cột price_rent đang có ô không phải số nguyên',
+    'columnPriceRentExcelMin' => 'Cột price_rent đang có ô không lớn hơn 0',
+
+    'columnTotalPageExcelRequired' => 'Cột total_page đang có ô trống',
+    'columnTotalPageExcelInteger' => 'Cột total_page đang có ô không phải số nguyên',
+    'columnTotalPageExcelMin' => 'Cột total_page đang có ô không lớn hơn 0',
+
+    'columnQuantityExcelRequired' => 'Cột quantity đang có ô trống',
+    'columnQuantityExcelInteger' => 'Cột quantity đang có ô không phải số nguyên',
+    'columnQuantityExcelMin' => 'Cột quantity đang có ô không lớn hơn 0',
+
+    'columnCategoryChildrenExcelRequired' => 'Cột category_children đang có ô trống',
+
+    'columnCategoryParentExcelRequired' => 'Cột category parent đang có ô trống',
+
+    'columnAuthorExcelRequired' => 'Cột author đang có ô trống',
+
+    'columnThumbnailExcelRequired' => 'Cột thumbnail đang có ô trống',
+
+    'columnDescriptionExcelRequired' => 'Cột description đang có ô trống',
 ];
