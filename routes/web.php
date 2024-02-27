@@ -23,37 +23,23 @@ use Illuminate\Support\Facades\Route;
 */
 //User
     //GET
-Route::get('/login',function () {
-    return view('login');
-})->name('login');
+Route::get('/login',[UserController::class,'getViewLogin'])->name('login');
 
-Route::get('/forgot-password',function () {
-    return view('forgotPassword');
-})->name('forgotPassword');
+Route::get('/forgot-password',[UserController::class,'getViewForgotPassword'])->name('forgotPassword');
 
-Route::get('/403', function () {
-    return view('error.403');
-})->name('403');
+Route::get('/403', [UserController::class,'getView403'])->name('403');
 
-Route::get('/register',function () {
-    return view('register');
-})->name('register');
+Route::get('/register', [UserController::class, 'getRegister'])->name('register');
 
 Route::get('/verify/email/{token}',[UserController::class,'verifyEmail']);
 
-Route::get('/verify/email/notice',function () {
-    return view('noticeVerifyEmail');
-})->name('noticeVerifyEmail');
+Route::get('/notice/verify/email',[UserController::class,'getViewNoticeVerifyEmail'])->name('noticeVerifyEmail');
 
-Route::get('/forgot-password/notice',function () {
-    return view('noticeForgotPassword');
-})->name('noticeForgotPassword');
+Route::get('/forgot-password/notice',[UserController::class,'getViewNoticeForgotPassword'])->name('noticeForgotPassword');
 
 Route::get('/reset-password/{token}',[UserController::class,'redirectToPageResetPassword'])->name('redirectToPageResetPassword');
 
-Route::get('/reset-password',function () {
-    return view('resetPassword');
-})->name('resetPassword');
+Route::get('/reset-password',[UserController::class,'getViewResetPassword'])->name('resetPassword');
 
 Route::post('/register',[UserController::class,'register'])->name('register');
 
@@ -86,9 +72,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/calendar-return-book',[HistoryRentBookController::class,'showCalendarReturnBook'])->name('calendarReturnBook');
 
-    Route::get('/account',function () {
-        return view('userInformation');
-    })->name('profile');
+    Route::get('/account',[UserController::class,'getViewUserInformation'])->name('profile');
 
     Route::post('/confirm-rent-book',[BookController::class,'confirmRentBook'])->name('confirmRentBook');
 
@@ -104,14 +88,13 @@ Route::post('/logout',[UserController::class,'logout'])->name('logout');
 //Admin
 Route::prefix('admin')->group(function () {
     //GET
-    Route::get('/login',function () {
-        return view('admin.login');
-    })->name('admin.login');
+    Route::get('/login',[AdminController::class,'getViewAdminLogin'])->name('admin.login');
 
     //POST
     Route::post('/login')->middleware('auth.admin')->name('admin.login');
 
     Route::post('/logout',[AdminController::class,'logout'])->name('admin.logout');
+
     Route::middleware('auth.check.admin')->group(function () {
         //GET
         Route::get('/dashboard',[AdminController::class,'showDashBoard'])->name('dashboard');
@@ -126,13 +109,9 @@ Route::prefix('admin')->group(function () {
 
         Route::get('/manage/user',[UserController::class,'showAllUser'])->name('manageUser');
 
-        Route::get('/calendar',function () {
-            return view('admin.calendarPage');
-        })->name('calendarPage');
+        Route::get('/calendar',[AdminController::class,'getViewCalendarForAdmin'])->name('calendarPage');
 
-        Route::get('/report',function () {
-            return view('admin.exportReport');
-        })->name('report');
+        Route::get('/report',[AdminController::class,'getViewExportReport'])->name('report');
         //POST
 
         //PUT
@@ -142,7 +121,3 @@ Route::prefix('admin')->group(function () {
 });
 
 
-
-
-
-Route::get('users/export/', [AdminController::class, 'exportReport']);
