@@ -3,20 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Exports\UsersExport;
-use App\Http\Controllers\Controller;
+use App\Jobs\SendMail;
 use App\Mail\RegisterMail;
 use App\Models\User;
 use App\Repositories\UserRepositoryInterface;
 use Carbon\Carbon;
+use Faker\Provider\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Faker\Generator as Faker;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Maatwebsite\Excel\Facades\Excel;
-use MongoDB\Driver\Session;
-use function PHPUnit\Framework\isEmpty;
 
 class UserController extends Controller
 {
@@ -29,6 +27,11 @@ class UserController extends Controller
     public function __construct(UserRepositoryInterface $userRepository)
     {
         $this->userRepository = $userRepository;
+    }
+
+    public function getRegister()
+    {
+        return view('register');
     }
 
     public function register(Request $request) {
@@ -57,8 +60,7 @@ class UserController extends Controller
             }
 
             $checkEmailExist = $this->userRepository->getUserByMail($request->input('mail'));
-            if ($checkEmailExist !== []) {
-                dd('1');
+            if ($checkEmailExist->isNotEmpty()) {
                 $validation->errors()->add('mail',@trans('message.mailExist'));
             }
 
@@ -75,12 +77,11 @@ class UserController extends Controller
             $user->remember_token = Str::random(40);
             $user->status = User::statusInactive;
 
-            $userRegisterId = $this->userRepository->add($user);
+            $userRegister = $this->userRepository->add($user);
 
-            Mail::send('verifyEmail',compact('user'),function ($message) use($user){
-                $message->subject(@trans('message.verifyEmail'));
-                $message->to($user->mail);
-            });
+            $url = url('/verify/email/'.$user->remember_token);
+
+            $this->dispatch(new SendMail($userRegister,'verifyAccount',$url));
 
             return redirect()->route('noticeVerifyEmail')->with('user',$user);
         }catch (\Exception $e) {
@@ -110,10 +111,11 @@ class UserController extends Controller
             if ($user) {
                 $user->remember_token = Str::random(40);
                 $this->userRepository->update($user);
-                Mail::send('verifyEmail',compact('user'),function ($message) use($user){
-                    $message->subject(@trans('message.verifyEmail'));
-                    $message->to($user->mail);
-                });
+
+                $url = url('/verify/email/'.$user->remember_token);
+
+                $this->dispatch(new SendMail($user,'verifyAccount',$url));
+
                 return back()->with(['user'=>$user,'success'=>@trans('message.resendVerifyEmailSuccessfully')]);
             }
             else {
@@ -132,10 +134,10 @@ class UserController extends Controller
             }
             $user->remember_token = Str::random(40);
             $this->userRepository->update($user);
-            Mail::send('resetPasswordMessage', compact('user') , function ($message) use($user) {
-                $message->subject(@trans('message.forgotPassword'));
-                $message->to($user->mail);
-            });
+
+            $url = route('redirectToPageResetPassword',['token'=>$user->remember_token]);
+            $this->dispatch(new SendMail($user,'forgotPassword',$url));
+
             return redirect()->route('noticeForgotPassword')->with('user',$user);
         }catch (\Exception $e) {
             throw new \Exception($e);
@@ -197,10 +199,10 @@ class UserController extends Controller
             if ($user) {
                 $user->remember_token = Str::random(40);
                 $this->userRepository->update($user);
-                Mail::send('resetPasswordMessage',compact('user'),function ($message) use($user){
-                    $message->subject(@trans('message.forgotPassword'));
-                    $message->to($user->mail);
-                });
+
+                $url = route('redirectToPageResetPassword',['token'=>$user->remember_token]);
+                $this->dispatch(new SendMail($user,'forgotPassword',$url));
+
                 return back()->with(['user'=>$user,'success'=>@trans('message.resendResetPasswordSuccessfully')]);
             }
             else {
@@ -315,7 +317,4 @@ class UserController extends Controller
         }
     }
 
-    public function export() {
-        return Excel::download(new UsersExport, 'users.xlsx');
-    }
 }
