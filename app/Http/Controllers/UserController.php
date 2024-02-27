@@ -34,6 +34,34 @@ class UserController extends Controller
         return view('register');
     }
 
+    public function getViewLogin() {
+        return view('login');
+    }
+
+    public function getViewForgotPassword() {
+        return view('forgotPassword');
+    }
+
+    public function getView403() {
+        return view('error.403');
+    }
+
+    public function getViewNoticeVerifyEmail() {
+        return view('noticeVerifyEmail');
+    }
+
+    public function getViewNoticeForgotPassword() {
+        return view('noticeForgotPassword');
+    }
+
+    public function getViewResetPassword() {
+        return view('resetPassword');
+    }
+
+    public function getViewUserInformation() {
+        return view('userInformation');
+    }
+
     public function register(Request $request) {
         try {
             $validation = Validator::make($request->all(),[

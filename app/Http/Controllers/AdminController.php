@@ -47,6 +47,18 @@ class AdminController extends Controller
     }
 
 
+    public function getViewAdminLogin() {
+        return view('admin.login');
+    }
+
+    public function getViewCalendarForAdmin() {
+        return view('admin.calendarPage');
+    }
+
+    public function getViewExportReport() {
+        return view('admin.exportReport');
+    }
+
     /**
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
@@ -152,7 +164,6 @@ class AdminController extends Controller
             $requestRentBook = $this->historyRentBookRepository->getDetailRequestRentBook($request->input('requestId'));
             return Excel::download(new ExportInvoiceRentBook($requestRentBook),'invoice.xlsx');
         }catch (\Exception $e) {
-            dd($e);
             return response()->json(['error' => $e]);
         }
     }
