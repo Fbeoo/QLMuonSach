@@ -78,6 +78,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/search/book',[BookController::class,'searchBook'])->name('searchBook');
 
+    Route::post('/sort/book',[BookController::class,'sortBook'])->name('sortBook');
+
 });
 
     //POST
