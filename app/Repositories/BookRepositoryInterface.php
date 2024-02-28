@@ -48,6 +48,6 @@ interface BookRepositoryInterface extends EloquentRepositoryInterface {
 
     public function getInformationBookMissing();
 
-    public function getBookByAllAttribute($name,$yearPublish,$priceRent,$weight,$totalPage,$description,$category_id);
+    public function getBookByAllAttribute($collection,$categoryId);
 
 }

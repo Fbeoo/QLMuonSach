@@ -305,17 +305,17 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface {
         }
     }
 
-    public function getBookByAllAttribute($name, $yearPublish, $priceRent, $weight, $totalPage, $description, $category_id)
+    public function getBookByAllAttribute($collection,$categoryId)
     {
         try {
             $book = $this->model
-                ->where('name',$name)
-                ->where('year_publish',$yearPublish)
-                ->where('price_rent',$priceRent)
-                ->where('weight',$weight)
-                ->where('total_page',$totalPage)
-                ->where('description',$description)
-                ->where('category_id',$category_id)
+                ->where('name',$collection['name'])
+                ->where('year_publish',$collection['year_publish'])
+                ->where('price_rent',$collection['price_rent'])
+                ->where('weight',$collection['weight'])
+                ->where('total_page',$collection['total_page'])
+                ->where('description',$collection['description'])
+                ->where('category_id',$categoryId)
                 ->get()
                 ->first();
             return $book;
