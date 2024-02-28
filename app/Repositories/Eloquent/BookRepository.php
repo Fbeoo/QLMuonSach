@@ -173,9 +173,11 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface {
             $books = $this->model
                 ->where('category_id',$categoryId)
                 ->where('status',1)
-                ->with('category','authorBook','authorBook.authorInfo')
-                ->paginate(12);
-            return $books;
+                ->with('category','authorBook','authorBook.authorInfo');
+            Session::put('bookAsc',$books->orderBy('price_rent','asc')->paginate(12));
+            Session::put('bookDesc',$books->orderBy('price_rent','desc')->paginate(12));
+            Session::put('bookDefault',$books->paginate(12));
+            return $books->paginate(12);
         }catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -184,8 +186,11 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface {
     public function getBookForAllBookPage()
     {
         try {
-            $books = $this->model->paginate('12');
-            return $books;
+            $books = $this->model;
+            Session::put('bookAsc',$books->orderBy('price_rent','asc')->paginate(12));
+            Session::put('bookDesc',$books->orderBy('price_rent','desc')->paginate(12));
+            Session::put('bookDefault',$books->paginate(12));
+            return $books->paginate(12);
         }catch (\Exception $e) {
             throw new \Exception($e);
         }
