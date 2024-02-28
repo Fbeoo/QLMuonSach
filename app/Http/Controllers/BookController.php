@@ -16,6 +16,7 @@ use App\Repositories\CategoryRepositoryInterface;
 use App\Repositories\DetailHistoryRentBookRepositoryInterface;
 use App\Repositories\Eloquent\BookRepository;
 use App\Repositories\HistoryRentBookRepositoryInterface;
+use AWS\CRT\Log;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -988,6 +989,26 @@ class BookController extends Controller
             return response()->json(['success' => 'Thêm sách thành công']);
         }catch (ValidationException $e) {
             return response()->json(['errorValidateExcel' => $e->getMessage()]);
+        }
+    }
+
+    public function sortBook(Request $request) {
+        try {
+            if ($request->input('sortBook') === 'priceAsc') {
+                $books = Session::get('bookAsc');
+            }
+            else if ($request->input('sortBook') === 'priceDesc') {
+                $books = Session::get('bookDesc');
+            }
+            else if ($request->input('sortBook' === 'default')) {
+                $books = Session::get('bookDefault');
+            }
+            else {
+                return view('error.404');
+            }
+            return view('allBook',['books' => $books]);
+        }catch (\Exception $e) {
+            throw new \Exception($e);
         }
     }
 }
