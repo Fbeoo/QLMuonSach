@@ -68,10 +68,17 @@
 
 
 </style>
-<a type="button" class="btn btn-block btn-success" style="margin-left: auto; width: 10%; margin-top: 20px" href="{{route('addBookPage')}}">Thêm mới</a>
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalImportFile">
-    Thêm sách bằng file excel
-</button>
+<div class="dropdown">
+    <button style="width: 200px; float: right; margin-top: 25px" class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Thêm sách
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a style="width: 80%" type="button" class="dropdown-item" href="{{route('addBookPage')}}">Thêm mới</a>
+        <a style="float: right" type="button" class="dropdown-item" data-toggle="modal" data-target="#modalImportFile">
+            Thêm sách bằng file excel
+        </a>
+    </div>
+</div>
 <div style="display: flex; justify-content: center; align-items: center;width: 80%">
 <div style="margin-left: 20px">
     <form id="formFilterBook" enctype="multipart/form-data">
