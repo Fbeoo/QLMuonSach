@@ -13,7 +13,8 @@ RUN apt-get update && \
         zip \
         unzip \
         zlib1g-dev \
-        libzip-dev && \
+        libzip-dev \
+        supervisor && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -27,6 +28,14 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN useradd -G www-data,root -u $uid -d /home/$user $user && \
     mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user
+
+# Cấu hình Supervisor
+# Cấu hình Supervisor
+RUN mkdir -p /etc/supervisor/conf.d && \
+    mkdir -p /var/log/supervisor && \
+    mkdir -p /etc/supervisor/logs
+
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 WORKDIR /var/www
 USER $user
