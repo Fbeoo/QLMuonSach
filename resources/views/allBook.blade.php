@@ -38,8 +38,24 @@
     <div class="card card-primary">
         <div class="card-body">
             <div>
-                <div style="position: relative; padding-bottom: 30px">
-                    <label style="font-size: 30px">Tất cả sách</label>
+                <div class="row">
+                    <div class="col-6" style="position: relative; padding-bottom: 30px">
+                        <label style="font-size: 30px">Tất cả sách</label>
+                    </div>
+                    <div class="col-6 d-flex align-items-center justify-content-end">
+                        <label style="margin-right: 10px; margin-top: 8px">Sắp xếp theo</label>
+                        <select name="sortBook" id="sortBook" class="form-control custom-select" style="width: 40%;">
+                            @if($type === 'allBook')
+                                <option value="{{route('allBook')}}">Mặc định</option>
+                                <option value="{{route('sortAllBook',['typeSort' => 'priceAsc'])}}">Giá thấp - cao</option>
+                                <option value="{{route('sortAllBook',['typeSort' => 'priceDesc'])}}">Giá cao - thấp</option>
+                            @elseif($type === 'bookOfCategory')
+                                <option value="{{route('getBookByCategory',['categoryId' => $categoryId])}}">Mặc định</option>
+                                <option value="{{route('sortBookOfCategory',['categoryId' => $categoryId, 'typeSort' => 'priceAsc'])}}">Giá thấp - cao</option>
+                                <option value="{{route('sortBookOfCategory',['categoryId' => $categoryId, 'typeSort' => 'priceDesc'])}}">Giá cao - thấp</option>
+                            @endif
+                        </select>
+                    </div>
                 </div>
                 <div class="filter-container p-0 row">
                     @foreach($books as $book)
@@ -66,9 +82,14 @@
     <ul id="ulPagination">
         @for($i = 1; $i <= $books->lastPage(); $i++)
             <li>
-                <a href="{{ route('allBook', ['page' => $i]) }}">{{ $i }}</a>
+                <a href="{{$books->url($i)}}">{{ $i }}</a>
             </li>
         @endfor
     </ul>
 </div>
+<script>
+    document.getElementById('sortBook').addEventListener('change',function () {
+        window.location.href = document.getElementById('sortBook').value
+    })
+</script>
 @include('layout.footer')
