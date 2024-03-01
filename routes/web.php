@@ -74,11 +74,14 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/account',[UserController::class,'getViewUserInformation'])->name('profile');
 
+    Route::get('/sort-all-book/{typeSort}',[BookController::class,'sortAllBook'])->name('sortAllBook');
+
+    Route::get('/sort-book/{categoryId}/{typeSort}',[BookController::class,'sortBookOfCategory'])->name('sortBookOfCategory');
+
     Route::post('/confirm-rent-book',[BookController::class,'confirmRentBook'])->name('confirmRentBook');
 
     Route::post('/search/book',[BookController::class,'searchBook'])->name('searchBook');
 
-    Route::post('/sort/book',[BookController::class,'sortBook'])->name('sortBook');
 
 });
 
@@ -121,5 +124,8 @@ Route::prefix('admin')->group(function () {
 
     });
 });
+
+
+Route::get('/test/{bookId}',[BookController::class,'getCommentBook']);
 
 
