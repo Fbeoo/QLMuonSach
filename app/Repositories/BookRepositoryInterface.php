@@ -50,4 +50,8 @@ interface BookRepositoryInterface extends EloquentRepositoryInterface {
 
     public function getBookByAllAttribute($collection,$categoryId);
 
+    public function sortAllBook($type);
+
+    public function sortBookOfCategory($categoryId,$type);
+
 }

@@ -173,11 +173,9 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface {
             $books = $this->model
                 ->where('category_id',$categoryId)
                 ->where('status',1)
-                ->with('category','authorBook','authorBook.authorInfo');
-            Session::put('bookAsc',$books->orderBy('price_rent','asc')->paginate(12));
-            Session::put('bookDesc',$books->orderBy('price_rent','desc')->paginate(12));
-            Session::put('bookDefault',$books->paginate(12));
-            return $books->paginate(12);
+                ->with('category','authorBook','authorBook.authorInfo')
+                ->paginate(12);
+            return $books;
         }catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -186,11 +184,8 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface {
     public function getBookForAllBookPage()
     {
         try {
-            $books = $this->model;
-            Session::put('bookAsc',$books->orderBy('price_rent','asc')->paginate(12));
-            Session::put('bookDesc',$books->orderBy('price_rent','desc')->paginate(12));
-            Session::put('bookDefault',$books->paginate(12));
-            return $books->paginate(12);
+            $books = $this->model->paginate(12);
+            return $books;
         }catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -199,7 +194,7 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface {
     public function getDetailBook($bookId)
     {
         try {
-            $books = $this->model->where('id',$bookId)->with('authorBook.authorInfo')->first();
+            $books = $this->model->where('id',$bookId)->with('authorBook.authorInfo','commentBook','commentBook.user')->first();
             return $books;
         }catch (\Exception $e) {
             throw new \Exception($e);
@@ -324,6 +319,47 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface {
                 ->get()
                 ->first();
             return $book;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function sortAllBook($type)
+    {
+        try {
+            if ($type === 'priceAsc') {
+                $books = $this->model->orderBy('price_rent','asc')->paginate(12);
+            }
+            else if ($type === 'priceDesc') {
+
+                $books = $this->model->orderBy('price_rent','desc')->paginate(12);
+            }
+            return $books;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function sortBookOfCategory($categoryId, $type)
+    {
+        try {
+            if ($type === 'priceAsc') {
+                $books = $this->model
+                    ->where('category_id' , $categoryId)
+                    ->where('status',1)
+                    ->orderBy('price_rent','asc')
+                    ->with('category','authorBook','authorBook.authorInfo')
+                    ->paginate(12);
+            }
+            else if ($type === 'priceDesc') {
+                $books = $this->model
+                    ->where('category_id' , $categoryId)
+                    ->where('status',1)
+                    ->orderBy('price_rent','desc')
+                    ->with('category','authorBook','authorBook.authorInfo')
+                    ->paginate(12);
+            }
+            return $books;
         }catch (\Exception $e) {
             throw new \Exception($e);
         }
