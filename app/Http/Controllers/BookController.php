@@ -13,6 +13,7 @@ use App\Repositories\AuthorBookRepositoryInterface;
 use App\Repositories\AuthorInfoRepositoryInterface;
 use App\Repositories\BookRepositoryInterface;
 use App\Repositories\CategoryRepositoryInterface;
+use App\Repositories\CommentBookRepositoryInterface;
 use App\Repositories\DetailHistoryRentBookRepositoryInterface;
 use App\Repositories\Eloquent\BookRepository;
 use App\Repositories\HistoryRentBookRepositoryInterface;
@@ -62,6 +63,8 @@ class BookController extends Controller
 
     protected $historyRentBookRepository;
 
+    protected $commentBookRepository;
+
     /**
      * @param BookRepositoryInterface $bookRepository
      * @param AuthorBookRepositoryInterface $authorBookRepository
@@ -74,7 +77,8 @@ class BookController extends Controller
         AuthorInfoRepositoryInterface $authorInfoRepository,
         CategoryRepositoryInterface $categoryRepository,
         DetailHistoryRentBookRepositoryInterface $detailHistoryRentBookRepository,
-        HistoryRentBookRepositoryInterface $historyRentBookRepository
+        HistoryRentBookRepositoryInterface $historyRentBookRepository,
+        CommentBookRepositoryInterface $commentBookRepository
     )
     {
         $this->bookRepository = $bookRepository;
@@ -83,6 +87,7 @@ class BookController extends Controller
         $this->categoryRepository = $categoryRepository;
         $this->detailHistoryRentBookRepository = $detailHistoryRentBookRepository;
         $this->historyRentBookRepository = $historyRentBookRepository;
+        $this->commentBookRepository = $commentBookRepository;
     }
 
     /** ADMIN */
@@ -95,6 +100,7 @@ class BookController extends Controller
             return \response()->json(['error'=>$e]);
         }
     }
+
     public function getBookForManageBookPage() {
         try {
             $books = $this->bookRepository->getBookWithAuthorAndCategory();
@@ -516,13 +522,13 @@ class BookController extends Controller
      */
     public function getBookByCategory($categoryId) {
         $books = $this->bookRepository->getBookByCategoryForUser($categoryId);
-        return view ('allBook',['books'=>$books]);
+        return view ('allBook',['books'=>$books,'type' => 'bookOfCategory','categoryId' => $categoryId]);
     }
 
     public function showBookInAllBookPage() {
         try {
             $books = $this->bookRepository->getBookForAllBookPage();
-            return view('allBook',['books'=>$books]);
+            return view('allBook',['books'=>$books,'type' => 'allBook']);
         }catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -992,23 +998,25 @@ class BookController extends Controller
         }
     }
 
-    public function sortBook(Request $request) {
+    public function sortAllBook($typeSort) {
         try {
-            if ($request->input('sortBook') === 'priceAsc') {
-                $books = Session::get('bookAsc');
-            }
-            else if ($request->input('sortBook') === 'priceDesc') {
-                $books = Session::get('bookDesc');
-            }
-            else if ($request->input('sortBook' === 'default')) {
-                $books = Session::get('bookDefault');
-            }
-            else {
-                return view('error.404');
-            }
-            return view('allBook',['books' => $books]);
+            $books = $this->bookRepository->sortAllBook($typeSort);
+            return view('allBook',['books' => $books, 'type' => 'allBook']);
         }catch (\Exception $e) {
             throw new \Exception($e);
         }
+    }
+
+    public function sortBookOfCategory($categoryId,$typeSort) {
+        try {
+            $books = $this->bookRepository->sortBookOfCategory($categoryId,$typeSort);
+            return view('allBook',['books' => $books, 'type' => 'bookOfCategory', 'categoryId' => $categoryId]);
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function getCommentBook($bookId) {
+        return $this->commentBookRepository->getCommentOfBook($bookId);
     }
 }
