@@ -23,7 +23,7 @@ use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class BookImport implements ToCollection, WithHeadingRow
+class BookImport implements ToCollection, WithHeadingRow, WithValidation
 {
 
     protected $categoryRepository;
@@ -76,56 +76,56 @@ class BookImport implements ToCollection, WithHeadingRow
         }
     }
 
-//    public function rules(): array
-//    {
-//        return [
-//            'name' => 'required',
-//            'year_publish' => 'required|integer|min:1',
-//            'price_rent' => 'required|integer|min:1',
-//            'weight' => 'required|integer|min:1',
-//            'total_page' => 'required|integer|min:1',
-//            'quantity' => 'required|integer|min:1',
-//            'category_children' => 'required',
-//            'category_parent' => 'required',
-//            'author' => 'required',
-//            'thumbnail' => 'required',
-//            'description' => 'required'
-//        ];
-//    }
-//    public function customValidationMessages()
-//    {
-//        return [
-//            'name.required' => @trans('message.columnNameExcelRequired'),
-//
-//            'year_publish.required' => @trans('message.columnYearPublishExcelRequired'),
-//            'year_publish.integer' => @trans('message.columnYearPublishExcelInteger'),
-//            'year_publish.min' => @trans('message.columnYearPublishExcelMin'),
-//
-//            'price_rent.required' => @trans('message.columnPriceRentExcelRequired'),
-//            'price_rent.integer' => @trans('message.columnPriceRentExcelInteger'),
-//            'price_rent.min' => @trans('message.columnPriceRentExcelMin'),
-//
-//            'weight.required' => @trans('message.columnWeightExcelRequired'),
-//            'weight.integer' => @trans('message.columnWeightExcelInteger'),
-//            'weight.min' => @trans('message.columnWeightExcelMin'),
-//
-//            'total_page.required' => @trans('message.columnTotalPageExcelRequired'),
-//            'total_page.integer' => @trans('message.columnTotalPageExcelInteger'),
-//            'total_page.min' => @trans('message.columnTotalPageExcelMin'),
-//
-//            'quantity.required' => @trans('message.columnQuantityExcelRequired'),
-//            'quantity.integer' => @trans('message.columnQuantityExcelInteger'),
-//            'quantity.min' => @trans('message.columnQuantityExcelMin'),
-//
-//            'category_children.required' => @trans('message.columnCategoryChildrenExcelRequired'),
-//
-//            'category_parent.required' => @trans('message.columnCategoryParentExcelRequired'),
-//
-//            'author.required' => @trans('message.columnAuthorExcelRequired'),
-//
-//            'thumbnail.required' => @trans('message.columnThumbnailExcelRequired'),
-//
-//            'description.required' => @trans('message.columnDescriptionExcelRequired')
-//        ];
-//    }
+    public function rules(): array
+    {
+        return [
+            'name' => 'required',
+            'year_publish' => 'required|integer|min:1',
+            'price_rent' => 'required|integer|min:1',
+            'weight' => 'required|integer|min:1',
+            'total_page' => 'required|integer|min:1',
+            'quantity' => 'required|integer|min:1',
+            'category_children' => 'required',
+            'category_parent' => 'required',
+            'author' => 'required',
+            'thumbnail' => 'required',
+            'description' => 'required'
+        ];
+    }
+    public function customValidationMessages()
+    {
+        return [
+            'name.required' => @trans('message.columnNameExcelRequired'),
+
+            'year_publish.required' => @trans('message.columnYearPublishExcelRequired'),
+            'year_publish.integer' => @trans('message.columnYearPublishExcelInteger'),
+            'year_publish.min' => @trans('message.columnYearPublishExcelMin'),
+
+            'price_rent.required' => @trans('message.columnPriceRentExcelRequired'),
+            'price_rent.integer' => @trans('message.columnPriceRentExcelInteger'),
+            'price_rent.min' => @trans('message.columnPriceRentExcelMin'),
+
+            'weight.required' => @trans('message.columnWeightExcelRequired'),
+            'weight.integer' => @trans('message.columnWeightExcelInteger'),
+            'weight.min' => @trans('message.columnWeightExcelMin'),
+
+            'total_page.required' => @trans('message.columnTotalPageExcelRequired'),
+            'total_page.integer' => @trans('message.columnTotalPageExcelInteger'),
+            'total_page.min' => @trans('message.columnTotalPageExcelMin'),
+
+            'quantity.required' => @trans('message.columnQuantityExcelRequired'),
+            'quantity.integer' => @trans('message.columnQuantityExcelInteger'),
+            'quantity.min' => @trans('message.columnQuantityExcelMin'),
+
+            'category_children.required' => @trans('message.columnCategoryChildrenExcelRequired'),
+
+            'category_parent.required' => @trans('message.columnCategoryParentExcelRequired'),
+
+            'author.required' => @trans('message.columnAuthorExcelRequired'),
+
+            'thumbnail.required' => @trans('message.columnThumbnailExcelRequired'),
+
+            'description.required' => @trans('message.columnDescriptionExcelRequired')
+        ];
+    }
 }
