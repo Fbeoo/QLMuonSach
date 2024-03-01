@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthorInfoController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CommentBookController;
 use App\Http\Controllers\HistoryRentBookController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -59,6 +60,7 @@ Route::get('/admin/all/user',[UserController::class,'getAllUser']);
 
 Route::get('/request-borrowing-book/{userId}',[HistoryRentBookController::class,'getRequestBorrowingOfUser']);
 
+Route::get('/comment/book/{bookId}',[CommentBookController::class,'getCommentOfBook']);
 //POST
 Route::post('/admin/add/book',[BookController::class,'addBook'])->name('addBook');
 
@@ -81,6 +83,8 @@ Route::post('/change-date-rent',[BookController::class,'changeDateRent']);
 Route::post('/rent-multi-book',[BookController::class,'rentMultiBook']);
 
 Route::post('/edit-profile',[UserController::class,'editProfile']);
+
+Route::post('/comment/book',[CommentBookController::class,'addComment']);
 
 Route::post('/admin/filter/request-rent-book',[HistoryRentBookController::class,'filterRequestRentBook']);
 
