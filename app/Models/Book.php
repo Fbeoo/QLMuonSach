@@ -51,11 +51,9 @@ class Book extends Model
         return $this->hasMany(DetailHistoryRentBook::class,'book_id','id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function commentingByUser() {
-        return $this->belongsToMany(User::class,'comment_book');
+
+    public function commentBook() {
+        return $this->hasMany(CommentBook::class,'book_id','id');
     }
 
 }
