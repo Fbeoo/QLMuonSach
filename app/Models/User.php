@@ -52,11 +52,8 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(HistoryRentBook::class,'user_id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
     public function commentedBook() {
-        return $this->belongsToMany(Book::class,'comment_book');
+        return $this->hasMany(CommentBook::class,'user_id','id');
     }
 
     /**
