@@ -16,7 +16,7 @@ class CheckIsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::user()) {
+        if (!\auth()->guard('admin')->user()) {
             return redirect()->route('403');
         }
         return $next($request);
