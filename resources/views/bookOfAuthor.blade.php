@@ -1,5 +1,12 @@
-@include('layout.header')
-<x-sidebar/>
+{{--@include('layout.header')--}}
+{{--<x-sidebar/>--}}
+@extends('layout.layout')
+
+@section('title')
+    {{$authorAndBookInfo[0]->authorInfo->author_name}}
+@endsection
+
+@section('content')
 <div class="col-10" style="margin: auto; padding-top: 50px">
 {{--    <div class="card card-primary">--}}
 {{--        <div class="card-body">--}}
@@ -41,4 +48,5 @@
         </div>
     </div>
 </div>
-@include('layout.footer')
+@endsection
+{{--@include('layout.footer')--}}
