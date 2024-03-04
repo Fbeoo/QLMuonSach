@@ -21,50 +21,55 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-//User
-    //GET
-Route::get('/login',[UserController::class,'getViewLogin'])->name('login');
+Route::middleware('auth.check.login')->group(function () {
+    Route::get('/login',[UserController::class,'getViewLogin'])->name('login');
 
-Route::get('/forgot-password',[UserController::class,'getViewForgotPassword'])->name('forgotPassword');
+    Route::get('/forgot-password',[UserController::class,'getViewForgotPassword'])->name('forgotPassword');
+
+    Route::get('/register', [UserController::class, 'getRegister'])->name('register');
+
+    Route::get('/verify/email/{token}',[UserController::class,'verifyEmail']);
+
+    Route::get('/notice/verify/email',[UserController::class,'getViewNoticeVerifyEmail'])->name('noticeVerifyEmail');
+
+    Route::get('/forgot-password/notice',[UserController::class,'getViewNoticeForgotPassword'])->name('noticeForgotPassword');
+
+    Route::get('/reset-password',[UserController::class,'getViewResetPassword'])->name('resetPassword');
+
+    Route::get('/reset-password/{token}',[UserController::class,'redirectToPageResetPassword'])->name('redirectToPageResetPassword');
+
+    Route::post('/register',[UserController::class,'register'])->name('register');
+
+    Route::post('/resend/verify/email',[UserController::class,'resendVerifyEmail'])->name('resendVerifyEmail');
+
+    Route::post('/forgot-password',[UserController::class,'forgotPassword'])->name('forgotPassword');
+
+    Route::post('/reset-password',[UserController::class,'resetPassword'])->name('resetPassword');
+
+    Route::post('/resend/reset-password',[UserController::class,'resendResetPassword'])->name('resendResetPassword');
+});
 
 Route::get('/403', [UserController::class,'getView403'])->name('403');
 
-Route::get('/register', [UserController::class, 'getRegister'])->name('register');
+Route::get('/', [BookController::class,'getBookForHomePage'])->name('home');
 
-Route::get('/verify/email/{token}',[UserController::class,'verifyEmail']);
+Route::get('/author',[AuthorInfoController::class,'showAuthorInAllAuthorPage'])->name('allAuthor');
 
-Route::get('/notice/verify/email',[UserController::class,'getViewNoticeVerifyEmail'])->name('noticeVerifyEmail');
+Route::get('/book/{id}',[BookController::class,'getDetailBook'])->name('detail_book');
 
-Route::get('/forgot-password/notice',[UserController::class,'getViewNoticeForgotPassword'])->name('noticeForgotPassword');
+Route::get('/book/category/{categoryId}',[BookController::class,'getBookByCategory'])->name('getBookByCategory');
 
-Route::get('/reset-password/{token}',[UserController::class,'redirectToPageResetPassword'])->name('redirectToPageResetPassword');
+Route::get('/book',[BookController::class,'showBookInAllBookPage'])->name('allBook');
 
-Route::get('/reset-password',[UserController::class,'getViewResetPassword'])->name('resetPassword');
+Route::get('/author/{authorId}',[AuthorBookController::class,'showBookOfAuthor'])->name('bookOfAuthor');
 
-Route::post('/register',[UserController::class,'register'])->name('register');
+Route::get('/sort-all-book/{typeSort}',[BookController::class,'sortAllBook'])->name('sortAllBook');
 
-Route::post('/resend/verify/email',[UserController::class,'resendVerifyEmail'])->name('resendVerifyEmail');
+Route::get('/sort-book/{categoryId}/{typeSort}',[BookController::class,'sortBookOfCategory'])->name('sortBookOfCategory');
 
-Route::post('/forgot-password',[UserController::class,'forgotPassword'])->name('forgotPassword');
-
-Route::post('/reset-password',[UserController::class,'resetPassword'])->name('resetPassword');
-
-Route::post('/resend/reset-password',[UserController::class,'resendResetPassword'])->name('resendResetPassword');
+Route::post('/search/book',[BookController::class,'searchBook'])->name('searchBook');
 
 Route::middleware(['auth'])->group(function () {
-    // GET
-
-    Route::get('/', [BookController::class,'getBookForHomePage'])->name('home');
-
-    Route::get('/author',[AuthorInfoController::class,'showAuthorInAllAuthorPage'])->name('allAuthor');
-
-    Route::get('/book/{id}',[BookController::class,'getDetailBook'])->name('detail_book');
-
-    Route::get('/book/category/{categoryId}',[BookController::class,'getBookByCategory'])->name('getBookByCategory');
-
-    Route::get('/book',[BookController::class,'showBookInAllBookPage'])->name('allBook');
-
-    Route::get('/author/{authorId}',[AuthorBookController::class,'showBookOfAuthor'])->name('bookOfAuthor');
 
     Route::get('/cart',[BookController::class,'showBookInCart'])->name('cart');
 
@@ -74,14 +79,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/account',[UserController::class,'getViewUserInformation'])->name('profile');
 
-    Route::get('/sort-all-book/{typeSort}',[BookController::class,'sortAllBook'])->name('sortAllBook');
-
-    Route::get('/sort-book/{categoryId}/{typeSort}',[BookController::class,'sortBookOfCategory'])->name('sortBookOfCategory');
-
     Route::post('/confirm-rent-book',[BookController::class,'confirmRentBook'])->name('confirmRentBook');
-
-    Route::post('/search/book',[BookController::class,'searchBook'])->name('searchBook');
-
 
 });
 
@@ -92,16 +90,15 @@ Route::post('/logout',[UserController::class,'logout'])->name('logout');
 
 //Admin
 Route::prefix('admin')->group(function () {
-    //GET
+
     Route::get('/login',[AdminController::class,'getViewAdminLogin'])->name('admin.login');
 
-    //POST
     Route::post('/login')->middleware('auth.admin')->name('admin.login');
 
     Route::post('/logout',[AdminController::class,'logout'])->name('admin.logout');
 
     Route::middleware('auth.check.admin')->group(function () {
-        //GET
+
         Route::get('/dashboard',[AdminController::class,'showDashBoard'])->name('dashboard');
 
         Route::get('/manage/book',[BookController::class,'getBookForManageBookPage'])->name('manageBook');
@@ -117,15 +114,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/calendar',[AdminController::class,'getViewCalendarForAdmin'])->name('calendarPage');
 
         Route::get('/report',[AdminController::class,'getViewExportReport'])->name('report');
-        //POST
-
-        //PUT
-
-
     });
 });
-
-
-Route::get('/test/{bookId}',[BookController::class,'getCommentBook']);
 
 
