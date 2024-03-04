@@ -51,7 +51,7 @@ function getDetailRequest(requestId) {
     $('#detailRequest').empty()
     $('#totalPrice').empty()
     $.ajax({
-        url: 'http://localhost:8000/api/admin/detail-request/'+requestId,
+        url: 'http://localhost:8000/api/detail-request/'+requestId,
         method: 'GET',
         dataType: 'json',
         contentType: "application/json; charset=utf-8",

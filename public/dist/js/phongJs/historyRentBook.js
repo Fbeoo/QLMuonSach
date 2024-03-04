@@ -17,7 +17,7 @@ $(document).ready(function() {
 function showDetailRequest(requestId) {
     $('#detailRequest').empty();
     $.ajax({
-        url: 'http://localhost:8000/api/admin/detail-request/'+ requestId,
+        url: 'http://localhost:8000/api/detail-request/'+ requestId,
         method: 'GET',
         dataType: 'json',
         contentType: "application/json; charset=utf-8",
@@ -50,7 +50,7 @@ function refuseRequestRentBook(requestId) {
     var loaderContainer = document.getElementById("loaderContainer");
     loaderContainer.classList.remove("hidden");
     $.ajax({
-        url: 'http://localhost:8000/api/admin/refuse-request-rent-book',
+        url: 'http://localhost:8000/api/refuse-request-rent-book',
         method: 'PUT',
         dataType: 'json',
         contentType: "application/json; charset=utf-8",
