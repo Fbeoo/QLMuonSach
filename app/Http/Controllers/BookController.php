@@ -957,7 +957,7 @@ class BookController extends Controller
     public function searchBook(Request $request) {
         try {
             $resultSearch = $this->bookRepository->searchBook($request->input('bookNameSearch'));
-            return view('searchPage',['books'=>$resultSearch]);
+            return view('searchPage',['books'=>$resultSearch,'wordSearch' => $request->input('bookNameSearch')]);
         }catch (\Exception $e) {
             throw new \Exception($e);
         }
