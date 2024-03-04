@@ -1,5 +1,12 @@
-@include('layout.header')
-<x-sidebar/>
+{{--@include('layout.header')--}}
+{{--<x-sidebar/>--}}
+@extends('layout.layout')
+
+@section('title')
+    Thông tin cá nhân
+@endsection
+
+@section('content')
 <div class="card" style="width: 50%; margin: auto; padding-top: 20px">
     <div class="card-body row">
         <div class="col-6" style="margin: auto">
@@ -39,8 +46,6 @@
         </div>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script>
     $(function() {
         $('input[name="dob"]').daterangepicker({
@@ -55,4 +60,7 @@
     });
 </script>
 <script src="{{asset('dist/js/phongJs/userProfile.js')}}"></script>
-@include('layout.footer')
+{{--@include('layout.footer')--}}
+@endsection
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>

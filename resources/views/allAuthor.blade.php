@@ -1,5 +1,12 @@
-@include('layout.header');
-<x-sidebar/>
+{{--@include('layout.header');--}}
+{{--<x-sidebar/>--}}
+@extends('layout.layout')
+
+@section('title')
+    Tác giả
+@endsection
+
+@section('content')
 <style>
     .pagination {
         display: flex;
@@ -69,4 +76,5 @@
         @endfor
     </ul>
 </div>
-@include('layout.footer');
+@endsection
+{{--@include('layout.footer');--}}

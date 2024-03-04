@@ -1,5 +1,12 @@
-@include('layout.header')
-<x-sidebar/>
+{{--@include('layout.header')--}}
+{{--<x-sidebar/>--}}
+@extends('layout.layout')
+
+@section('title')
+    Lịch trả sách
+@endsection
+
+@section('content')
 <style>
     .fc-event {
         cursor: pointer;
@@ -74,4 +81,7 @@
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
 <script src="{{asset('dist/js/phongJs/calendarForUser.js')}}"></script>
-@include('layout.footer')
+@endsection
+{{--@include('layout.footer')--}}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>

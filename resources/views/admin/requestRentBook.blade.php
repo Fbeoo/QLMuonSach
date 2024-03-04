@@ -1,5 +1,12 @@
-@include('admin.layout.header')
-@include('admin.layout.sidebar')
+{{--@include('admin.layout.header')--}}
+{{--@include('admin.layout.sidebar')--}}
+@extends('layout.layout')
+
+@section('title')
+    Quản lý yêu cầu mượn sách
+@endsection
+
+@section('content')
 <style>
     .pagination {
         display: flex;
@@ -159,6 +166,7 @@
                                                         <button style="cursor: pointer" class="dropdown-item" id="statusRequest{{$request->id}}Returned" data-toggle="modal" data-target="#exampleModal" data-id="{{$request->id}}" data-value="Returned">Đánh dấu đã trả</button>
                                                     @endif
                                                 @endif
+                                                <button style="cursor: pointer" class="dropdown-item exportInvoice" data-id="{{$request->id}}">Xuất hóa đơn</button>
                                             </div>
                                         </div>
                                     </td>
@@ -231,8 +239,6 @@
 <div id="loaderContainer" class="loader-container hidden">
     <div class="loader"></div>
 </div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script>
     $(function() {
         $('input[name="dateRentRange"]').daterangepicker({
@@ -263,4 +269,7 @@
     });
 </script>
 <script src="{{asset('dist/js/phongJs/requestRentBook.js')}}"></script>
-@include('admin.layout.footer')
+{{--@include('admin.layout.footer')--}}
+@endsection
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>

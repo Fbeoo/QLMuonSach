@@ -1,5 +1,13 @@
-@include('admin.layout.header')
-@include('admin.layout.sidebar')
+{{--@include('admin.layout.header')--}}
+{{--@include('admin.layout.sidebar')--}}
+
+@extends('layout.layout')
+
+@section('title')
+    Quản lý người dùng
+@endsection
+
+@section('content')
 <style>
     .pagination {
         display: flex;
@@ -238,7 +246,8 @@
 <div id="loaderContainer" class="loader-container hidden">
     <div class="loader"></div>
 </div>
+<script src="{{asset('dist/js/phongJs/manageUser.js')}}"></script>
+{{--@include('admin.layout.footer')--}}
+@endsection
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script src="{{asset('dist/js/phongJs/manageUser.js')}}"></script>
-@include('admin.layout.footer')

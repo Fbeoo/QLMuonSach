@@ -1,5 +1,44 @@
-@include('admin.layout.header')
-@include('admin.layout.sidebar')
+{{--@include('admin.layout.header')--}}
+{{--@include('admin.layout.sidebar')--}}
+@extends('layout.layout')
+
+@section('title')
+    Xuất báo cáo
+@endsection
+
+@section('content')
+    <style>
+        .loader-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+        }
+
+        .loader {
+            border: 16px solid #f3f3f3;
+            border-top: 16px solid #3498db;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
 <form id="formExportReport">
     @csrf
     <div class="row" style="width: 80%; margin: auto; padding-top: 30px">
@@ -10,17 +49,26 @@
                 <option value="book">Sách</option>
                 <option value="requestRent">Yêu cầu mượn</option>
             </select>
+            <div id="categoryReportError">
+
+            </div>
         </div>
         <div class="col-4">
             <label>Loại báo cáo</label>
             <select name="typeReport" id="report" class="form-control custom-select">
 
             </select>
+            <div id="typeReportError">
+
+            </div>
         </div>
         <div class="col-4" id="time">
             <div class="form-group">
                 <label>Thời gian</label>
                 <input class="form-control" type="text" name="dateRangeReport" id="dateRangeReport" value="" disabled/>
+            </div>
+            <div id="dateRangeReportError">
+
             </div>
         </div>
     </div>
@@ -30,9 +78,9 @@
             </a>
     </div>
 </form>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.2/FileSaver.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<div id="loaderContainer" class="loader-container hidden">
+    <div class="loader"></div>
+</div>
 <script>
     $(function() {
         $('input[name="dateRangeReport"]').daterangepicker({
@@ -50,4 +98,8 @@
     });
 </script>
 <script src="{{asset('dist/js/phongJs/exportReport.js')}}"></script>
-@include('admin.layout.footer')
+{{--@include('admin.layout.footer')--}}
+@endsection
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.2/FileSaver.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>

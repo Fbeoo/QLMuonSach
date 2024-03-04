@@ -1,5 +1,12 @@
-@include('layout.header')
-<x-sidebar/>
+{{--@include('layout.header')--}}
+{{--<x-sidebar/>--}}
+@extends('layout.layout')
+
+@section('title')
+    {{$wordSearch}} - Tìm kiếm
+@endsection
+
+@section('content')
 <style>
     .pagination {
         display: flex;
@@ -80,4 +87,5 @@
     </div>
 @endif
 
-@include('layout.footer')
+{{--@include('layout.footer')--}}
+@endsection

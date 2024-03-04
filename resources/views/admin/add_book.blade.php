@@ -1,5 +1,12 @@
-@include('admin.layout.header')
-@include('admin.layout.sidebar')
+{{--@include('admin.layout.header')--}}
+{{--@include('admin.layout.sidebar')--}}
+@extends('layout.layout')
+
+@section('title')
+    Thêm sách
+@endsection
+
+@section('content')
 <style>
     label{
         color:#000;
@@ -239,6 +246,7 @@
 </div>
 
 
-@include('admin.layout.footer')
+{{--@include('admin.layout.footer')--}}
 <script src="{{asset('dist/js/phongJs/addBook.js')}}"></script>
+@endsection
 

@@ -1,5 +1,12 @@
-@include('layout.header');
-<x-sidebar/>
+{{--@include('layout.header');--}}
+{{--<x-sidebar/>--}}
+@extends('layout.layout')
+
+@section('title')
+    Giỏ hàng
+@endsection
+
+@section('content')
 <div class="card" style="width: 80%; margin: auto; margin-top: 20px; padding-bottom: 70px">
     <div class="card-header">
         <h3 class="card-title">Giỏ hàng của bạn</h3>
@@ -83,7 +90,8 @@
     @endif
 </div>
 
+<script src="{{asset('dist/js/phongJs/cart.js')}}"></script>
+@endsection
+{{--@include('layout.footer');--}}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script src="{{asset('dist/js/phongJs/cart.js')}}"></script>
-@include('layout.footer');

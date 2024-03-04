@@ -1,5 +1,12 @@
-@include('layout.header')
-<x-sidebar/>
+{{--@include('layout.header')--}}
+{{--<x-sidebar/>--}}
+@extends('layout.layout')
+
+@section('title')
+    Lịch sử mượn sách
+@endsection
+
+@section('content')
 <style>
     .pagination {
         display: flex;
@@ -190,7 +197,9 @@
 </div>
 <div id="loaderContainer" class="loader-container hidden">
     <div class="loader"></div>
-</div>    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</div>
     <script src="{{asset('dist/js/phongJs/historyRentBook.js')}}"></script>
-@include('layout.footer')
+{{--@include('layout.footer')--}}
+@endsection
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>

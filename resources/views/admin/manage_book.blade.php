@@ -1,5 +1,12 @@
-@include('admin.layout.header')
-@include('admin.layout.sidebar')
+{{--@include('admin.layout.header')--}}
+{{--@include('admin.layout.sidebar')--}}
+@extends('layout.layout')
+
+@section('title')
+    Quản lý sách
+@endsection
+
+@section('content')
 <style>
     .pagination {
         display: flex;
@@ -243,13 +250,14 @@
                     </div>
                 </div>
             </div>
-            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
             <script>
 
             </script>
             <script src="{{asset('dist/js/phongJs/lockBook.js')}}"></script>
             <script src="{{asset('dist/js/phongJs/manageBook.js')}}"></script>
-@include('admin.layout.footer')
+{{--@include('admin.layout.footer')--}}
+@endsection
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 

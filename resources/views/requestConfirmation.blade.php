@@ -1,5 +1,12 @@
-@include('layout.header')
-<x-sidebar/>
+{{--@include('layout.header')--}}
+{{--<x-sidebar/>--}}
+@extends('layout.layout')
+
+@section('title')
+    Xác nhận mượn sách
+@endsection
+
+@section('content')
  <!-- Main content -->
     <div class="invoice p-3 mb-3" style="width: 80%; margin: auto">
         <!-- title row -->
@@ -139,4 +146,5 @@
     <!-- /.invoice -->
 </div>
 <script src="{{asset('dist/js/phongJs/confirmRequestRentBook.js')}}"></script>
-@include('layout.footer')
+{{--@include('layout.footer')--}}
+@endsection

@@ -1,5 +1,10 @@
-@include('layout.header')
-<x-sidebar/>
+{{--@include('layout.header')--}}
+{{--<x-sidebar/>--}}
+@extends('title')
+    Tất cả sách
+@endsection
+
+@section('content')
 <style>
     .pagination {
         display: flex;
@@ -92,4 +97,5 @@
         window.location.href = document.getElementById('sortBook').value
     })
 </script>
-@include('layout.footer')
+@endsection
+{{--@include('layout.footer')--}}

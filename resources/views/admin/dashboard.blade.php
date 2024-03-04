@@ -1,5 +1,13 @@
-@include('admin.layout.header')
-@include('admin.layout.sidebar')
+{{--@include('admin.layout.header')--}}
+{{--@include('admin.layout.sidebar')--}}
+
+@extends('layout.layout')
+
+@section('title')
+    Dashboard
+@endsection
+
+@section('content')
 <style>
     .chart-container {
         width: 500px;
@@ -109,4 +117,5 @@
         }
     });
 </script>
-@include('admin.layout.footer')
+{{--@include('admin.layout.footer')--}}
+@endsection

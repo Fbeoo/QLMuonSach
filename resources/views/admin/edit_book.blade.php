@@ -1,5 +1,13 @@
-@include('admin.layout.header')
-@include('admin.layout.sidebar')
+{{--@include('admin.layout.header')--}}
+{{--@include('admin.layout.sidebar')--}}
+
+@extends('layout.layout')
+
+@section('title')
+    {{$book->name}} - Sửa
+@endsection
+
+@section('content')
 <style>
     .loader-container {
         display: flex;
@@ -171,4 +179,5 @@
     <div class="loader"></div>
 </div>
 @include('admin.layout.footer')
-<script src="{{asset('dist/js/phongJs/editBook.js')}}"></script>
+{{--<script src="{{asset('dist/js/phongJs/editBook.js')}}"></script>--}}
+@endsection
