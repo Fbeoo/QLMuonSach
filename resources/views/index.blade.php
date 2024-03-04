@@ -1,5 +1,12 @@
-@include('layout.header')
-<x-sidebar/>
+{{--@include('layout.header')--}}
+{{--<x-sidebar/>--}}
+@extends('layout.layout')
+
+@section('title')
+    Trang chủ
+@endsection
+
+@section('content')
 <style>
     .pagination {
         display: flex;
@@ -91,4 +98,5 @@
         </div>
     </div>
 </div>
-@include('layout.footer')
+{{--@include('layout.footer')--}}
+@endsection
