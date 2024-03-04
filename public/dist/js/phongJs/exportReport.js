@@ -10,8 +10,7 @@ selectCategoryReport.addEventListener('change',function () {
     }
     else if (selectCategoryReport.value === 'requestRent') {
         strHtml = `<option value="" selected>Lựa chọn loại báo cáo cần xuất</option>
-                <option value="requestRentInDay">Thống kê yêu cầu mượn trong ngày</option>
-                <option value="requestRentByDateRange">Thống kê yêu cầu mượn theo thời gian</option>`;
+                <option value="requestRentInDay">Thống kê yêu cầu mượn trong ngày</option>`;
     }
     else {
         strHtml = '';
@@ -31,6 +30,9 @@ document.getElementById('export').addEventListener('click',function () {
     event.preventDefault();
 
     var formData = new FormData($('#formExportReport')[0]);
+
+    var loaderContainer = document.getElementById("loaderContainer");
+    loaderContainer.classList.remove("hidden");
 
     $.ajax({
         url : 'http://localhost:8000/api/admin/export-report',
@@ -62,7 +64,9 @@ document.getElementById('export').addEventListener('click',function () {
                 a.click();
                 a.remove();
                 window.URL.revokeObjectURL(url);
+                alert('Xuất báo cáo thành công')
             }
+            loaderContainer.classList.add("hidden");
         },
     })
 })
