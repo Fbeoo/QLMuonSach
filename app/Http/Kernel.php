@@ -7,6 +7,7 @@ use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\AuthenticateUserOrAdmin;
 use App\Http\Middleware\AuthUser;
 use App\Http\Middleware\CheckIsAdmin;
+use App\Http\Middleware\CheckIsLogin;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -74,5 +75,6 @@ class Kernel extends HttpKernel
         'auth.user' => AuthUser::class,
         'auth.admin' => AuthAdmin::class,
         'auth.check.admin' => CheckIsAdmin::class,
+        'auth.check.login' => CheckIsLogin::class,
     ];
 }
