@@ -10,4 +10,6 @@ interface UserRepositoryInterface extends EloquentRepositoryInterface {
     public function getUserByToken($token);
 
     public function getUserByMail($mail);
+
+    public function getAllRequestRentBookExpirationOfUser();
 }

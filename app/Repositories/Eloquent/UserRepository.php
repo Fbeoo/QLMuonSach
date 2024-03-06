@@ -2,6 +2,7 @@
 namespace App\Repositories\Eloquent;
 use App\Models\HistoryRentBook;
 use App\Repositories\UserRepositoryInterface;
+use Illuminate\Database\Eloquent\Builder;
 use mysql_xdevapi\Exception;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface {
@@ -80,6 +81,25 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface {
         try {
             $user = $this->model->where('mail',$mail)->get();
             return $user;
+        }catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function getAllRequestRentBookExpirationOfUser()
+    {
+        try {
+            $requestRentBook = $this->model
+                ->whereHas('historyRentBook', function (Builder $query) {
+                    $query->where('expiration_date', '<', now()->format('Y-m-d'))
+                        ->where('status', 1);
+                })
+                ->with(['historyRentBook' => function ($query) {
+                    $query->where('status', 1)
+                        ->with(['detailHistoryRentBook', 'detailHistoryRentBook.book']);
+                }])
+                ->get();
+            return $requestRentBook;
         }catch (\Exception $e) {
             throw new \Exception($e);
         }
