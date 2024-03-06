@@ -1,6 +1,8 @@
 {{--@include('layout.header')--}}
 {{--<x-sidebar/>--}}
-@extends('title')
+@extends('layout.layout')
+
+@section('title')
     Tất cả sách
 @endsection
 
