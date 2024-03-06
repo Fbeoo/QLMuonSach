@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Mail;
 use Faker\Generator as Faker;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
@@ -68,7 +69,7 @@ class UserController extends Controller
                 'name' => 'required',
                 'mail' => 'required|email',
                 'address' => 'required',
-                'password' => 'required',
+                'password' => ['required',Password::min(8)->mixedCase()->numbers()->symbols()],
                 'confirmPassword' => 'required'
             ],[
                 'name.required' => @trans('message.nameRequired'),
@@ -344,5 +345,4 @@ class UserController extends Controller
             return response()->json(['error'=>$e]);
         }
     }
-
 }
