@@ -2,44 +2,64 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+/**
+ *
+ */
+class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+
+    const statusLock = 0;
+    const statusNormal = 1;
+
+    const statusInactive = 2;
+
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
+     * @var string
+     */
+    protected $table = 'user';
+    /**
+     * @var string
+     */
+    protected $guarded = 'web';
+
+    protected $email = 'mail';
+    /**
+     * @var string[]
      */
     protected $fillable = [
         'name',
-        'email',
-        'password',
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
+        'dob',
+        'mail',
+        'address',
+        'status',
         'password',
         'remember_token',
     ];
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function historyRentBook() {
+        return $this->hasMany(HistoryRentBook::class,'user_id');
+    }
+
+    public function commentedBook() {
+        return $this->hasMany(CommentBook::class,'user_id','id');
+    }
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+    public function compensateBook() {
+        return $this->belongsToMany(Book::class,'report_compensation');
+    }
 }
